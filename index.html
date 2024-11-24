@@ -36,8 +36,8 @@
         .logo {
             width: 150px;
             height: auto;
-            border-radius: 50%; /* Optional: To make the image appear circular */
-            border: 3px solid #005f73; /* Adds a border around the logo */
+            border-radius: 50%; /* Optional: Circular appearance */
+            border: 3px solid #005f73;
         }
         .content {
             padding: 40px 20px;
@@ -70,6 +70,25 @@
         .tokenomics p {
             font-size: 16px;
             line-height: 1.6;
+        }
+        .buttons {
+            margin-top: 30px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #005f73; /* Deep teal */
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #023e58; /* Darker teal */
         }
         footer {
             background-color: #005f73; /* Deep teal */
@@ -112,13 +131,29 @@
     <div class="tokenomics">
         <h3>Tokenomics</h3>
         <p>
-            Cryptodira has a fixed supply of 4.9 million tokens. The creator's wallet containing 1 million tokens
-            will be turned over to a conservation fund to support sea turtle preservation efforts.
+            Cryptodira has a fixed supply of 4,912,863.0795 tokens. The creator's wallet containing 1 million tokens
+             is for a conservation fund to support sea turtle preservation efforts.
         </p>
         <p>
             <strong>Wallet Address:</strong> 5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG<br />
             This wallet will remain dedicated to funding projects and organizations that protect sea turtles in the wild.
         </p>
+
+        <!-- Buttons -->
+        <div class="buttons">
+            <a 
+                href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" 
+                class="button" 
+                target="_blank">
+                Liquidity Pool
+            </a>
+            <a 
+                href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" 
+                class="button" 
+                target="_blank">
+                Birdeye
+            </a>
+        </div>
     </div>
 
     <!-- Footer Section -->
