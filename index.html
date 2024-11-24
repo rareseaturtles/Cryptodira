@@ -40,25 +40,39 @@
             border: 3px solid #005f73;
         }
         .content {
-            padding: 40px 20px;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 250px); /* Adjusted for header/footer */
         }
-        .content h2 {
+        .content-box {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 40px 20px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            border: 1px solid #94d2bd; /* Aqua border */
+        }
+        .content-box h2 {
             font-size: 36px;
             margin-bottom: 20px;
             color: #005f73; /* Deep teal */
         }
-        .content p {
+        .content-box p {
             font-size: 18px;
             line-height: 1.6;
             margin-bottom: 30px;
+            color: #555; /* Softer gray */
         }
         .tokenomics {
             background-color: #e0fbfc; /* Very light aqua */
             padding: 30px 20px;
             margin: 20px auto;
             border-radius: 10px;
-            width: 80%;
+            width: 100%;
             max-width: 800px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -119,12 +133,14 @@
 
     <!-- Main Content Section -->
     <div class="content">
-        <h2>About Cryptodira</h2>
-        <p>
-            Cryptodira is a Solana blockchain-based token designed to make a positive impact on the world.
-            Named after the scientific suborder of turtles, Cryptodira is committed to preserving sea turtles
-            and their habitats. By holding Cryptodira tokens, you're directly contributing to this noble cause.
-        </p>
+        <div class="content-box">
+            <h2>About Cryptodira</h2>
+            <p>
+                Cryptodira is a Solana blockchain-based token designed to make a positive impact on the world.
+                Named after the scientific suborder of turtles, Cryptodira is committed to preserving sea turtles
+                and their habitats. By holding Cryptodira tokens, you're directly contributing to this noble cause.
+            </p>
+        </div>
     </div>
 
     <!-- Tokenomics Section -->
@@ -132,7 +148,7 @@
         <h3>Tokenomics</h3>
         <p>
             Cryptodira has a fixed supply of 4,912,863.0795 tokens. The creator's wallet containing 1 million tokens
-             is for a conservation fund to support sea turtle preservation efforts.
+            will be used for a conservation fund to support sea turtle preservation efforts.
         </p>
         <p>
             <strong>Wallet Address:</strong> 5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG<br />
