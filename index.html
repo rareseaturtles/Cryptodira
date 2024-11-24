@@ -9,11 +9,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e6f7ff; /* Light blue background representing the ocean */
+            background-color: #f0f8ff; /* Soft aqua background */
             color: #333; /* Dark gray text */
         }
         header {
-            background-color: #0077b6; /* Deep ocean blue */
+            background-color: #005f73; /* Deep teal */
             color: #ffffff; /* White text */
             padding: 20px 0;
             text-align: center;
@@ -26,6 +26,7 @@
         header p {
             font-size: 18px;
             margin: 10px 0 0 0;
+            color: #94d2bd; /* Aqua green accent */
         }
         .logo-container {
             display: flex;
@@ -33,8 +34,10 @@
             margin: 20px 0;
         }
         .logo {
-            width: 200px;
+            width: 150px;
             height: auto;
+            border-radius: 50%; /* Optional: To make the image appear circular */
+            border: 3px solid #005f73; /* Adds a border around the logo */
         }
         .content {
             padding: 40px 20px;
@@ -43,7 +46,7 @@
         .content h2 {
             font-size: 36px;
             margin-bottom: 20px;
-            color: #0077b6;
+            color: #005f73; /* Deep teal */
         }
         .content p {
             font-size: 18px;
@@ -51,7 +54,7 @@
             margin-bottom: 30px;
         }
         .tokenomics {
-            background-color: #f1f1f1; /* Light gray background */
+            background-color: #e0fbfc; /* Very light aqua */
             padding: 30px 20px;
             margin: 20px auto;
             border-radius: 10px;
@@ -62,14 +65,14 @@
         .tokenomics h3 {
             font-size: 28px;
             margin-bottom: 15px;
-            color: #0077b6;
+            color: #005f73; /* Deep teal */
         }
         .tokenomics p {
             font-size: 16px;
             line-height: 1.6;
         }
         footer {
-            background-color: #0077b6;
+            background-color: #005f73; /* Deep teal */
             color: #ffffff;
             text-align: center;
             padding: 10px 0;
@@ -85,15 +88,11 @@
     <header>
         <div class="logo-container">
             <!-- Sea Turtle Logo -->
-            <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-                <circle cx="100" cy="100" r="80" fill="#48cae4" stroke="#0077b6" stroke-width="5" />
-                <!-- Turtle shell -->
-                <polygon points="100,40 130,70 120,130 80,130 70,70" fill="#0077b6" />
-                <!-- Flippers -->
-                <path d="M60,100 Q40,80 60,60" fill="none" stroke="#0077b6" stroke-width="5" />
-                <path d="M140,100 Q160,80 140,60" fill="none" stroke="#0077b6" stroke-width="5" />
-                <path d="M85,140 Q80,160 100,165 Q120,160 115,140" fill="none" stroke="#0077b6" stroke-width="5" />
-            </svg>
+            <img 
+                class="logo" 
+                src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" 
+                alt="Cryptodira Logo"
+            />
         </div>
         <h1>Cryptodira</h1>
         <p>A Crypto Token for Protecting Sea Turtles</p>
