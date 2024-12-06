@@ -97,7 +97,8 @@
             font-size: 14px;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script> <!-- Load Solana Web3.js -->
+    <!-- Load Solana Web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
 </head>
 <body>
     <!-- Header Section -->
@@ -163,6 +164,7 @@
     <!-- JavaScript -->
     <script>
         async function sendTransaction() {
+            // Check if Phantom Wallet is available and connected
             if (window.solana && window.solana.isPhantom) {
                 try {
                     // Connect to the Phantom Wallet
@@ -206,6 +208,7 @@
             }
         }
 
+        // Event listener for the Donate button
         document.getElementById('donateButton').addEventListener('click', sendTransaction);
     </script>
 </body>
