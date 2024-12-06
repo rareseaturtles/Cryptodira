@@ -164,6 +164,7 @@
     <!-- JavaScript -->
     <script>
         document.getElementById('donateButton').addEventListener('click', async function() {
+            // Check if Phantom is available and connected
             if (window.solana && window.solana.isPhantom) {
                 try {
                     // Connect to Phantom Wallet
