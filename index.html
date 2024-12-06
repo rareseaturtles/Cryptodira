@@ -164,28 +164,28 @@
     <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            if (typeof solanaWeb3 !== 'undefined') {
-                console.log("Solana Web3 library loaded successfully.");
-            } else {
+            if (typeof solanaWeb3 === 'undefined') {
                 console.error("Solana Web3 library not loaded.");
                 alert("Error: Solana Web3 library not available. Please try again later.");
                 return;
             }
 
+            console.log("Solana Web3 library loaded successfully.");
+
             document.getElementById('donateButton').addEventListener('click', async function() {
                 if (window.solana && window.solana.isPhantom) {
                     try {
-                        // Connect to Phantom Wallet
+                        // Request connection to Phantom Wallet
                         await window.solana.connect();
                         console.log('Connected to Phantom Wallet:', window.solana.publicKey.toString());
 
-                        // Create a connection to the Solana devnet
+                        // Create connection to Solana devnet
                         const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
 
-                        // Define the recipient's wallet address
+                        // Define recipient wallet address
                         const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
 
-                        // Create the transaction
+                        // Create transaction
                         const transaction = new solanaWeb3.Transaction().add(
                             solanaWeb3.SystemProgram.transfer({
                                 fromPubkey: window.solana.publicKey,
@@ -194,21 +194,23 @@
                             })
                         );
 
-                        // Sign and send the transaction
+                        // Sign and send transaction
                         const { signature } = await window.solana.signAndSendTransaction(transaction);
                         console.log('Transaction signature:', signature);
+                        alert(`Transaction sent. Signature: ${signature}`);
 
-                        alert('Transaction sent successfully. Waiting for confirmation...');
-                        // Optionally, wait for the confirmation of the transaction
+                        // Confirm transaction
                         await connection.confirmTransaction(signature);
-                        alert('Transaction confirmed!');
-                        
+                        alert('Transaction confirmed successfully!');
                     } catch (error) {
                         console.error('Error initiating the transaction:', error);
-                        if (error.message.includes('insufficient balance')) {
+
+                        if (error.message && error.message.includes('User rejected the request')) {
+                            alert('Transaction cancelled by user.');
+                        } else if (error.message && error.message.includes('insufficient balance')) {
                             alert('Insufficient balance to complete the transaction.');
                         } else {
-                            alert('An error occurred. Please try again.');
+                            alert('An unexpected error occurred. Please try again.');
                         }
                     }
                 } else {
