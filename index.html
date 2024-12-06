@@ -137,7 +137,7 @@
 
     <!-- Donation Button -->
     <div class="buttons">
-        <button class="button" id="donateButton">Donate</button>
+        <button class="button" id="donateButton">Donate 0.005 SOL</button>
     </div>
 
     <!-- Additional Buttons -->
@@ -163,48 +163,51 @@
 
     <!-- JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.solana && window.solana.isPhantom) {
-                console.log('Phantom Wallet detected');
-            } else {
-                console.error('Phantom Wallet is not installed. Please install it to continue.');
-                alert('Phantom Wallet is not installed. Please install it to continue.');
-            }
-        });
-
         document.getElementById('donateButton').addEventListener('click', async function() {
-            try {
-                if (window.solana && window.solana.isPhantom) {
+            // Check if Phantom is available and connected
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    // Connect to Phantom Wallet
                     await window.solana.connect();
                     console.log('Connected to Phantom Wallet:', window.solana.publicKey.toString());
 
+                    // Create a connection to the Solana devnet (for testing purposes)
                     const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
+
+                    // Define the user's public key
+                    const userPublicKey = new solanaWeb3.PublicKey(window.solana.publicKey.toString());
+
+                    // Define the recipient's wallet address (use your donation wallet)
                     const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
 
+                    // Amount to send (in SOL)
+                    const amountInSOL = 0.005;
+                    const lamports = amountInSOL * solanaWeb3.LAMPORTS_PER_SOL; // Convert SOL to lamports
+
+                    // Create the transaction
                     const transaction = new solanaWeb3.Transaction().add(
                         solanaWeb3.SystemProgram.transfer({
-                            fromPubkey: window.solana.publicKey,
+                            fromPubkey: userPublicKey,
                             toPubkey: recipientAddress,
-                            lamports: solanaWeb3.LAMPORTS_PER_SOL * 0.005, // Amount in SOL (0.005 SOL)
+                            lamports: lamports,
                         })
                     );
 
-                    const { signature } = await window.solana.signTransaction(transaction);
-                    await connection.confirmTransaction(signature);
+                    // Sign and send the transaction
+                    const signature = await window.solana.signAndSendTransaction(transaction);
+                    console.log('Transaction sent:', signature);
 
-                    alert('Transaction completed successfully! Signature: ' + signature);
-                } else {
-                    alert('Please install Phantom Wallet and connect it to your browser.');
-                }
-            } catch (error) {
-                console.error('Error initiating the transaction:', error);
-                if (error.message.includes('User rejected the request')) {
-                    alert('Connection request was rejected. Please try again.');
-                } else if (error.message.includes('insufficient funds')) {
-                    alert('Insufficient funds. Please add more SOL to your wallet.');
-                } else {
+                    // Confirm the transaction
+                    const confirmation = await connection.confirmTransaction(signature, 'confirmed');
+                    console.log('Transaction confirmed:', confirmation);
+
+                    alert('Transaction successful!');
+                } catch (error) {
+                    console.error('Error initiating the transaction:', error);
                     alert('An error occurred. Please check the console for details.');
                 }
+            } else {
+                alert('Please install Phantom Wallet and try again.');
             }
         });
     </script>
