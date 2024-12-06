@@ -168,33 +168,45 @@
             if (window.solana && window.solana.isPhantom) {
                 try {
                     // Connect to Phantom Wallet
-                    await window.solana.connect();
-                    console.log('Connected to Phantom Wallet');
+                    const response = await window.solana.connect();
+                    console.log('Connected to Phantom Wallet:', response.publicKey.toString());
 
                     // Create a connection to the Solana devnet
                     const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
 
-                    // Define the recipient's wallet address (use your donation wallet)
+                    // Define the recipient's wallet address
                     const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
-                    
+
+                    // Get the user's wallet balance in lamports
+                    const balance = await connection.getBalance(response.publicKey);
+                    const amountLamports = solanaWeb3.LAMPORTS_PER_SOL * 0.005; // 0.005 SOL in lamports
+
+                    // Check if the user has sufficient balance
+                    if (balance < amountLamports) {
+                        alert('Insufficient balance. Please add more SOL to your wallet.');
+                        return;
+                    }
+
                     // Create the transaction
                     const transaction = new solanaWeb3.Transaction().add(
                         solanaWeb3.SystemProgram.transfer({
                             fromPubkey: window.solana.publicKey,
                             toPubkey: recipientAddress,
-                            lamports: solanaWeb3.LAMPORTS_PER_SOL * 0.05, // Amount in SOL (e.g., 0.05 SOL)
+                            lamports: amountLamports, // Amount in lamports
                         })
                     );
 
-                    // Serialize the transaction
-                    const serializedTransaction = transaction.serialize().toString('base58');
+                    // Sign the transaction
+                    const signedTransaction = await window.solana.signTransaction(transaction);
 
-                    // Use Phantom's deep linking URL for signing and sending
-                    const deepLinkURL = `https://phantom.app/ul/v1/signAndSendTransaction?payload=${encodeURIComponent(serializedTransaction)}`;
+                    // Send the transaction
+                    const txId = await connection.sendRawTransaction(signedTransaction.serialize(), {
+                        skipPreflight: false,
+                        preflightCommitment: 'confirmed',
+                    });
 
-                    // Redirect the user to Phantom for signing and sending the transaction
-                    window.location.href = deepLinkURL;
-
+                    console.log('Transaction ID:', txId);
+                    alert('Transaction submitted. Check your Phantom wallet for confirmation.');
                 } catch (error) {
                     console.error('Error initiating the transaction:', error);
                     alert('An error occurred. Please try again.');
