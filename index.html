@@ -7,184 +7,42 @@
     <!-- Load the @solana/web3.js library -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
     <style>
-        /* Basic styles for the website */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f8ff;
-            color: #333;
-        }
-        header {
-            background-color: #005f73;
-            color: #ffffff;
-            padding: 10px 0;
-            text-align: center;
-        }
-        header h1 {
-            font-size: 48px;
-            margin: 0;
-            font-family: 'Trebuchet MS', sans-serif;
-        }
-        header p {
-            font-size: 18px;
-            margin: 10px 0 0 0;
-            color: #94d2bd;
-        }
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .logo {
-            width: 150px;
-            height: auto;
-            border-radius: 50%;
-            border: 3px solid #005f73;
-        }
-        .content-box, .tokenomics {
-            text-align: center;
-            background-color: #ffffff;
-            padding: 20px;
-            margin: 20px auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 80%;
-            border: 1px solid #94d2bd;
-        }
-        .content-box h2, .tokenomics h3 {
-            font-size: 28px;
-            margin-bottom: 15px;
-            color: #005f73;
-        }
-        .content-box p, .tokenomics p {
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            color: #555;
-        }
-        .buttons {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 24px;
-            margin: 10px;
-            font-size: 16px;
-            color: #ffffff;
-            background-color: #005f73;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            cursor: pointer;
-            flex: 0 0 auto;
-        }
-        .button:hover {
-            background-color: #023e58;
-        }
-        footer {
-            background-color: #005f73;
-            color: #ffffff;
-            text-align: center;
-            padding: 10px 0;
-        }
-        footer p {
-            margin: 0;
-            font-size: 14px;
-        }
+        /* Add styles here */
     </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header>
-        <div class="logo-container">
-            <img 
-                class="logo" 
-                src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" 
-                alt="Cryptodira Logo"
-            />
-        </div>
-        <h1>Cryptodira</h1>
-        <p>A Crypto Token for Protecting Sea Turtles</p>
-    </header>
+    <!-- Content and button for donations -->
+    <button id="donateButton">Donate 0.005 SOL</button>
 
-    <!-- About Section -->
-    <div class="content-box">
-        <h2>About Cryptodira $Dira</h2>
-        <p>
-            Cryptodira is a Solana blockchain-based token designed to make a positive impact on the world.
-            Named after the scientific suborder of turtles, Cryptodira is committed to preserving sea turtles
-            and their habitats. By holding Cryptodira tokens, you're directly contributing to this noble cause.
-        </p>
-    </div>
-
-    <!-- Tokenomics Section -->
-    <div class="tokenomics">
-        <h3>Tokenomics</h3>
-        <p>
-            Cryptodira has a fixed supply of 4,912,863.0795 tokens. Hi, I'm Ryan McCauley. I want to take a moment to address the skepticism that often surrounds the crypto space. While many meme projects come and go, I’m proud to say that what I’ve been building has been three years in the making. It’s been a journey of slow but steady progress, and I’m here for the long haul. This experience has been as challenging as it is rewarding, and I’ve learned so much along the way. For me, this isn’t just about creating something fun; it’s about striving to make a meaningful difference in the world. Transparency is key, so if you have any questions, don’t hesitate to ask. My goal is simple: to leave the world a little better than I found it.
-        </p>
-        <p>
-            This liquidity pool will remain dedicated to funding projects and organizations that protect sea turtles in the wild.
-        </p>
-    </div>
-
-    <!-- Donation Button -->
-    <div class="buttons">
-        <button class="button" id="donateButton">Donate 0.005 SOL</button>
-    </div>
-
-    <!-- Additional Buttons -->
-    <div class="buttons">
-        <a 
-            href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" 
-            class="button" 
-            target="_blank">
-            Liquidity Pool
-        </a>
-        <a 
-            href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" 
-            class="button" 
-            target="_blank">
-            Birdeye
-        </a>
-    </div>
-
-    <!-- Footer Section -->
-    <footer>
-        <p>&copy; 2024 Cryptodira. Supporting Sea Turtle Conservation.</p>
-    </footer>
-
-    <!-- JavaScript -->
     <script>
+        // Ensure that the solanaWeb3 library is defined
+        if (typeof solanaWeb3 === 'undefined') {
+            alert('Solana Web3 library is not loaded. Please check your code and try again.');
+        } else {
+            console.log('solanaWeb3 library loaded successfully.');
+        }
+
         document.getElementById('donateButton').addEventListener('click', async function() {
-            // Check if Phantom is available and connected
             if (window.solana && window.solana.isPhantom) {
                 try {
-                    // Connect to Phantom Wallet and request permission to connect
+                    // Step 1: Connect to the wallet
                     await window.solana.connect();
                     console.log('Connected to Phantom Wallet:', window.solana.publicKey.toString());
 
-                    // Get the user's public key
-                    const userPublicKey = new solanaWeb3.PublicKey(window.solana.publicKey.toString());
-
-                    // Create a connection to the Solana devnet (for testing purposes)
+                    // Step 2: Create a connection to the Solana blockchain
                     const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
 
-                    // Define the recipient's wallet address (use your donation wallet)
+                    // Step 3: Get the user's public key
+                    const userPublicKey = new solanaWeb3.PublicKey(window.solana.publicKey.toString());
+
+                    // Step 4: Define the recipient's public key (your donation wallet)
                     const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
 
-                    // Amount to send (in SOL)
+                    // Step 5: Specify the amount to send (in SOL)
                     const amountInSOL = 0.005;
                     const lamports = amountInSOL * solanaWeb3.LAMPORTS_PER_SOL; // Convert SOL to lamports
 
-                    // Create the transaction
+                    // Step 6: Create the transaction
                     const transaction = new solanaWeb3.Transaction().add(
                         solanaWeb3.SystemProgram.transfer({
                             fromPubkey: userPublicKey,
@@ -193,26 +51,27 @@
                         })
                     );
 
-                    // Preview the transaction to the user for approval
+                    // Step 7: Preview the transaction to the user for approval
                     alert(`A transaction of ${amountInSOL} SOL is ready to send to ${recipientAddress.toString()}. Please approve it in your wallet.`);
 
-                    // Sign and send the transaction (await user approval)
-                    const signature = await window.solana.signAndSendTransaction(transaction);
-                    console.log('Transaction sent:', signature);
+                    // Step 8: Sign and send the transaction
+                    const signedTransaction = await window.solana.signAndSendTransaction(transaction);
+                    console.log('Transaction sent:', signedTransaction);
 
-                    // Confirm the transaction
-                    const confirmation = await connection.confirmTransaction(signature, 'confirmed');
-                    console.log('Transaction confirmed:', confirmation);
-
-                    alert('Transaction successful!');
+                    // Step 9: Confirm the transaction
+                    const transactionConfirmation = await connection.confirmTransaction(signedTransaction, 'confirmed');
+                    if (transactionConfirmation) {
+                        alert('Transaction successfully completed!');
+                    }
                 } catch (error) {
                     console.error('Error initiating the transaction:', error);
-                    alert('An error occurred. Please check the console for details.');
+                    alert('An error occurred. Please try again.');
                 }
             } else {
-                alert('Please install Phantom Wallet and try again.');
+                alert('Phantom Wallet is not detected. Please install it and try again.');
             }
         });
     </script>
 </body>
 </html>
+
