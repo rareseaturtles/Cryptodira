@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cryptodira - Protecting Sea Turtles</title>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.js"></script>
     <style>
         /* Your existing styles */
         body {
@@ -163,19 +164,17 @@
 
     <!-- JavaScript -->
     <script>
-        // Wait for the page to load and ensure Phantom Wallet is connected
         window.addEventListener('load', async () => {
             if (window.solana && window.solana.isPhantom) {
                 console.log('Phantom Wallet is available and recognized');
 
-                // Listen for the button click
                 document.getElementById('donateButton').addEventListener('click', async function() {
                     try {
                         // Request wallet connection
                         const response = await window.solana.connect();
                         console.log('Connected to Phantom Wallet', response);
 
-                        // Check if window.solanaWeb3 is defined and can be used
+                        // Check if window.solanaWeb3 is available
                         if (typeof window.solanaWeb3 !== 'undefined') {
                             console.log('window.solanaWeb3 is defined:', window.solanaWeb3);
 
@@ -204,25 +203,16 @@
 
                             console.log('Transaction Signature:', transactionSignature);
 
-                            // Confirm the transaction
-                            const confirmation = await connection.confirmTransaction(transactionSignature);
-                            if (confirmation.value.err) {
-                                alert('Transaction failed. Please try again.');
-                                console.error('Transaction confirmation failed:', confirmation.value.err);
-                            } else {
-                                alert('Donation successful! Thank you for your support.');
-                            }
+                            // Confirm
                         } else {
-                            console.error('window.solanaWeb3 is undefined');
-                            alert('Solana Web3 library is not loaded properly. Please refresh the page or try again later.');
+                            console.error('Solana Web3 library not loaded. Please refresh the page or check your connection.');
                         }
                     } catch (error) {
                         console.error('Error connecting to Phantom Wallet:', error);
-                        alert('An error occurred while connecting to your wallet. Please make sure you are logged in to Phantom.');
                     }
                 });
             } else {
-                alert('Please install Phantom Wallet and try again.');
+                console.error('Phantom Wallet is not available. Please install or enable it.');
             }
         });
     </script>
