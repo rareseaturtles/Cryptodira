@@ -7,7 +7,7 @@
     <!-- Load the @solana/web3.js library -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
     <style>
-        /* Your existing styles */
+        /* General styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -174,13 +174,14 @@
                     const transaction = new solanaWeb3.Transaction().add(
                         solanaWeb3.SystemProgram.transfer({
                             fromPubkey: window.solana.publicKey,
-                            toPubkey: new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG'), // Donation wallet address
+                            toPubkey: new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG'), // Replace with the actual donation wallet address
                             lamports: solanaWeb3.LAMPORTS_PER_SOL * 0.05, // Amount in SOL (e.g., 0.05 SOL)
                         })
                     );
 
                     // Get recent blockhash and set fee payer
-                    const { blockhash } = await solanaWeb3.Connection.getRecentBlockhash();
+                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
+                    const { blockhash } = await connection.getLatestBlockhash();
                     transaction.recentBlockhash = blockhash;
                     transaction.feePayer = window.solana.publicKey;
 
@@ -198,7 +199,6 @@
 
                     console.log('Transaction sent:', signature);
                     alert('Donation successful! Thank you for your support.');
-
                 } catch (error) {
                     console.error('Error sending transaction:', error);
                     alert('An error occurred while sending your donation. Please try again.');
