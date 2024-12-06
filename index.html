@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cryptodira - Protecting Sea Turtles</title>
+    <!-- Load the @solana/web3.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
     <style>
         /* Your existing styles */
         body {
@@ -66,7 +68,7 @@
             margin-top: 30px;
             display: flex;
             justify-content: center;
-            gap: 10px; /* Adds space between buttons */
+            gap: 10px;
         }
         .button {
             display: inline-block;
@@ -81,7 +83,7 @@
             font-weight: bold;
             transition: background-color 0.3s;
             cursor: pointer;
-            flex: 0 0 auto; /* Prevents buttons from expanding */
+            flex: 0 0 auto;
         }
         .button:hover {
             background-color: #023e58;
@@ -97,8 +99,6 @@
             font-size: 14px;
         }
     </style>
-    <!-- Load Solana Web3.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
 </head>
 <body>
     <!-- Header Section -->
@@ -163,53 +163,50 @@
 
     <!-- JavaScript -->
     <script>
-        async function sendTransaction() {
-            // Check if Phantom Wallet is available and connected
+        document.getElementById('donateButton').addEventListener('click', async function() {
             if (window.solana && window.solana.isPhantom) {
                 try {
-                    // Connect to the Phantom Wallet
+                    // Connect to Phantom Wallet
                     await window.solana.connect();
                     console.log('Connected to Phantom Wallet');
 
-                    // Create a connection to the Solana blockchain
-                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'), 'confirmed');
-
-                    // Get the public key from the connected wallet
-                    const userPublicKey = window.solana.publicKey;
-                    console.log('User Public Key:', userPublicKey.toString());
-
-                    // Define the recipient address and amount (0.05 SOL)
-                    const recipient = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
-                    const amountInLamports = 0.05 * solanaWeb3.LAMPORTS_PER_SOL; // 1 SOL = 10^9 lamports
-
-                    // Create a transaction
+                    // Define the donation transaction
                     const transaction = new solanaWeb3.Transaction().add(
                         solanaWeb3.SystemProgram.transfer({
-                            fromPubkey: userPublicKey,
-                            toPubkey: recipient,
-                            lamports: amountInLamports,
+                            fromPubkey: window.solana.publicKey,
+                            toPubkey: new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG'), // Donation wallet address
+                            lamports: solanaWeb3.LAMPORTS_PER_SOL * 0.05, // Amount in SOL (e.g., 0.05 SOL)
                         })
                     );
 
-                    // Sign and send the transaction using Phantom Wallet
-                    const { signature } = await window.solana.request({
-                        method: 'solana_sendTransaction',
-                        params: [transaction, { skipPreflight: false, preflightCommitment: 'confirmed' }],
+                    // Get recent blockhash and set fee payer
+                    const { blockhash } = await solanaWeb3.Connection.getRecentBlockhash();
+                    transaction.recentBlockhash = blockhash;
+                    transaction.feePayer = window.solana.publicKey;
+
+                    // Sign the transaction
+                    const signedTransaction = await window.solana.request({
+                        method: 'wallet_signTransaction',
+                        params: [transaction],
+                    });
+
+                    // Send the transaction
+                    const signature = await window.solana.request({
+                        method: 'wallet_sendTransaction',
+                        params: [signedTransaction, { preflightCommitment: 'confirmed' }],
                     });
 
                     console.log('Transaction sent:', signature);
-                    alert('Transaction successful! View it here: https://explorer.solana.com/tx/' + signature + '?cluster=devnet');
+                    alert('Donation successful! Thank you for your support.');
+
                 } catch (error) {
                     console.error('Error sending transaction:', error);
                     alert('An error occurred while sending your donation. Please try again.');
                 }
             } else {
-                alert('Please install Phantom Wallet and connect it to the site to proceed.');
+                alert('Please install Phantom Wallet and try again.');
             }
-        }
-
-        // Event listener for the Donate button
-        document.getElementById('donateButton').addEventListener('click', sendTransaction);
+        });
     </script>
 </body>
 </html>
