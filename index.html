@@ -167,15 +167,15 @@
             // Check if Phantom is available and connected
             if (window.solana && window.solana.isPhantom) {
                 try {
-                    // Connect to Phantom Wallet
+                    // Connect to Phantom Wallet and request permission to connect
                     await window.solana.connect();
                     console.log('Connected to Phantom Wallet:', window.solana.publicKey.toString());
 
+                    // Get the user's public key
+                    const userPublicKey = new solanaWeb3.PublicKey(window.solana.publicKey.toString());
+
                     // Create a connection to the Solana devnet (for testing purposes)
                     const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
-
-                    // Define the user's public key
-                    const userPublicKey = new solanaWeb3.PublicKey(window.solana.publicKey.toString());
 
                     // Define the recipient's wallet address (use your donation wallet)
                     const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
@@ -193,7 +193,10 @@
                         })
                     );
 
-                    // Sign and send the transaction
+                    // Preview the transaction to the user for approval
+                    alert(`A transaction of ${amountInSOL} SOL is ready to send to ${recipientAddress.toString()}. Please approve it in your wallet.`);
+
+                    // Sign and send the transaction (await user approval)
                     const signature = await window.solana.signAndSendTransaction(transaction);
                     console.log('Transaction sent:', signature);
 
