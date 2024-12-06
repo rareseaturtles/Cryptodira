@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cryptodira - Protecting Sea Turtles</title>
+    <script src="https://unpkg.com/@solana/web3.js@1.31.0/dist/index.iife.min.js"></script> <!-- Include the Solana Web3 library -->
     <style>
         /* Your existing styles */
         body {
@@ -62,29 +63,27 @@
             margin-bottom: 15px;
             color: #555;
         }
-       .buttons {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    gap: 10px; /* Adds space between buttons */
-}
-
-.button {
-    display: inline-block;
-    padding: 12px 24px;
-    margin: 10px;
-    font-size: 16px;
-    color: #ffffff;
-    background-color: #005f73;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    cursor: pointer;
-    flex: 0 0 auto; /* Prevents buttons from expanding */
-}
-
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Adds space between buttons */
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #005f73;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            flex: 0 0 auto; /* Prevents buttons from expanding */
+        }
         .button:hover {
             background-color: #023e58;
         }
@@ -136,25 +135,25 @@
     </div>
 
     <!-- Donation Button -->
-<div class="buttons">
-    <button class="button" id="donateButton">Donate</button>
-</div>
+    <div class="buttons">
+        <button class="button" id="donateButton">Donate</button>
+    </div>
 
-<!-- Additional Buttons -->
-<div class="buttons">
-    <a 
-        href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" 
-        class="button" 
-        target="_blank">
-        Liquidity Pool
-    </a>
-    <a 
-        href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" 
-        class="button" 
-        target="_blank">
-        Birdeye
-    </a>
-</div>
+    <!-- Additional Buttons -->
+    <div class="buttons">
+        <a 
+            href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" 
+            class="button" 
+            target="_blank">
+            Liquidity Pool
+        </a>
+        <a 
+            href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" 
+            class="button" 
+            target="_blank">
+            Birdeye
+        </a>
+    </div>
 
     <!-- Footer Section -->
     <footer>
@@ -167,33 +166,43 @@
             if (window.solana && window.solana.isPhantom) {
                 try {
                     // Request the user's wallet connection
-                    await window.solana.connect();
+                    const response = await window.solana.connect();
                     console.log('Connected to Phantom Wallet');
 
-                    // Define the transaction parameters
-                    const transaction = {
-                        to: '5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG',
-                        amount: 0.05, // Amount of SOL to send
-                        currency: 'SOL'
-                    };
+                    // Import Solana Web3 functions
+                    const { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = window.solanaWeb3;
 
-                    // Create the payment request
-                    const transactionParams = {
-                        recipient: transaction.to,
-                        amount: transaction.amount * 1000000000, // Convert SOL to lamports (1 SOL = 10^9 lamports)
-                        message: 'Donation to Cryptodira for Sea Turtle Conservation'
-                    };
+                    // Connect to Solana network (mainnet)
+                    const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
 
-                    // Send the transaction using Phantom Wallet
-                    const result = await window.solana.request({
-                        method: 'wallet_sendTransaction',
-                        params: [transactionParams],
+                    // Set up the recipient and amount
+                    const recipientPublicKey = new PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
+                    const amountInLamports = 0.05 * LAMPORTS_PER_SOL; // Convert SOL to lamports
+
+                    // Create a transaction
+                    const transaction = new Transaction().add(
+                        SystemProgram.transfer({
+                            fromPubkey: response.publicKey,
+                            toPubkey: recipientPublicKey,
+                            lamports: amountInLamports,
+                        })
+                    );
+
+                    // Send the transaction to Phantom Wallet
+                    const transactionSignature = await window.solana.request({
+                        method: 'solana_sendTransaction',
+                        params: [transaction, connection.rpcEndpoint],
                     });
 
-                    if (result) {
-                        alert('Donation successful! Thank you for your support.');
+                    console.log('Transaction Signature:', transactionSignature);
+
+                    // Confirm the transaction
+                    const confirmation = await connection.confirmTransaction(transactionSignature);
+                    if (confirmation.value.err) {
+                        alert('Transaction failed. Please try again.');
+                        console.error('Transaction confirmation failed:', confirmation.value.err);
                     } else {
-                        alert('Donation failed. Please try again.');
+                        alert('Donation successful! Thank you for your support.');
                     }
                 } catch (error) {
                     console.error('Error connecting to Phantom Wallet:', error);
