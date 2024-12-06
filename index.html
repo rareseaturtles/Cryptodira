@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cryptodira - Protecting Sea Turtles</title>
-    <script src="https://unpkg.com/@solana/web3.js@1.31.0/dist/index.iife.min.js"></script> <!-- Include the Solana Web3 library -->
+    <!-- Include Solana web3.js library -->
+    <script src="https://unpkg.com/@solana/web3.js@1.31.0/dist/index.iife.min.js"></script>
     <style>
         /* Your existing styles */
         body {
@@ -169,17 +170,15 @@
                     const response = await window.solana.connect();
                     console.log('Connected to Phantom Wallet');
 
-                    // Import Solana Web3 functions
+                    // Create a new connection to the Solana mainnet
                     const { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = window.solanaWeb3;
-
-                    // Connect to Solana network (mainnet)
                     const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
 
                     // Set up the recipient and amount
                     const recipientPublicKey = new PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
                     const amountInLamports = 0.05 * LAMPORTS_PER_SOL; // Convert SOL to lamports
 
-                    // Create a transaction
+                    // Create the transaction
                     const transaction = new Transaction().add(
                         SystemProgram.transfer({
                             fromPubkey: response.publicKey,
@@ -188,7 +187,7 @@
                         })
                     );
 
-                    // Send the transaction to Phantom Wallet
+                    // Send the transaction using Phantom Wallet
                     const transactionSignature = await window.solana.request({
                         method: 'solana_sendTransaction',
                         params: [transaction, connection.rpcEndpoint],
