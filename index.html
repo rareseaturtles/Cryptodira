@@ -6,6 +6,99 @@
     <title>Cryptodira - Protecting Sea Turtles</title>
     <!-- Load the @solana/web3.js library -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
+    <style>
+        /* Basic styles for the website */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        header {
+            background-color: #005f73;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 48px;
+            margin: 0;
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+        header p {
+            font-size: 18px;
+            margin: 10px 0 0 0;
+            color: #94d2bd;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+            border-radius: 50%;
+            border: 3px solid #005f73;
+        }
+        .content-box, .tokenomics {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 80%;
+            border: 1px solid #94d2bd;
+        }
+        .content-box h2, .tokenomics h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #005f73;
+        }
+        .content-box p, .tokenomics p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #005f73;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            flex: 0 0 auto;
+        }
+        .button:hover {
+            background-color: #023e58;
+        }
+        footer {
+            background-color: #005f73;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+        }
+        footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
     <!-- Header Section -->
@@ -92,28 +185,13 @@
                         })
                     );
 
-                    // Serialize and encode the transaction
+                    // Serialize the transaction
                     const serializedTransaction = transaction.serialize().toString('base58');
 
-                    // Generate a nonce for security
-                    const nonce = new Date().getTime().toString(); // Example nonce (use a better approach for production)
+                    // Use Phantom's deep linking URL for signing and sending
+                    const deepLinkURL = `https://phantom.app/ul/v1/signAndSendTransaction?payload=${encodeURIComponent(serializedTransaction)}`;
 
-                    // Construct the deep link URL
-                    const baseURL = 'https://phantom.app/ul/v1/signAndSendTransaction';
-                    const encryptionPublicKey = 'YOUR_DAPP_ENCRYPTION_PUBLIC_KEY'; // Replace with your dApp's encryption public key
-                    const redirectLink = encodeURIComponent('https://your-redirect-url.com'); // Replace with your redirect URL
-
-                    // Build the query string with encrypted payload
-                    const payload = {
-                        transaction: serializedTransaction,
-                        sendOptions: JSON.stringify({ preflightCommitment: 'confirmed' }), // Optional send options
-                        session: window.solana.session,
-                    };
-                    const encryptedPayload = btoa(JSON.stringify(payload)); // Simple base64 encoding; replace with actual encryption if needed
-
-                    const deepLinkURL = `${baseURL}?dapp_encryption_public_key=${encryptionPublicKey}&nonce=${nonce}&redirect_link=${redirectLink}&payload=${encryptedPayload}`;
-
-                    // Redirect to Phantom for signing and sending the transaction
+                    // Redirect the user to Phantom for signing and sending the transaction
                     window.location.href = deepLinkURL;
 
                 } catch (error) {
