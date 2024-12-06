@@ -163,58 +163,58 @@
 
     <!-- JavaScript -->
     <script>
-        document.getElementById('donateButton').addEventListener('click', async function() {
-            // Check if Phantom is available and connected
-            if (window.solana && window.solana.isPhantom) {
-                try {
-                    // Connect to Phantom Wallet
-                    const response = await window.solana.connect();
-                    console.log('Connected to Phantom Wallet:', response.publicKey.toString());
-
-                    // Create a connection to the Solana devnet
-                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
-
-                    // Define the recipient's wallet address
-                    const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
-
-                    // Get the user's wallet balance in lamports
-                    const balance = await connection.getBalance(response.publicKey);
-                    const amountLamports = solanaWeb3.LAMPORTS_PER_SOL * 0.005; // 0.005 SOL in lamports
-
-                    // Check if the user has sufficient balance
-                    if (balance < amountLamports) {
-                        alert('Insufficient balance. Please add more SOL to your wallet.');
-                        return;
-                    }
-
-                    // Create the transaction
-                    const transaction = new solanaWeb3.Transaction().add(
-                        solanaWeb3.SystemProgram.transfer({
-                            fromPubkey: window.solana.publicKey,
-                            toPubkey: recipientAddress,
-                            lamports: amountLamports, // Amount in lamports
-                        })
-                    );
-
-                    // Sign the transaction
-                    const signedTransaction = await window.solana.signTransaction(transaction);
-
-                    // Send the transaction
-                    const txId = await connection.sendRawTransaction(signedTransaction.serialize(), {
-                        skipPreflight: false,
-                        preflightCommitment: 'confirmed',
-                    });
-
-                    console.log('Transaction ID:', txId);
-                    alert('Transaction submitted. Check your Phantom wallet for confirmation.');
-                } catch (error) {
-                    console.error('Error initiating the transaction:', error);
-                    alert('An error occurred. Please try again.');
-                }
-            } else {
-                alert('Please install Phantom Wallet and try again.');
+        // Wait until the Solana Web3 library is fully loaded
+        window.onload = async function() {
+            if (typeof solanaWeb3 === 'undefined') {
+                console.error("Solana Web3 library not loaded.");
+                alert("Error: Solana Web3 library not available. Please try again later.");
+                return;
             }
-        });
+
+            document.getElementById('donateButton').addEventListener('click', async function() {
+                if (window.solana && window.solana.isPhantom) {
+                    try {
+                        // Connect to Phantom Wallet
+                        await window.solana.connect();
+                        console.log('Connected to Phantom Wallet:', window.solana.publicKey.toString());
+
+                        // Create a connection to the Solana devnet
+                        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
+
+                        // Define the recipient's wallet address
+                        const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
+
+                        // Create the transaction
+                        const transaction = new solanaWeb3.Transaction().add(
+                            solanaWeb3.SystemProgram.transfer({
+                                fromPubkey: window.solana.publicKey,
+                                toPubkey: recipientAddress,
+                                lamports: solanaWeb3.LAMPORTS_PER_SOL * 0.005, // Amount in SOL (0.005 SOL)
+                            })
+                        );
+
+                        // Sign and send the transaction
+                        const { signature } = await window.solana.signAndSendTransaction(transaction);
+                        console.log('Transaction signature:', signature);
+
+                        alert('Transaction sent successfully. Waiting for confirmation...');
+                        // Optionally, wait for the confirmation of the transaction
+                        await connection.confirmTransaction(signature);
+                        alert('Transaction confirmed!');
+                        
+                    } catch (error) {
+                        console.error('Error initiating the transaction:', error);
+                        if (error.message.includes('insufficient balance')) {
+                            alert('Insufficient balance to complete the transaction.');
+                        } else {
+                            alert('An error occurred. Please try again.');
+                        }
+                    }
+                } else {
+                    alert('Please install Phantom Wallet and try again.');
+                }
+            });
+        }
     </script>
 </body>
 </html>
