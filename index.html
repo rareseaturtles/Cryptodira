@@ -147,14 +147,6 @@
         <h3>Tokenomics</h3>
         <p>
             Cryptodira has a fixed supply of 4,912,863.0795 tokens.
-            Hi, I'm Ryan McCauley. I want to take a moment to address the skepticism that often surrounds the crypto space.
-            While many meme projects come and go, I’m proud to say that what I’ve been building has been three years in the making.
-            It’s been a journey of slow but steady progress, and I’m here for the long haul.
-            This experience has been as challenging as it is rewarding, and I’ve learned so much along the way.
-            For me, this isn’t just about creating something fun; it’s about striving to make a meaningful difference in the world.
-            Transparency is key, so if you have any questions, don’t hesitate to ask.
-            My goal is simple: to leave the world a little better than I found it.
-            
         </p>
         <p>
             This liquidity pool will remain dedicated to funding projects and organizations that protect sea turtles in the wild.
@@ -174,6 +166,12 @@
                 target="_blank">
                 Birdeye
             </a>
+            <a 
+                href="#" 
+                class="button" 
+                id="coinbaseButton">
+                Donate SOL via Coinbase
+            </a>
         </div>
     </div>
 
@@ -181,5 +179,15 @@
     <footer>
         <p>&copy; 2024 Cryptodira. Supporting Sea Turtle Conservation.</p>
     </footer>
+
+    <script>
+        document.getElementById("coinbaseButton").addEventListener("click", function () {
+            const recipientAddress = "5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG";
+            const amount = "0.05";
+            const currency = "SOL";
+            const coinbaseURL = `https://www.coinbase.com/send?address=${recipientAddress}&amount=${amount}&currency=${currency}`;
+            window.open(coinbaseURL, "_blank");
+        });
+    </script>
 </body>
 </html>
