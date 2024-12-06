@@ -163,9 +163,10 @@
 
     <!-- JavaScript -->
     <script>
-        // Wait until the Solana Web3 library is fully loaded
-        window.onload = async function() {
-            if (typeof solanaWeb3 === 'undefined') {
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof solanaWeb3 !== 'undefined') {
+                console.log("Solana Web3 library loaded successfully.");
+            } else {
                 console.error("Solana Web3 library not loaded.");
                 alert("Error: Solana Web3 library not available. Please try again later.");
                 return;
@@ -214,7 +215,7 @@
                     alert('Please install Phantom Wallet and try again.');
                 }
             });
-        }
+        });
     </script>
 </body>
 </html>
