@@ -163,61 +163,50 @@
 
     <!-- JavaScript -->
     <script>
-        window.onload = async () => {
-            // Ensure solanaWeb3 is available before using it
-            if (typeof solanaWeb3 === 'undefined') {
-                console.error("Solana Web3 library not loaded.");
-                alert("Error: Solana Web3 library not available. Please try again later.");
-                return;
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.solana && window.solana.isPhantom) {
+                console.log('Phantom Wallet detected');
+            } else {
+                console.error('Phantom Wallet is not installed. Please install it to continue.');
+                alert('Phantom Wallet is not installed. Please install it to continue.');
             }
-            console.log("Solana Web3 library loaded successfully.");
+        });
 
-            document.getElementById('donateButton').addEventListener('click', async function() {
+        document.getElementById('donateButton').addEventListener('click', async function() {
+            try {
                 if (window.solana && window.solana.isPhantom) {
-                    try {
-                        // Connect to Phantom Wallet
-                        const response = await window.solana.connect();
-                        console.log('Connected to Phantom Wallet:', response.publicKey.toString());
+                    await window.solana.connect();
+                    console.log('Connected to Phantom Wallet:', window.solana.publicKey.toString());
 
-                        // Create connection to Solana devnet
-                        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
+                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
+                    const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
 
-                        // Define recipient wallet address
-                        const recipientAddress = new solanaWeb3.PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
+                    const transaction = new solanaWeb3.Transaction().add(
+                        solanaWeb3.SystemProgram.transfer({
+                            fromPubkey: window.solana.publicKey,
+                            toPubkey: recipientAddress,
+                            lamports: solanaWeb3.LAMPORTS_PER_SOL * 0.005, // Amount in SOL (0.005 SOL)
+                        })
+                    );
 
-                        // Create transaction
-                        const transaction = new solanaWeb3.Transaction().add(
-                            solanaWeb3.SystemProgram.transfer({
-                                fromPubkey: window.solana.publicKey,
-                                toPubkey: recipientAddress,
-                                lamports: solanaWeb3.LAMPORTS_PER_SOL * 0.005, // Amount in SOL (0.005 SOL)
-                            })
-                        );
+                    const { signature } = await window.solana.signTransaction(transaction);
+                    await connection.confirmTransaction(signature);
 
-                        // Sign and send transaction
-                        const { signature } = await window.solana.signAndSendTransaction(transaction);
-                        console.log('Transaction signature:', signature);
-                        alert(`Transaction sent. Signature: ${signature}`);
-
-                        // Confirm transaction
-                        await connection.confirmTransaction(signature);
-                        alert('Transaction confirmed successfully!');
-                    } catch (error) {
-                        console.error('Error initiating the transaction:', error);
-
-                        if (error.message && error.message.includes('User rejected the request')) {
-                            alert('Transaction cancelled by user.');
-                        } else if (error.message && error.message.includes('insufficient balance')) {
-                            alert('Insufficient balance. Please check your wallet balance.');
-                        } else {
-                            alert('An unexpected error occurred. Please try again.');
-                        }
-                    }
+                    alert('Transaction completed successfully! Signature: ' + signature);
                 } else {
-                    alert('Please install Phantom Wallet and try again.');
+                    alert('Please install Phantom Wallet and connect it to your browser.');
                 }
-            });
-        };
+            } catch (error) {
+                console.error('Error initiating the transaction:', error);
+                if (error.message.includes('User rejected the request')) {
+                    alert('Connection request was rejected. Please try again.');
+                } else if (error.message.includes('insufficient funds')) {
+                    alert('Insufficient funds. Please add more SOL to your wallet.');
+                } else {
+                    alert('An error occurred. Please check the console for details.');
+                }
+            }
+        });
     </script>
 </body>
 </html>
