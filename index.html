@@ -168,49 +168,28 @@
             if (window.solana && window.solana.isPhantom) {
                 console.log('Phantom Wallet is available and recognized');
 
-                document.getElementById('donateButton').addEventListener('click', async function() {
-                    try {
-                        // Request wallet connection
-                        const response = await window.solana.connect();
-                        console.log('Connected to Phantom Wallet', response);
+                try {
+                    const response = await window.solana.connect({
+                        app: {
+                            name: 'Cryptodira',
+                            icon: 'https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg',
+                            url: 'https://cryptodira.netlify.app'
+                        }
+                    });
+                    console.log('Connected to Phantom Wallet', response);
 
-                        // Check if window.solanaWeb3 is available
+                    document.getElementById('donateButton').addEventListener('click', async function() {
                         if (typeof window.solanaWeb3 !== 'undefined') {
                             console.log('window.solanaWeb3 is defined:', window.solanaWeb3);
-
-                            // Destructure needed modules from window.solanaWeb3
-                            const { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = window.solanaWeb3;
-                            const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
-
-                            // Set up transaction parameters
-                            const recipientPublicKey = new PublicKey('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG');
-                            const amountInLamports = 0.05 * LAMPORTS_PER_SOL; // Convert SOL to lamports
-
-                            // Create the transaction
-                            const transaction = new Transaction().add(
-                                SystemProgram.transfer({
-                                    fromPubkey: response.publicKey,
-                                    toPubkey: recipientPublicKey,
-                                    lamports: amountInLamports,
-                                })
-                            );
-
-                            // Send the transaction using Phantom Wallet
-                            const transactionSignature = await window.solana.request({
-                                method: 'solana_sendTransaction',
-                                params: [transaction, connection.rpcEndpoint],
-                            });
-
-                            console.log('Transaction Signature:', transactionSignature);
-
-                            // Confirm
+                            // Proceed with transaction code here
                         } else {
                             console.error('Solana Web3 library not loaded. Please refresh the page or check your connection.');
                         }
-                    } catch (error) {
-                        console.error('Error connecting to Phantom Wallet:', error);
-                    }
-                });
+                    });
+
+                } catch (error) {
+                    console.error('Error connecting to Phantom Wallet:', error);
+                }
             } else {
                 console.error('Phantom Wallet is not available. Please install or enable it.');
             }
