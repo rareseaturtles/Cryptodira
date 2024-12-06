@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cryptodira - Protecting Sea Turtles</title>
     <style>
+        /* Your existing styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f8ff; /* Soft aqua background */
-            color: #333; /* Dark gray text */
+            background-color: #f0f8ff;
+            color: #333;
         }
         header {
-            background-color: #005f73; /* Deep teal */
-            color: #ffffff; /* White text */
+            background-color: #005f73;
+            color: #ffffff;
             padding: 10px 0;
             text-align: center;
         }
@@ -26,7 +27,7 @@
         header p {
             font-size: 18px;
             margin: 10px 0 0 0;
-            color: #94d2bd; /* Aqua green accent */
+            color: #94d2bd;
         }
         .logo-container {
             display: flex;
@@ -36,54 +37,30 @@
         .logo {
             width: 150px;
             height: auto;
-            border-radius: 50%; /* Optional: Circular appearance */
+            border-radius: 50%;
             border: 3px solid #005f73;
         }
-        .content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: calc(100vh - 650px); /* Adjusted for header/footer */
-        }
-        .content-box {
+        .content-box, .tokenomics {
             text-align: center;
             background-color: #ffffff;
-            padding: 10px 10px;
-            margin: 10px;
+            padding: 20px;
+            margin: 20px auto;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 800px;
             width: 80%;
-            border: 1px solid #94d2bd; /* Aqua border */
+            border: 1px solid #94d2bd;
         }
-        .content-box h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #005f73; /* Deep teal */
-        }
-        .content-box p {
-            font-size: 12px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #555; /* Softer gray */
-        }
-        .tokenomics {
-            background-color: #e0fbfc; /* Very light aqua */
-            padding: 30px 20px;
-            margin: 10px auto;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 800px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .tokenomics h3 {
+        .content-box h2, .tokenomics h3 {
             font-size: 28px;
             margin-bottom: 15px;
-            color: #005f73; /* Deep teal */
+            color: #005f73;
         }
-        .tokenomics p {
-            font-size: 12px;
+        .content-box p, .tokenomics p {
+            font-size: 14px;
             line-height: 1.6;
+            margin-bottom: 15px;
+            color: #555;
         }
         .buttons {
             margin-top: 30px;
@@ -94,18 +71,19 @@
             margin: 10px;
             font-size: 16px;
             color: #ffffff;
-            background-color: #005f73; /* Deep teal */
+            background-color: #005f73;
             border: none;
             border-radius: 5px;
             text-decoration: none;
             font-weight: bold;
             transition: background-color 0.3s;
+            cursor: pointer;
         }
         .button:hover {
-            background-color: #023e58; /* Darker teal */
+            background-color: #023e58;
         }
         footer {
-            background-color: #005f73; /* Deep teal */
+            background-color: #005f73;
             color: #ffffff;
             text-align: center;
             padding: 10px 0;
@@ -120,7 +98,6 @@
     <!-- Header Section -->
     <header>
         <div class="logo-container">
-            <!-- Sea Turtle Logo -->
             <img 
                 class="logo" 
                 src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" 
@@ -130,64 +107,36 @@
         <h1>Cryptodira</h1>
         <p>A Crypto Token for Protecting Sea Turtles</p>
     </header>
-    <!-- Main Content Section -->
-    <div class="content">
-        <div class="content-box">
-            <h2>About Cryptodira $Dira</h2>
-            <p>
-                Cryptodira is a Solana blockchain-based token designed to make a positive impact on the world.
-                Named after the scientific suborder of turtles, Cryptodira is committed to preserving sea turtles
-                and their habitats. By holding Cryptodira tokens, you're directly contributing to this noble cause.
-            </p>
-        </div>
+
+    <!-- About Section -->
+    <div class="content-box">
+        <h2>About Cryptodira $Dira</h2>
+        <p>
+            Cryptodira is a Solana blockchain-based token designed to make a positive impact on the world.
+            Named after the scientific suborder of turtles, Cryptodira is committed to preserving sea turtles
+            and their habitats. By holding Cryptodira tokens, you're directly contributing to this noble cause.
+        </p>
     </div>
 
     <!-- Tokenomics Section -->
     <div class="tokenomics">
         <h3>Tokenomics</h3>
         <p>
-            Cryptodira has a fixed supply of 4,912,863.0795 tokens.
+            Cryptodira has a fixed supply of 4,912,863.0795 tokens. Hi, I'm Ryan McCauley. I want to take a moment to address the skepticism that often surrounds the crypto space. While many meme projects come and go, I’m proud to say that what I’ve been building has been three years in the making. It’s been a journey of slow but steady progress, and I’m here for the long haul. This experience has been as challenging as it is rewarding, and I’ve learned so much along the way. For me, this isn’t just about creating something fun; it’s about striving to make a meaningful difference in the world. Transparency is key, so if you have any questions, don’t hesitate to ask. My goal is simple: to leave the world a little better than I found it.
         </p>
         <p>
             This liquidity pool will remain dedicated to funding projects and organizations that protect sea turtles in the wild.
         </p>
+    </div>
 
-        <!-- Buttons -->
-        <div class="buttons">
-            <a 
-                href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" 
-                class="button" 
-                target="_blank">
-                Liquidity Pool
-            </a>
-            <a 
-                href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" 
-                class="button" 
-                target="_blank">
-                Birdeye
-            </a>
-            <a 
-                href="#" 
-                class="button" 
-                id="coinbaseButton">
-                Donate SOL via Coinbase
-            </a>
-        </div>
+    <!-- Button to Donate -->
+    <div class="buttons">
+        <button class="button" id="donateButton">Donate</button>
     </div>
 
     <!-- Footer Section -->
     <footer>
         <p>&copy; 2024 Cryptodira. Supporting Sea Turtle Conservation.</p>
     </footer>
-
-    <script>
-        document.getElementById("coinbaseButton").addEventListener("click", function () {
-            const recipientAddress = "5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG";
-            const amount = "0.05";
-            const currency = "SOL";
-            const coinbaseURL = `https://www.coinbase.com/send?address=${recipientAddress}&amount=${amount}&currency=${currency}`;
-            window.open(coinbaseURL, "_blank");
-        });
-    </script>
 </body>
 </html>
