@@ -129,14 +129,74 @@
         </p>
     </div>
 
-    <!-- Button to Donate -->
+    <!-- Donation Button -->
     <div class="buttons">
         <button class="button" id="donateButton">Donate</button>
+    </div>
+
+    <!-- Additional Buttons -->
+    <div class="buttons">
+        <a 
+            href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" 
+            class="button" 
+            target="_blank">
+            Liquidity Pool
+        </a>
+        <a 
+            href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" 
+            class="button" 
+            target="_blank">
+            Birdeye
+        </a>
     </div>
 
     <!-- Footer Section -->
     <footer>
         <p>&copy; 2024 Cryptodira. Supporting Sea Turtle Conservation.</p>
     </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.getElementById('donateButton').addEventListener('click', async function() {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    // Request the user's wallet connection
+                    await window.solana.connect();
+                    console.log('Connected to Phantom Wallet');
+
+                    // Define the transaction parameters
+                    const transaction = {
+                        to: '5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG',
+                        amount: 0.05, // Amount of SOL to send
+                        currency: 'SOL'
+                    };
+
+                    // Create the payment request
+                    const transactionParams = {
+                        recipient: transaction.to,
+                        amount: transaction.amount * 1000000000, // Convert SOL to lamports (1 SOL = 10^9 lamports)
+                        message: 'Donation to Cryptodira for Sea Turtle Conservation'
+                    };
+
+                    // Send the transaction using Phantom Wallet
+                    const result = await window.solana.request({
+                        method: 'wallet_sendTransaction',
+                        params: [transactionParams],
+                    });
+
+                    if (result) {
+                        alert('Donation successful! Thank you for your support.');
+                    } else {
+                        alert('Donation failed. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error connecting to Phantom Wallet:', error);
+                    alert('An error occurred while connecting to your wallet. Please make sure you are logged in to Phantom.');
+                }
+            } else {
+                alert('Please install Phantom Wallet and try again.');
+            }
+        });
+    </script>
 </body>
 </html>
