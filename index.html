@@ -128,20 +128,13 @@
     <div class="tokenomics">
         <h3>Tokenomics</h3>
         <p>
-            Cryptodira has a fixed supply of 4,912,863.0795 tokens. Hi, I'm Ryan McCauley. I want to take a moment to address the skepticism that often surrounds the crypto space. While many meme projects come and go, I’m proud to say that what I’ve been building has been three years in the making. It’s been a journey of slow but steady progress, and I’m here for the long haul. This experience has been as challenging as it is rewarding, and I’ve learned so much along the way. For me, this isn’t just about creating something fun; it’s about striving to make a meaningful difference in the world. Transparency is key, so if you have any questions, don’t hesitate to ask. My goal is simple: to leave the world a little better than I found it.
-        </p>
-        <p>
-            This liquidity pool will remain dedicated to funding projects and organizations that protect sea turtles in the wild.
+            Cryptodira has a fixed supply of 4,912,863.0795 tokens. Hi, I'm Ryan McCauley. I want to take a moment to address the skepticism that often surrounds the crypto space. While many meme projects come and go, I’m proud to say that what I’ve been building has been three years in the making. It’s been a journey of slow but steady progress, and I’m here for the long haul.
         </p>
     </div>
 
-    <!-- Donation Button -->
+    <!-- Donation and Buttons Section -->
     <div class="buttons">
-        <button class="button" onclick="sendSolanaTransaction('5kDS6zihkqZ76vLN4u9LCnvNU5cX1D2pcDw7ZMUfwTVG)">Donate</button>
-    </div>
-
-    <!-- Additional Buttons -->
-    <div class="buttons">
+        <button class="button" onclick="connectAndSignMessage()">Sign Pledge</button>
         <a 
             href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" 
             class="button" 
@@ -163,55 +156,27 @@
 
     <!-- JavaScript -->
     <script>
-        // Ensure solanaWeb3 is loaded
-        if (typeof solanaWeb3 === 'undefined') {
-            console.error("Solana Web3 library not loaded. Please include it before running this code.");
-        }
-
-        async function sendSolanaTransaction(recipientAddress, amount) {
+        async function connectAndSignMessage() {
             if (window.solana && window.solana.isPhantom) {
                 try {
                     // Connect to Phantom wallet
                     await window.solana.connect();
-                    console.log('Connected to Phantom Wallet:', window.solana.publicKey.toString());
+                    const walletAddress = window.solana.publicKey.toString();
+                    console.log('Connected to Phantom Wallet:', walletAddress);
 
-                    // Create a connection to the Solana network
-                    const connection = new solanaWeb3.Connection(
-                        solanaWeb3.clusterApiUrl('devnet'), // Use 'mainnet-beta' for production
-                        'confirmed'
-                    );
+                    // Message to sign
+                    const message = "Welcome to Cryptodira! I promise to be nice to turtles.";
+                    const encodedMessage = new TextEncoder().encode(message);
 
-                    // Get user's public key
-                    const userPublicKey = window.solana.publicKey;
+                    // Request signing
+                    const signedMessage = await window.solana.signMessage(encodedMessage, 'utf8');
+                    console.log('Signed message:', signedMessage);
 
-                    // Create the transaction
-                    const transaction = new solanaWeb3.Transaction();
-
-                    // Define recipient's public key
-                    const recipientPublicKey = new solanaWeb3.PublicKey(recipientAddress);
-
-                    // Add transfer instruction
-                    transaction.add(
-                        solanaWeb3.SystemProgram.transfer({
-                            fromPubkey: userPublicKey,
-                            toPubkey: recipientPublicKey,
-                            lamports: solanaWeb3.LAMPORTS_PER_SOL * amount, // Convert SOL to lamports
-                        })
-                    );
-
-                    // Sign and send the transaction using Phantom wallet
-                    const signature = await window.solana.signAndSendTransaction(transaction);
-                    console.log('Transaction sent:', signature);
-
-                    // Confirm the transaction
-                    const confirmation = await connection.confirmTransaction(signature, 'confirmed');
-                    console.log('Transaction confirmed:', confirmation);
-
-                    alert('Transaction successful!');
+                    alert('Thank you for signing the pledge! Together, we can protect sea turtles.');
                 } catch (error) {
-                    console.error('Error initiating the transaction:', error);
+                    console.error('Error during wallet connection or signing:', error);
                     if (error.message.includes("User rejected the request")) {
-                        alert('Transaction cancelled by the user.');
+                        alert('You declined to sign the pledge. Please try again.');
                     } else {
                         alert('An error occurred. Please try again.');
                     }
