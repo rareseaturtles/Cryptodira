@@ -12,6 +12,11 @@
     <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta property="og:url" content="https://yourwebsite.com"> <!-- Replace with your actual URL -->
     <meta property="og:type" content="website">
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cryptodira - Protecting Sea Turtles">
+    <meta name="twitter:description" content="Support sea turtle conservation with Cryptodira, a Solana-based token.">
+    <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <title>Cryptodira - Protecting Sea Turtles</title>
     <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
@@ -76,26 +81,42 @@
             margin-top: 30px;
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         .button {
             display: inline-block;
             padding: 12px 24px;
-            margin: 10px;
+            margin: 5px;
             font-size: 16px;
             color: #ffffff;
             background-color: #005f73;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: bold;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
             cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             flex: 0 0 auto;
+            min-height: 48px;
         }
         .button:hover {
-            background-color: #023e58;
+            background: linear-gradient(135deg, #023e58, #001f2e);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .button[type="button"] {
+            background: linear-gradient(135deg, #005f73, #023e58);
+            order: -1;
+        }
+        .button[href] {
+            background-color: #94d2bd;
+            color: #005f73;
+        }
+        .button[href]:hover {
+            background: linear-gradient(135deg, #7ab5a5, #5e8f7d);
+            color: #ffffff;
         }
         footer {
             background-color: #005f73;
@@ -112,10 +133,11 @@
             .buttons {
                 flex-direction: column;
                 align-items: center;
+                gap: 10px;
             }
             .button {
                 width: 100%;
-                max-width: 300px;
+                max-width: 250px;
                 margin: 5px 0;
             }
         }
@@ -187,7 +209,7 @@
     </div>
 
     <div class="buttons">
-        <button class="button" onclick="connectAndSignMessage()">Sign Pledge</button>
+        <button class="button" onclick="connectAndSignMessage()" type="button">Sign Pledge</button>
         <a href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" class="button" target="_blank">Swap Here</a>
         <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" class="button" target="_blank">Birdeye Chart</a>
         <a href="https://stake.smithii.io/dirastake" class="button" target="_blank">Stake Here</a>
