@@ -35,44 +35,55 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #f0f8ff, #b2e2f2);
+            background: linear-gradient(135deg, #f0f8ff, #b2e2f2); /* Retained from first site */
             color: #333;
-            text-align: center;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
         }
-        h1 {
-            font-size: 52px;
-            color: #005f73;
-            margin: 20px 0;
+        header {
+            background-color: #005f73;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+            width: 100%;
+        }
+        header h1 {
+            font-size: 48px;
+            margin: 0;
             font-family: 'Trebuchet MS', sans-serif;
-            text-shadow: 2px 2px 4px rgba(0, 95, 115, 0.2);
+        }
+        header p {
+            font-size: 18px;
+            margin: 10px 0 0 0;
+            color: #94d2bd;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
         }
         .logo {
-            width: 160px;
+            width: 160px; /* Retained from first site */
             height: auto;
             border-radius: 50%;
-            border: 5px solid #005f73;
-            margin: 20px auto;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s;
+            border: 5px solid #005f73; /* Retained from first site */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Retained from first site */
+            transition: transform 0.3s; /* Retained from first site */
         }
         .logo:hover {
-            transform: scale(1.05);
+            transform: scale(1.05); /* Retained from first site */
         }
         .content-box, .tokenomics {
             text-align: center;
             background-color: #ffffff;
             padding: 20px;
             margin: 20px auto;
-            border-radius: 15px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 800px;
             width: 80%;
-            border: 3px solid #94d2bd;
+            border: 1px solid #94d2bd;
         }
         .content-box h2, .tokenomics h3 {
             font-size: 28px;
@@ -86,36 +97,41 @@
             color: #555;
         }
         .buttons {
+            margin-top: 30px;
             display: flex;
             justify-content: center;
-            gap: 25px;
-            margin-top: 25px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         .button {
-            padding: 16px 35px;
-            font-size: 22px;
-            color: #fff;
-            background: linear-gradient(135deg, #005f73, #023e58);
+            display: inline-block;
+            padding: 14px 28px;
+            margin: 5px;
+            font-size: 18px;
+            color: #ffffff;
+            background-color: #005f73;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
             cursor: pointer;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            flex: 0 0 auto;
+            min-height: 48px;
         }
         .button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(135deg, #023e58, #001f2e);
+            background-color: #023e58;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .button:active {
-            transform: translateY(2px);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        .button[type="button"] {
+            background-color: #005f73;
+            order: -1;
         }
-        .button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            box-shadow: none;
+        .button[href] {
+            background-color: #005f73;
         }
         footer {
             background-color: #005f73;
@@ -134,13 +150,14 @@
             .buttons {
                 flex-direction: column;
                 align-items: center;
-                gap: 15px;
+                gap: 10px;
             }
             .button {
-                width: 80%;
+                width: 100%;
                 max-width: 250px;
+                margin: 5px 0;
             }
-            h1 {
+            header h1 {
                 font-size: 36px;
             }
             .logo {
@@ -171,7 +188,7 @@
             background: #ffffff;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             z-index: 1000;
             width: 90%;
             max-width: 400px;
@@ -196,8 +213,13 @@
     </style>
 </head>
 <body>
-    <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Logo">
-    <h1>Cryptodira - Protecting Sea Turtles</h1>
+    <header>
+        <div class="logo-container">
+            <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Logo">
+        </div>
+        <h1>Cryptodira</h1>
+        <p>A Crypto Token for Protecting Sea Turtles</p>
+    </header>
 
     <div class="content-box">
         <h2>About Cryptodira $Dira</h2>
@@ -259,7 +281,7 @@
 
     <script>
         function showMessage(message, isSuccess) {
-            console.log('Showing message:', message); // Debug log
+            console.log('Showing message:', message);
             const modal = document.getElementById('pledge-modal');
             modal.innerHTML = `<p>${message}</p><button onclick="closeModal()">Close</button>`;
             modal.style.background = isSuccess ? '#d4edda' : '#f8d7da';
@@ -267,7 +289,7 @@
         }
 
         function showModal() {
-            console.log('Displaying modal'); // Debug log
+            console.log('Displaying modal');
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('pledge-modal');
             overlay.style.display = 'block';
@@ -275,7 +297,7 @@
         }
 
         function closeModal() {
-            console.log('Closing modal'); // Debug log
+            console.log('Closing modal');
             document.getElementById('modal-overlay').style.display = 'none';
             document.getElementById('pledge-modal').style.display = 'none';
         }
@@ -306,9 +328,6 @@
                 showMessage('An error occurred: ' + error.message, false);
             }
         }
-
-        // Test modal functionality (remove after verifying)
-        // setTimeout(() => showMessage('Test message', true), 2000);
     </script>
 </body>
 </html>
