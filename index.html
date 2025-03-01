@@ -86,15 +86,16 @@
         }
         .button {
             display: inline-block;
-            padding: 12px 24px;
+            padding: 14px 28px;
             margin: 5px;
-            font-size: 16px;
+            font-size: 18px;
             color: #ffffff;
             background-color: #005f73;
             border: none;
             border-radius: 8px;
             text-decoration: none;
             font-weight: bold;
+            text-align: center;
             transition: background-color 0.3s, transform 0.2s;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -102,21 +103,16 @@
             min-height: 48px;
         }
         .button:hover {
-            background: linear-gradient(135deg, #023e58, #001f2e);
+            background-color: #023e58;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .button[type="button"] {
-            background: linear-gradient(135deg, #005f73, #023e58);
+            background-color: #005f73;
             order: -1;
         }
         .button[href] {
-            background-color: #94d2bd;
-            color: #005f73;
-        }
-        .button[href]:hover {
-            background: linear-gradient(135deg, #7ab5a5, #5e8f7d);
-            color: #ffffff;
+            background-color: #005f73; /* Match header background color for all buttons */
         }
         footer {
             background-color: #005f73;
