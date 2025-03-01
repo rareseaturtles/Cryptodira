@@ -3,78 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Cryptodira is a Solana-based cryptocurrency token dedicated to protecting sea turtles and supporting Earth conservation.">
-    <meta name="keywords" content="Cryptodira, sea turtles, cryptocurrency, Solana, conservation, token">
-    <meta name="author" content="Cryptodira Team">
+    <title>Cryptodira - Protecting Sea Turtles</title>
+
     <!-- Open Graph Metadata -->
     <meta property="og:title" content="Cryptodira - Protecting Sea Turtles" />
     <meta property="og:description" content="Join Cryptodira, a Solana-based token, to support sea turtle conservation and Earth protection efforts. Connect your Phantom wallet to engage with our community!" />
     <meta property="og:url" content="https://cryptodira.netlify.app/" />
     <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" />
-    <meta property="og:image:width" content="1200"> <!-- Adjust based on actual logo size -->
-    <meta property="og:image:height" content="630"> <!-- Adjust based on actual logo size -->
-    <meta property="og:image:alt" content="Cryptodira Logo - Sea Turtle Conservation Token" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Cryptodira" />
+
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Cryptodira - Protecting Sea Turtles" />
     <meta name="twitter:description" content="Join Cryptodira, a Solana-based token, to support sea turtle conservation and Earth protection efforts. Connect your Phantom wallet to engage!" />
     <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" />
-    <meta name="twitter:image:alt" content="Cryptodira Logo - Sea Turtle Conservation Token" />
-    <!-- Additional Metadata for Robustness -->
-    <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#005f73" />
-    <meta property="article:publisher" content="https://x.com/rareseaturtles" />
-    <meta property="article:author" content="Cryptodira Team" />
-    <title>Cryptodira - Protecting Sea Turtles</title>
-    <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
+
+    <!-- Additional Metadata -->
+    <meta name="description" content="Cryptodira is a Solana-based cryptocurrency token dedicated to protecting sea turtles and supporting Earth conservation." />
+    <meta name="keywords" content="Cryptodira, sea turtles, cryptocurrency, Solana, conservation, token" />
+    <meta name="author" content="Cryptodira Team" />
+
+    <!-- Favicon (Tab Logo) -->
+    <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg" />
+
+    <!-- External Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
+
+    <!-- Inline Styles -->
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f8ff;
+            background: linear-gradient(135deg, #f0f8ff, #b2e2f2);
             color: #333;
-        }
-        header {
-            background-color: #005f73;
-            color: #ffffff;
-            padding: 10px 0;
             text-align: center;
-        }
-        header h1 {
-            font-size: 48px;
-            margin: 0;
-            font-family: 'Trebuchet MS', sans-serif;
-        }
-        header p {
-            font-size: 18px;
-            margin: 10px 0 0 0;
-            color: #94d2bd;
-        }
-        .logo-container {
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
+        }
+        h1 {
+            font-size: 52px;
+            color: #005f73;
             margin: 20px 0;
+            font-family: 'Trebuchet MS', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 95, 115, 0.2);
         }
         .logo {
-            width: 150px;
+            width: 160px;
             height: auto;
             border-radius: 50%;
-            border: 3px solid #005f73;
+            border: 5px solid #005f73;
+            margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s;
+        }
+        .logo:hover {
+            transform: scale(1.05);
         }
         .content-box, .tokenomics {
             text-align: center;
             background-color: #ffffff;
             padding: 20px;
             margin: 20px auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             max-width: 800px;
             width: 80%;
-            border: 1px solid #94d2bd;
+            border: 3px solid #94d2bd;
         }
         .content-box h2, .tokenomics h3 {
             font-size: 28px;
@@ -88,47 +86,44 @@
             color: #555;
         }
         .buttons {
-            margin-top: 30px;
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 25px;
+            margin-top: 25px;
             flex-wrap: wrap;
         }
         .button {
-            display: inline-block;
-            padding: 14px 28px;
-            margin: 5px;
-            font-size: 18px;
-            color: #ffffff;
-            background-color: #005f73;
+            padding: 16px 35px;
+            font-size: 22px;
+            color: #fff;
+            background: linear-gradient(135deg, #005f73, #023e58);
             border: none;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            text-align: center;
-            transition: background-color 0.3s, transform 0.2s;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            flex: 0 0 auto;
-            min-height: 48px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
         }
         .button:hover {
-            background-color: #023e58;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #023e58, #001f2e);
         }
-        .button[type="button"] {
-            background-color: #005f73;
-            order: -1;
+        .button:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
         }
-        .button[href] {
-            background-color: #005f73; /* Match header background color for all buttons */
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
         }
         footer {
             background-color: #005f73;
             color: #ffffff;
             text-align: center;
             padding: 10px 0;
+            width: 100%;
+            margin-top: auto;
         }
         footer p {
             margin: 0;
@@ -139,12 +134,21 @@
             .buttons {
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
             }
             .button {
-                width: 100%;
+                width: 80%;
                 max-width: 250px;
-                margin: 5px 0;
+            }
+            h1 {
+                font-size: 36px;
+            }
+            .logo {
+                width: 100px;
+            }
+            .content-box, .tokenomics {
+                width: 90%;
+                padding: 15px;
             }
         }
         /* Modal and Overlay Styles */
@@ -167,7 +171,7 @@
             background: #ffffff;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
             z-index: 1000;
             width: 90%;
             max-width: 400px;
@@ -192,13 +196,8 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo-container">
-            <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Logo"/>
-        </div>
-        <h1>Cryptodira</h1>
-        <p>A Crypto Token for Protecting Sea Turtles</p>
-    </header>
+    <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Logo">
+    <h1>Cryptodira - Protecting Sea Turtles</h1>
 
     <div class="content-box">
         <h2>About Cryptodira $Dira</h2>
@@ -207,40 +206,40 @@
         </p>
     </div>
 
-   <div class="tokenomics">
-    <h3>Tokenomics</h3>
-    <p>
-        CryptoDira (DIRA) Tokenomics<br>
-        <strong>Key Metrics:</strong><br>
-        Total Supply: 4,893,683.13 DIRA<br>
-        Circulating Supply: ~1,429,184.06 DIRA (29.2%)<br>
-        Holders: 56<br>
-        Transactions: 749 transfers, 72 swaps over 7 days<br>
-        <strong>Mission & Utility:</strong><br>
-        CryptoDira (DIRA) is a Solana-based token dedicated to supporting sea turtle conservation and broader Earth-cleaning initiatives through online engagement. As a merit-based digital asset, DIRA rewards users for completing online tasks—such as signing the pledge, voting, trying their luck, and following on X while funding conservation efforts. Use DIRA to stake, engage in community activities, all while fostering a cleaner planet. Our goal? Seamless online participation, sustainable growth, and less trash.<br>
-        <strong>Tasks for Earning DIRA:</strong><br>
-        - Sign the pledge on our website (e.g., 10 DIRA).<br>
-        - Vote on our platform at <a href="https://diramocracy.netlify.app/" target="_blank">diramocracy.netlify.app</a> (e.g., 15 DIRA).<br>
-        - Try your luck for rewards at <a href="https://turtletreasure.netlify.app/" target="_blank">turtletreasure.netlify.app</a> (e.g., up to 50 DIRA).<br>
-        - Follow us on X at <a href="https://x.com/rareseaturtles" target="_blank">https://x.com/rareseaturtles</a> (e.g., 5 DIRA).<br>
-        Tasks are verified via platform interactions and require a Phantom wallet connection.<br>
-        <strong>Future Expansion:</strong><br>
-        We’re exploring the introduction of physical tasks, such as cleaning up trash or organizing community cleanups, to further engage our community in real-world environmental impact—stay tuned for updates!<br>
-        <strong>Distribution:</strong><br>
-        - Community Rewards: (10000 DIRA) for task completion.<br>
-        - Liquidity Pool: 20% (978,736.63 DIRA) locked on Meteora forever, with fees funding conservation.<br>
-        - Team & Advisors: 15% (1000000 DIRA), providing liquidity.<br>
-        - Treasury: 10% (0DIRA) for development, marketing, and partnerships, managed via governance.<br>
-        <strong>Recent Market Activity:</strong><br>
-        - Significant trading volume with 94 transfers and 72 swaps over 7 days, totaling $548.72 and $585.15, respectively.<br>
-        - High volatility with peaks of 25-30 transfers/day, indicating growing interest.<br>
-        - Top 10 holders own 70.79% (3,464,499.07 DIRA), with smaller accounts holding 29.2% (1,429,184.06 DIRA).<br>
-        <strong>Transparency & Tracking:</strong><br>
-        For real-time updates on transactions, holder distribution, and contract details, visit Solscan at <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</a>.<br>
-        <strong>Community Engagement:</strong><br>
-        Join our community for updates and participation: follow us on X at <a href="https://x.com/rareseaturtles" target="_blank">https://x.com/rareseaturtles</a> or join our Telegram at <a href="https://t.me/rareseaturtle" target="_blank">https://t.me/rareseaturtle</a>.
-    </p>
-</div>
+    <div class="tokenomics">
+        <h3>Tokenomics</h3>
+        <p>
+            CryptoDira (DIRA) Tokenomics<br>
+            <strong>Key Metrics:</strong><br>
+            Total Supply: 4,893,683.13 DIRA<br>
+            Circulating Supply: ~1,429,184.06 DIRA (29.2%)<br>
+            Holders: 56<br>
+            Transactions: 749 transfers, 72 swaps over 7 days<br>
+            <strong>Mission & Utility:</strong><br>
+            CryptoDira (DIRA) is a Solana-based token dedicated to supporting sea turtle conservation and broader Earth-cleaning initiatives through online engagement. As a merit-based digital asset, DIRA rewards users for completing online tasks—such as signing the pledge, voting, trying their luck, and following on X—while funding conservation efforts. Use DIRA to stake, engage in community activities, all while fostering a cleaner planet. Our goal? Seamless online participation, sustainable growth, and less trash.<br>
+            <strong>Tasks for Earning DIRA:</strong><br>
+            - Sign the pledge on our website (e.g., 10 DIRA).<br>
+            - Vote on our platform at <a href="https://diramocracy.netlify.app/" target="_blank">diramocracy.netlify.app</a> (e.g., 15 DIRA).<br>
+            - Try your luck for rewards at <a href="https://turtletreasure.netlify.app/" target="_blank">turtletreasure.netlify.app</a> (e.g., up to 50 DIRA).<br>
+            - Follow us on X at <a href="https://x.com/rareseaturtles" target="_blank">https://x.com/rareseaturtles</a> (e.g., 5 DIRA).<br>
+            Tasks are verified via platform interactions and require a Phantom wallet connection.<br>
+            <strong>Future Expansion:</strong><br>
+            We’re exploring the introduction of physical tasks, such as cleaning up trash or organizing community cleanups, to further engage our community in real-world environmental impact—stay tuned for updates!<br>
+            <strong>Distribution:</strong><br>
+            - Community Rewards: (10000 DIRA) for task completion.<br>
+            - Liquidity Pool: 20% (978,736.63 DIRA) locked on Meteora forever, with fees funding conservation.<br>
+            - Team & Advisors: 15% (1000000 DIRA), providing liquidity.<br>
+            - Treasury: 10% (0DIRA) for development, marketing, and partnerships, managed via governance.<br>
+            <strong>Recent Market Activity:</strong><br>
+            - Significant trading volume with 94 transfers and 72 swaps over 7 days, totaling $548.72 and $585.15, respectively.<br>
+            - High volatility with peaks of 25-30 transfers/day, indicating growing interest.<br>
+            - Top 10 holders own 70.79% (3,464,499.07 DIRA), with smaller accounts holding 29.2% (1,429,184.06 DIRA).<br>
+            <strong>Transparency & Tracking:</strong><br>
+            For real-time updates on transactions, holder distribution, and contract details, visit Solscan at <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</a>.<br>
+            <strong>Community Engagement:</strong><br>
+            Join our community for updates and participation: follow us on X at <a href="https://x.com/rareseaturtles" target="_blank">https://x.com/rareseaturtles</a> or join our Telegram at <a href="https://t.me/rareseaturtle" target="_blank">https://t.me/rareseaturtle</a>.
+        </p>
+    </div>
 
     <div class="buttons">
         <button class="button" onclick="connectAndSignMessage()" type="button">Sign Pledge</button>
