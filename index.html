@@ -225,7 +225,6 @@
         <h3>Tokenomics</h3>
         <div id="token-info">
             <p>Loading token data...</p>
-            <button class="button" onclick="updateTokenInfo()">Refresh</button>
         </div>
 
         <h3>Roadmap to 10K Liquidity & 500 Holders</h3>
@@ -280,9 +279,9 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Solana config
+        // Solana config (RPC only for wallet checks)
         const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
-        const PRIMARY_RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/FhRe8GPzziOkp5qiOF5OO4erPzDYvoF_";
+        const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/FhRe8GPzziOkp5qiOF5OO4erPzDYvoF_";
         const FALLBACK_RPC_ENDPOINT = "https://api.mainnet-beta.solana.com";
         const MIN_TOKEN_BALANCE = BigInt(5000000); // 500 tokens * 10^4 (4 decimals)
         let publicKey = null;
@@ -290,57 +289,42 @@
         let walletProvider = null;
         let walletName = "Unknown";
 
-        // Function to get connection with fallback
+        // Birdeye API key
+        const BIRDEYE_API_KEY = "4dc27c9e01b443d89dde2f389b496dd7";
+
+        // Fetch token info from Birdeye API
+        async function updateTokenInfo() {
+            try {
+                const response = await fetch("https://public-api.birdeye.so/v1/token/info?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8", {
+                    headers: { "X-API-KEY": BIRDEYE_API_KEY }
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const data = await response.json();
+                tokenInfoEl.innerHTML = `
+                    <p><strong>Total Supply:</strong> ${(data.supply / 1e4).toFixed(2)} DIRA</p>
+                    <p><strong>Holders:</strong> ${data.holders || "N/A"}</p>
+                    <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
+                    <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
+                    <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
+                `;
+            } catch (error) {
+                tokenInfoEl.innerHTML = `<p>Error fetching token data: ${error.message}</p>`;
+            }
+        }
+
+        // Initial fetch and periodic updates (every 5 minutes)
+        updateTokenInfo();
+        setInterval(updateTokenInfo, 300000); // 5 minutes
+
+        // Function to get connection with fallback (for wallet checks only)
         function getConnection() {
             try {
-                return new solanaWeb3.Connection(PRIMARY_RPC_ENDPOINT, "confirmed");
+                return new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
             } catch (error) {
                 console.warn("Primary RPC failed, switching to fallback:", error);
                 return new solanaWeb3.Connection(FALLBACK_RPC_ENDPOINT, "confirmed");
             }
         }
-
-        // Fetch and update token info
-        async function updateTokenInfo() {
-            const connection = getConnection();
-            try {
-                // Get total supply
-                const supplyInfo = await connection.getTokenSupply(TOKEN_MINT_ADDRESS);
-                const totalSupply = (Number(supplyInfo.value.amount) / 1e4).toFixed(2);
-
-                // Get holder count (approximation)
-                const tokenAccounts = await connection.getProgramAccounts(
-                    new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-                    {
-                        filters: [
-                            { dataSize: 165 },
-                            { memcmp: { offset: 0, bytes: TOKEN_MINT_ADDRESS.toBase58() } }
-                        ]
-                    }
-                );
-                const holderCount = tokenAccounts.filter(acc => 
-                    Number(acc.account.data.readBigUInt64LE(64)) > 0
-                ).length;
-
-                // Update DOM
-                tokenInfoEl.innerHTML = `
-                    <p><strong>Total Supply:</strong> ${totalSupply} DIRA</p>
-                    <p><strong>Holders:</strong> ${holderCount}</p>
-                    <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
-                    <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
-                    <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
-                    <button class="button" onclick="updateTokenInfo()">Refresh</button>
-                `;
-            } catch (error) {
-                tokenInfoEl.innerHTML = `
-                    <p>Error fetching token data: ${error.message}</p>
-                    <button class="button" onclick="updateTokenInfo()">Refresh</button>
-                `;
-            }
-        }
-
-        // Initial fetch only
-        updateTokenInfo();
 
         async function connectWallet() {
             walletProvider = null;
