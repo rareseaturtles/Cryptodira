@@ -3,164 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Optimized Twitter Card Metadata -->
+    <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cryptodira - Protecting Sea Turtles">
-    <meta name="twitter:description" content="Join Cryptodira, a Solana-based token, to support sea turtle conservation and Earth protection efforts. Connect your Phantom wallet to engage!">
+    <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation with monthly giveaways for holders!">
     <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
-    <meta name="twitter:image:alt" content="Cryptodira logo featuring a sea turtle">
     <meta name="twitter:site" content="@rareseaturtles">
     <meta name="twitter:creator" content="@rareseaturtles">
     <!-- Open Graph Metadata -->
     <meta property="og:title" content="Cryptodira - Protecting Sea Turtles">
-    <meta property="og:description" content="Join Cryptodira, a Solana-based token, to support sea turtle conservation and Earth protection efforts. Connect your Phantom wallet to engage with our community!">
+    <meta property="og:description" content="Cryptodira: A Solana token for sea turtle conservation with monthly giveaways. Connect your wallet to join!">
     <meta property="og:url" content="https://cryptodira.netlify.app/">
     <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta property="og:type" content="website">
     <!-- Additional Metadata -->
     <title>Cryptodira - Protecting Sea Turtles</title>
-    <meta name="description" content="Cryptodira is a Solana-based cryptocurrency token dedicated to protecting sea turtles and supporting Earth conservation.">
+    <meta name="description" content="Cryptodira is a Solana token dedicated to sea turtle conservation with monthly giveaways for holders.">
     <!-- Favicon -->
     <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
-    <!-- External Script -->
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.57.0/dist/index.iife.min.js"></script>
-    <!-- Inline Styles -->
+    <!-- External Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.91.1/lib/index.iife.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #f0f8ff, #b2e2f2);
+            background: linear-gradient(135deg, #e0f7fa, #a5d6a7);
             color: #333;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
         header {
-            background-color: #005f73;
-            color: #ffffff;
-            padding: 10px 0;
             text-align: center;
+            padding: 20px 0;
             width: 100%;
         }
         header h1 {
             font-size: 48px;
-            margin: 0;
+            color: #2e7d32;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(46, 125, 50, 0.3);
             font-family: 'Trebuchet MS', sans-serif;
         }
         header p {
             font-size: 18px;
-            margin: 10px 0 0 0;
-            color: #94d2bd;
-        }
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
+            color: #1b5e20;
+            margin: 0;
         }
         .logo {
-            width: 160px;
+            width: 120px;
             height: auto;
             border-radius: 50%;
-            border: 5px solid #005f73;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 4px solid #2e7d32;
+            margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
         }
         .logo:hover {
             transform: scale(1.05);
         }
-        .content-box, .tokenomics {
-            text-align: center;
-            background-color: #ffffff;
-            padding: 20px;
-            margin: 20px auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .content {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             max-width: 800px;
-            width: 80%;
-            border: 1px solid #94d2bd;
+            width: 90%;
+            border: 3px solid #4caf50;
+            text-align: center;
         }
-        .content-box h2, .tokenomics h3 {
-            font-size: 28px;
+        .content h2, .content h3 {
+            color: #2e7d32;
             margin-bottom: 15px;
-            color: #005f73;
         }
-        .content-box p, .tokenomics p {
-            font-size: 14px;
+        .content p {
+            font-size: 16px;
             line-height: 1.6;
-            margin-bottom: 15px;
             color: #555;
+            margin-bottom: 15px;
         }
         .buttons {
-            margin-top: 30px;
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 15px;
-            flex-wrap: wrap;
+            margin: 20px 0;
         }
         .button {
-            display: inline-block;
-            padding: 14px 28px;
-            margin: 5px;
-            font-size: 18px;
-            color: #ffffff;
-            background-color: #005f73;
+            padding: 12px 25px;
+            font-size: 16px;
+            color: #fff;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
             border: none;
             border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            text-align: center;
-            transition: background-color 0.3s, transform 0.2s;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            flex: 0 0 auto;
-            min-height: 48px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-width: 150px;
         }
         .button:hover {
-            background-color: #023e58;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #1b5e20, #103d15);
         }
-        .button[type="button"] {
-            background-color: #005f73;
-            order: -1;
+        #disconnect-btn {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            display: none;
         }
-        .button[href] {
-            background-color: #005f73;
+        #disconnect-btn:hover {
+            background: linear-gradient(135deg, #b71c1c, #7f0000);
+        }
+        #status {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .roadmap {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(232, 245, 233, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .roadmap ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+        .roadmap li {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #1b5e20;
         }
         footer {
-            background-color: #005f73;
-            color: #ffffff;
+            background: #2e7d32;
+            color: #fff;
             text-align: center;
             padding: 10px 0;
             width: 100%;
             margin-top: auto;
         }
-        footer p {
-            margin: 0;
-            font-size: 14px;
-        }
         @media (max-width: 600px) {
-            .buttons {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }
-            .button {
-                width: 100%;
-                max-width: 250px;
-                margin: 5px 0;
-            }
-            header h1 {
-                font-size: 36px;
-            }
-            .logo {
-                width: 100px;
-            }
-            .content-box, .tokenomics {
-                width: 90%;
-                padding: 15px;
-            }
+            header h1 { font-size: 32px; }
+            .content { padding: 15px; margin: 15px; width: 95%; }
+            .button { padding: 10px 20px; font-size: 14px; min-width: 120px; }
+            .buttons { flex-direction: column; align-items: center; gap: 10px; }
+            .logo { width: 100px; }
         }
         #modal-overlay {
             display: none;
@@ -169,7 +164,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
         #pledge-modal {
@@ -178,10 +173,10 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #ffffff;
+            background: #fff;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             width: 90%;
             max-width: 400px;
@@ -194,90 +189,184 @@
         #pledge-modal button {
             padding: 10px 20px;
             font-size: 14px;
-            color: #ffffff;
-            background-color: #005f73;
+            color: #fff;
+            background: #2e7d32;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
         #pledge-modal button:hover {
-            background-color: #023e58;
+            background: #1b5e20;
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo-container">
-            <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Logo">
-        </div>
+        <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Logo">
         <h1>Cryptodira</h1>
-        <p>A Crypto Token for Protecting Sea Turtles</p>
+        <p>A Solana Token for Sea Turtle Conservation</p>
     </header>
 
-    <div class="content-box">
-        <h2>About Cryptodira $Dira</h2>
-        <p>
-            CryptoDira is a Solana blockchain-based token built for a community passionate about turtles and Earth conservation...
-        </p>
-    </div>
+    <div class="content">
+        <h2>Welcome to Cryptodira ($DIRA)</h2>
+        <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and supporting Earth conservation through community engagement and monthly giveaways for holders.</p>
+        
+        <div class="buttons">
+            <button class="button" id="connect-btn" onclick="connectWallet()">Connect Wallet</button>
+            <button class="button" id="disconnect-btn" onclick="disconnectWallet()">Disconnect</button>
+            <button class="button" onclick="connectAndSignMessage()">Sign Pledge</button>
+        </div>
+        <div id="status"></div>
 
-    <div class="tokenomics">
         <h3>Tokenomics</h3>
         <p>
-            CryptoDira (DIRA) Tokenomics<br>
-            <strong>Key Metrics:</strong><br>
-            Total Supply: 4,893,683.13 DIRA<br>
-            Circulating Supply: ~1,429,184.06 DIRA (29.2%)<br>
-            Holders: 56<br>
-            Transactions: 749 transfers, 72 swaps over 7 days<br>
-            <strong>Mission & Utility:</strong><br>
-            CryptoDira (DIRA) is a Solana-based token dedicated to supporting sea turtle conservation and broader Earth-cleaning initiatives through online engagement. As a merit-based digital asset, DIRA rewards users for completing online tasks—such as signing the pledge, voting, trying their luck, and following on X—while funding conservation efforts. Use DIRA to stake, engage in community activities, all while fostering a cleaner planet. Our goal? Seamless online participation, sustainable growth, and less trash.<br>
-            <strong>Tasks for Earning DIRA:</strong><br>
-            - Sign the pledge on our website (e.g., 10 DIRA).<br>
-            - Vote on our platform at <a href="https://diramocracy.netlify.app/" target="_blank">diramocracy.netlify.app</a> (e.g., 15 DIRA).<br>
-            - Try your luck for rewards at <a href="https://turtletreasure.netlify.app/" target="_blank">turtletreasure.netlify.app</a> (e.g., up to 50 DIRA).<br>
-            - Follow us on X at <a href="https://x.com/rareseaturtles" target="_blank">https://x.com/rareseaturtles</a> (e.g., 5 DIRA).<br>
-            Tasks are verified via platform interactions and require a Phantom wallet connection.<br>
-            <strong>Future Expansion:</strong><br>
-            We’re exploring the introduction of physical tasks, such as cleaning up trash or organizing community cleanups, to further engage our community in real-world environmental impact—stay tuned for updates!<br>
-            <strong>Distribution:</strong><br>
-            - Community Rewards: (10000 DIRA) for task completion.<br>
-            - Liquidity Pool: 20% (978,736.63 DIRA) locked on Meteora forever, with fees funding conservation.<br>
-            - Team & Advisors: 15% (1000000 DIRA), providing liquidity.<br>
-            - Treasury: 10% (0DIRA) for development, marketing, and partnerships, managed via governance.<br>
-            <strong>Recent Market Activity:</strong><br>
-            - Significant trading volume with 94 transfers and 72 swaps over 7 days, totaling $548.72 and $585.15, respectively.<br>
-            - High volatility with peaks of 25-30 transfers/day, indicating growing interest.<br>
-            - Top 10 holders own 70.79% (3,464,499.07 DIRA), with smaller accounts holding 29.2% (1,429,184.06 DIRA).<br>
-            <strong>Transparency & Tracking:</strong><br>
-            For real-time updates on transactions, holder distribution, and contract details, visit Solscan 
-            <strong>Community Engagement:</strong><br>
-            Join our community for updates and participation: follow us on X at <a href="https://x.com/rareseaturtles" target="_blank">https://x.com/rareseaturtles</a> or join our Telegram at <a href="https://t.me/rareseaturtle" target="_blank">https://t.me/rareseaturtle</a>.
+            <strong>Total Supply:</strong> 4,893,683.13 DIRA<br>
+            <strong>Circulating Supply:</strong> ~1,429,184.06 DIRA (29.2%)<br>
+            <strong>Holders:</strong> 56<br>
+            <strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.<br>
+            <strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.<br>
+            <strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a>
         </p>
-    </div>
 
-    <div class="buttons">
-        <button class="button" onclick="connectAndSignMessage()" type="button">Sign Pledge</button>
-        <a href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" class="button" target="_blank">Swap Here</a>
-        <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" class="button" target="_blank">Birdeye Chart</a>
-        <a href="https://stake.smithii.io/dirastake" class="button" target="_blank">Stake Here</a>
-        <a href="https://diramocracy.netlify.app/" class="button" target="_blank">Vote</a>
-        <a href="https://turtletreasure.netlify.app/" class="button" target="_blank">Giveaway</a>
-        <a href="https://litterleaks.netlify.app/" class="button" target="_blank">litter leaks</a>
-        <a href="https://dirashop.netlify.app/" class="button" target="_blank">Dira Shop</a>
-        <a href="https://cryptodirahunt.netlify.app/" class="button" target="_blank">Dira Hunt</a>
+        <h3>Roadmap to 10K Liquidity & 500 Holders</h3>
+        <div class="roadmap">
+            <ul>
+                <li><strong>Q1 2025:</strong> Reach 5K liquidity via Meteora pool, launch monthly giveaways for 500+ DIRA holders.</li>
+                <li><strong>Q2 2025:</strong> Grow to 200 holders with X campaigns and giveaway incentives.</li>
+                <li><strong>Q3 2025:</strong> Hit 10K liquidity, expand to 350 holders with staking rewards.</li>
+                <li><strong>Q4 2025:</strong> Achieve 500 holders, enhance monthly giveaways with conservation funding.</li>
+            </ul>
+        </div>
+
+        <h3>Join the Community</h3>
+        <div class="buttons">
+            <a href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" class="button" target="_blank">Swap on Meteora</a>
+            <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" class="button" target="_blank">Birdeye Chart</a>
+            <a href="https://stake.smithii.io/dirastake" class="button" target="_blank">Stake DIRA</a>
+            <a href="https://diramocracy.netlify.app/" class="button" target="_blank">Vote</a>
+            <a href="https://turtletreasure.netlify.app/" class="button" target="_blank">Monthly Giveaway</a>
+            <a href="https://litterleaks.netlify.app/" class="button" target="_blank">Litter Leaks</a>
+            <a href="https://dirashop.netlify.app/" class="button" target="_blank">Dira Shop</a>
+            <a href="https://cryptodirahunt.netlify.app/" class="button" target="_blank">Dira Hunt</a>
+            <a href="https://x.com/rareseaturtles" class="button" target="_blank">Follow on X</a>
+            <a href="https://t.me/rareseaturtle" class="button" target="_blank">Join Telegram</a>
+        </div>
     </div>
 
     <div id="modal-overlay"></div>
     <div id="pledge-modal"></div>
 
     <footer>
-        <p>© 2024 Cryptodira. Supporting Sea Turtle Conservation.</p>
+        <p>© 2025 Cryptodira. Supporting Sea Turtle Conservation.</p>
     </footer>
 
     <script>
+        // DOM elements
+        const connectBtn = document.getElementById("connect-btn");
+        const disconnectBtn = document.getElementById("disconnect-btn");
+        const statusEl = document.getElementById("status");
+
+        // Firebase config (matched with giveaway site)
+        const firebaseConfig = {
+            apiKey: "AIzaSyABc3oR2hxlm_DTE9vsEHufk7BZ6TqeKP0",
+            authDomain: "voting-f332e.firebaseapp.com",
+            projectId: "voting-f332e",
+            storageBucket: "voting-f332e.firebasestorage.app",
+            messagingSenderId: "551078651014",
+            appId: "1:551078651014:web:86646146a581b8dc3edd07",
+            measurementId: "G-WYLGQ9B7KC"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Solana config (matched with giveaway site)
+        const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
+        const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/FhRe8GPzziOkp5qiOF5OO4erPzDYvoF_";
+        const MIN_TOKEN_BALANCE = BigInt(5000000); // 500 tokens * 10^4 (4 decimals)
+        let publicKey = null;
+        let isTokenHolder = false;
+        let walletProvider = null;
+        let walletName = "Unknown";
+
+        async function connectWallet() {
+            walletProvider = null;
+            publicKey = null;
+            walletName = "Unknown";
+
+            if (window.solana && window.solana.isPhantom) {
+                walletProvider = window.solana;
+                walletName = "Phantom";
+            } else if (window.backpack && window.backpack.isBackpack) {
+                walletProvider = window.backpack;
+                walletName = "Backpack";
+            } else if (window.jup) {
+                walletProvider = window.jup;
+                walletName = "Jupiter Mobile";
+            } else if (window.solflare && window.solflare.isSolflare) {
+                walletProvider = window.solflare;
+                walletName = "Solflare";
+            } else {
+                statusEl.innerHTML = 'No supported wallet detected. Install <a href="https://phantom.app/" target="_blank" style="color: #2e7d32;">Phantom</a> or another wallet.';
+                return;
+            }
+
+            try {
+                const response = await walletProvider.connect();
+                publicKey = walletProvider.publicKey
+                    ? walletProvider.publicKey.toString()
+                    : response.publicKey.toString();
+
+                statusEl.textContent = `Connected: ${publicKey.slice(0, 6)}...${publicKey.slice(-4)} with ${walletName}`;
+                connectBtn.style.display = "none";
+                disconnectBtn.style.display = "inline-block";
+                await checkTokenOwnership();
+            } catch (error) {
+                statusEl.textContent = `Wallet connection failed: ${error.message}`;
+            }
+        }
+
+        function disconnectWallet() {
+            if (walletProvider && walletProvider.disconnect) {
+                walletProvider.disconnect();
+            }
+            publicKey = null;
+            walletProvider = null;
+            isTokenHolder = false;
+            statusEl.textContent = "Wallet disconnected";
+            connectBtn.style.display = "block";
+            disconnectBtn.style.display = "none";
+        }
+
+        async function checkTokenOwnership() {
+            if (!publicKey) {
+                statusEl.textContent = "No wallet connected.";
+                return;
+            }
+            try {
+                const connection = new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
+                const tokenAccounts = await connection.getTokenAccountsByOwner(
+                    new solanaWeb3.PublicKey(publicKey),
+                    { mint: TOKEN_MINT_ADDRESS }
+                );
+
+                let totalBalance = BigInt(0);
+                for (const account of tokenAccounts.value) {
+                    const balance = account.account.data.readBigUInt64LE(64);
+                    totalBalance += balance;
+                }
+
+                isTokenHolder = totalBalance > MIN_TOKEN_BALANCE;
+                if (isTokenHolder) {
+                    statusEl.textContent = `Verified: You hold ${(Number(totalBalance) / 1e4).toFixed(4)} DIRA (500+ tokens)!`;
+                } else {
+                    statusEl.textContent = `You hold ${(Number(totalBalance) / 1e4).toFixed(4)} DIRA. Need 500+ for monthly giveaways.`;
+                }
+            } catch (error) {
+                statusEl.textContent = "Error checking token: " + error.message;
+            }
+        }
+
         function showMessage(message, isSuccess) {
-            console.log('Showing message:', message);
             const modal = document.getElementById('pledge-modal');
             modal.innerHTML = `<p>${message}</p><button onclick="closeModal()">Close</button>`;
             modal.style.background = isSuccess ? '#d4edda' : '#f8d7da';
@@ -285,15 +374,11 @@
         }
 
         function showModal() {
-            console.log('Displaying modal');
-            const overlay = document.getElementById('modal-overlay');
-            const modal = document.getElementById('pledge-modal');
-            overlay.style.display = 'block';
-            modal.style.display = 'block';
+            document.getElementById('modal-overlay').style.display = 'block';
+            document.getElementById('pledge-modal').style.display = 'block';
         }
 
         function closeModal() {
-            console.log('Closing modal');
             document.getElementById('modal-overlay').style.display = 'none';
             document.getElementById('pledge-modal').style.display = 'none';
         }
@@ -302,26 +387,19 @@
 
         async function connectAndSignMessage() {
             if (!window.solana || !window.solana.isPhantom) {
-                showMessage('Phantom Wallet is not detected. Please install it and refresh the page.', false);
+                showMessage('Phantom Wallet not detected. Please install it.', false);
                 return;
             }
 
             try {
-                console.log('Attempting to connect to Phantom Wallet');
                 await window.solana.connect();
                 const walletAddress = window.solana.publicKey.toString();
-                console.log('Connected to Phantom Wallet:', walletAddress);
-
                 const message = "Welcome to Cryptodira! I promise to be nice to turtles.";
                 const encodedMessage = new TextEncoder().encode(message);
-                console.log('Attempting to sign message');
                 const signedMessage = await window.solana.signMessage(encodedMessage, 'utf8');
-                console.log('Signed message:', signedMessage);
-
-                showMessage('Thank you for signing the pledge! Together, we can protect sea turtles.', true);
+                showMessage('Pledge signed! Thank you for supporting sea turtles.', true);
             } catch (error) {
-                console.error('Error during wallet connection or signing:', error);
-                showMessage('An error occurred: ' + error.message, false);
+                showMessage('Error: ' + error.message, false);
             }
         }
     </script>
