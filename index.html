@@ -225,6 +225,7 @@
         <h3>Tokenomics</h3>
         <div id="token-info">
             <p>Loading token data...</p>
+            <button class="button" onclick="updateTokenInfo()">Refresh</button>
         </div>
 
         <h3>Roadmap to 10K Liquidity & 500 Holders</h3>
@@ -266,7 +267,7 @@
         const statusEl = document.getElementById("status");
         const tokenInfoEl = document.getElementById("token-info");
 
-        // Firebase config (matched with giveaway site)
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyABc3oR2hxlm_DTE9vsEHufk7BZ6TqeKP0",
             authDomain: "voting-f332e.firebaseapp.com",
@@ -305,15 +306,15 @@
             try {
                 // Get total supply
                 const supplyInfo = await connection.getTokenSupply(TOKEN_MINT_ADDRESS);
-                const totalSupply = (Number(supplyInfo.value.amount) / 1e4).toFixed(2); // 4 decimals
+                const totalSupply = (Number(supplyInfo.value.amount) / 1e4).toFixed(2);
 
                 // Get holder count (approximation)
                 const tokenAccounts = await connection.getProgramAccounts(
-                    new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"), // SPL Token Program
+                    new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
                     {
                         filters: [
-                            { dataSize: 165 }, // Token account size
-                            { memcmp: { offset: 0, bytes: TOKEN_MINT_ADDRESS.toBase58() } } // Filter by mint
+                            { dataSize: 165 },
+                            { memcmp: { offset: 0, bytes: TOKEN_MINT_ADDRESS.toBase58() } }
                         ]
                     }
                 );
@@ -328,19 +329,18 @@
                     <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
                     <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
                     <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
+                    <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
             } catch (error) {
-                if (error.code === 429) {
-                    tokenInfoEl.innerHTML = `<p>Rate limit exceeded. Trying again in 5 minutes...</p>`;
-                } else {
-                    tokenInfoEl.innerHTML = `<p>Error fetching token data: ${error.message}</p>`;
-                }
+                tokenInfoEl.innerHTML = `
+                    <p>Error fetching token data: ${error.message}</p>
+                    <button class="button" onclick="updateTokenInfo()">Refresh</button>
+                `;
             }
         }
 
-        // Initial fetch and periodic updates (every 5 minutes)
+        // Initial fetch only
         updateTokenInfo();
-        setInterval(updateTokenInfo, 300000); // 300,000 ms = 5 minutes
 
         async function connectWallet() {
             walletProvider = null;
@@ -360,7 +360,7 @@
                 walletProvider = window.solflare;
                 walletName = "Solflare";
             } else {
-                statusEl.innerHTML = 'No supported wallet detected. Install <a href="https://phantom.app/" target="_blank" style="color: #2e7d32;">Phantom</a> or another wallet.';
+                statusEl.innerHTML = 'No supported wallet detected. Install <a href="https://phantom.app/" target="_blank" style="color: #2e7d32;">Phantom</a>.';
                 return;
             }
 
