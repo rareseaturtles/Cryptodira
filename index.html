@@ -279,25 +279,35 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Solana config (matched with giveaway site)
+        // Solana config
         const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
-        const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/FhRe8GPzziOkp5qiOF5OO4erPzDYvoF_";
+        const PRIMARY_RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/FhRe8GPzziOkp5qiOF5OO4erPzDYvoF_";
+        const FALLBACK_RPC_ENDPOINT = "https://api.mainnet-beta.solana.com";
         const MIN_TOKEN_BALANCE = BigInt(5000000); // 500 tokens * 10^4 (4 decimals)
         let publicKey = null;
         let isTokenHolder = false;
         let walletProvider = null;
         let walletName = "Unknown";
 
+        // Function to get connection with fallback
+        function getConnection() {
+            try {
+                return new solanaWeb3.Connection(PRIMARY_RPC_ENDPOINT, "confirmed");
+            } catch (error) {
+                console.warn("Primary RPC failed, switching to fallback:", error);
+                return new solanaWeb3.Connection(FALLBACK_RPC_ENDPOINT, "confirmed");
+            }
+        }
+
         // Fetch and update token info
         async function updateTokenInfo() {
+            const connection = getConnection();
             try {
-                const connection = new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
-                
                 // Get total supply
                 const supplyInfo = await connection.getTokenSupply(TOKEN_MINT_ADDRESS);
                 const totalSupply = (Number(supplyInfo.value.amount) / 1e4).toFixed(2); // 4 decimals
 
-                // Get account info for holder count (approximation via token accounts)
+                // Get holder count (approximation)
                 const tokenAccounts = await connection.getProgramAccounts(
                     new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"), // SPL Token Program
                     {
@@ -309,9 +319,9 @@
                 );
                 const holderCount = tokenAccounts.filter(acc => 
                     Number(acc.account.data.readBigUInt64LE(64)) > 0
-                ).length; // Count accounts with non-zero balance
+                ).length;
 
-                // Update DOM with real-time data
+                // Update DOM
                 tokenInfoEl.innerHTML = `
                     <p><strong>Total Supply:</strong> ${totalSupply} DIRA</p>
                     <p><strong>Holders:</strong> ${holderCount}</p>
@@ -320,13 +330,17 @@
                     <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
                 `;
             } catch (error) {
-                tokenInfoEl.innerHTML = `<p>Error fetching token data: ${error.message}</p>`;
+                if (error.code === 429) {
+                    tokenInfoEl.innerHTML = `<p>Rate limit exceeded. Trying again in 5 minutes...</p>`;
+                } else {
+                    tokenInfoEl.innerHTML = `<p>Error fetching token data: ${error.message}</p>`;
+                }
             }
         }
 
-        // Initial fetch and periodic updates (every 30 seconds)
+        // Initial fetch and periodic updates (every 5 minutes)
         updateTokenInfo();
-        setInterval(updateTokenInfo, 30000);
+        setInterval(updateTokenInfo, 300000); // 300,000 ms = 5 minutes
 
         async function connectWallet() {
             walletProvider = null;
@@ -382,8 +396,8 @@
                 statusEl.textContent = "No wallet connected.";
                 return;
             }
+            const connection = getConnection();
             try {
-                const connection = new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
                 const tokenAccounts = await connection.getTokenAccountsByOwner(
                     new solanaWeb3.PublicKey(publicKey),
                     { mint: TOKEN_MINT_ADDRESS }
