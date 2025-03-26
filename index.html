@@ -290,15 +290,18 @@
         let walletProvider = null;
         let walletName = "Unknown";
 
-        // Birdeye API key (updated to the new key)
+        // Birdeye API key
         const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db";
 
-        // Fetch token info from Birdeye API, fallback to Solscan
+        // Fetch token price and liquidity from Birdeye API
         async function updateTokenInfo() {
-            // Try Birdeye first
             try {
-                const response = await fetch("https://public-api.birdeye.so/defi/token_overview?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8", {
-                    headers: { "X-API-KEY": BIRDEYE_API_KEY }
+                const response = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
+                    headers: {
+                        "X-API-KEY": BIRDEYE_API_KEY,
+                        "x-chain": "solana",
+                        "accept": "application/json"
+                    }
                 });
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -306,38 +309,11 @@
                 }
                 const data = await response.json();
                 tokenInfoEl.innerHTML = `
-                    <p><strong>Total Supply:</strong> ${(data.data.supply / 1e4).toFixed(2)} DIRA</p>
-                    <p><strong>Holders:</strong> ${data.data.holders || "N/A"}</p>
+                    <p><strong>Price:</strong> $${data.data.value.toFixed(6)}</p>
+                    <p><strong>Liquidity:</strong> $${data.data.liquidity.toFixed(2)}</p>
                     <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
                     <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
-                    <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
-                    <button class="button" onclick="updateTokenInfo()">Refresh</button>
-                `;
-                return; // Success, no need to fallback
-            } catch (error) {
-                console.warn("Birdeye API failed:", error.message);
-            }
-
-            // Fallback to Solscan
-            try {
-                const response = await fetch("https://public-api.solscan.io/token/meta/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Solscan HTTP ${response.status}: ${errorText}`);
-                }
-                const data = await response.json();
-                const holderResponse = await fetch("https://public-api.solscan.io/token/holders?tokenAddress=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&limit=1");
-                if (!holderResponse.ok) {
-                    const errorText = await holderResponse.text();
-                    throw new Error(`Solscan Holders HTTP ${holderResponse.status}: ${errorText}`);
-                }
-                const holderData = await holderResponse.json();
-                tokenInfoEl.innerHTML = `
-                    <p><strong>Total Supply:</strong> ${(data.supply / 1e4).toFixed(2)} DIRA</p>
-                    <p><strong>Holders:</strong> ${holderData.total || "N/A"}</p>
-                    <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
-                    <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
-                    <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
+                    <p><strong>Track:</strong> <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" target="_blank">Birdeye</a></p>
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
             } catch (error) {
