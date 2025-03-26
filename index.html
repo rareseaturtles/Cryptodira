@@ -292,17 +292,38 @@
         // Birdeye API key
         const BIRDEYE_API_KEY = "4dc27c9e01b443d89dde2f389b496dd7";
 
-        // Fetch token info from Birdeye API
+        // Fetch token info from Birdeye API, fallback to Solscan
         async function updateTokenInfo() {
+            // Try Birdeye first
             try {
                 const response = await fetch("https://public-api.birdeye.so/v1/token/info?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8", {
                     headers: { "X-API-KEY": BIRDEYE_API_KEY }
                 });
-                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                if (!response.ok) throw new Error(`Birdeye HTTP ${response.status}: ${response.statusText}`);
                 const data = await response.json();
                 tokenInfoEl.innerHTML = `
                     <p><strong>Total Supply:</strong> ${(data.supply / 1e4).toFixed(2)} DIRA</p>
                     <p><strong>Holders:</strong> ${data.holders || "N/A"}</p>
+                    <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
+                    <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
+                    <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
+                `;
+                return; // Success, no need to fallback
+            } catch (error) {
+                console.warn("Birdeye API failed:", error.message);
+            }
+
+            // Fallback to Solscan
+            try {
+                const response = await fetch("https://public-api.solscan.io/token/meta/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
+                if (!response.ok) throw new Error(`Solscan HTTP ${response.status}: ${response.statusText}`);
+                const data = await response.json();
+                const holderResponse = await fetch("https://public-api.solscan.io/token/holders?tokenAddress=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&limit=1");
+                if (!holderResponse.ok) throw new Error(`Solscan Holders HTTP ${holderResponse.status}`);
+                const holderData = await holderResponse.json();
+                tokenInfoEl.innerHTML = `
+                    <p><strong>Total Supply:</strong> ${(data.supply / 1e4).toFixed(2)} DIRA</p>
+                    <p><strong>Holders:</strong> ${holderData.total || "N/A"}</p>
                     <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
                     <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
                     <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
