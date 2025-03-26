@@ -150,6 +150,10 @@
             width: 100%;
             margin-top: auto;
         }
+        #token-info {
+            font-size: 16px;
+            color: #1b5e20;
+        }
         @media (max-width: 600px) {
             header h1 { font-size: 32px; }
             .content { padding: 15px; margin: 15px; width: 95%; }
@@ -219,14 +223,9 @@
         <div id="status"></div>
 
         <h3>Tokenomics</h3>
-        <p>
-            <strong>Total Supply:</strong> 4,893,683.13 DIRA<br>
-            <strong>Circulating Supply:</strong> ~1,429,184.06 DIRA (29.2%)<br>
-            <strong>Holders:</strong> 56<br>
-            <strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.<br>
-            <strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.<br>
-            <strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a>
-        </p>
+        <div id="token-info">
+            <p>Loading token data...</p>
+        </div>
 
         <h3>Roadmap to 10K Liquidity & 500 Holders</h3>
         <div class="roadmap">
@@ -265,6 +264,7 @@
         const connectBtn = document.getElementById("connect-btn");
         const disconnectBtn = document.getElementById("disconnect-btn");
         const statusEl = document.getElementById("status");
+        const tokenInfoEl = document.getElementById("token-info");
 
         // Firebase config (matched with giveaway site)
         const firebaseConfig = {
@@ -287,6 +287,46 @@
         let isTokenHolder = false;
         let walletProvider = null;
         let walletName = "Unknown";
+
+        // Fetch and update token info
+        async function updateTokenInfo() {
+            try {
+                const connection = new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
+                
+                // Get total supply
+                const supplyInfo = await connection.getTokenSupply(TOKEN_MINT_ADDRESS);
+                const totalSupply = (Number(supplyInfo.value.amount) / 1e4).toFixed(2); // 4 decimals
+
+                // Get account info for holder count (approximation via token accounts)
+                const tokenAccounts = await connection.getProgramAccounts(
+                    new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"), // SPL Token Program
+                    {
+                        filters: [
+                            { dataSize: 165 }, // Token account size
+                            { memcmp: { offset: 0, bytes: TOKEN_MINT_ADDRESS.toBase58() } } // Filter by mint
+                        ]
+                    }
+                );
+                const holderCount = tokenAccounts.filter(acc => 
+                    Number(acc.account.data.readBigUInt64LE(64)) > 0
+                ).length; // Count accounts with non-zero balance
+
+                // Update DOM with real-time data
+                tokenInfoEl.innerHTML = `
+                    <p><strong>Total Supply:</strong> ${totalSupply} DIRA</p>
+                    <p><strong>Holders:</strong> ${holderCount}</p>
+                    <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
+                    <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
+                    <p><strong>Track:</strong> <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank">Solscan</a></p>
+                `;
+            } catch (error) {
+                tokenInfoEl.innerHTML = `<p>Error fetching token data: ${error.message}</p>`;
+            }
+        }
+
+        // Initial fetch and periodic updates (every 30 seconds)
+        updateTokenInfo();
+        setInterval(updateTokenInfo, 30000);
 
         async function connectWallet() {
             walletProvider = null;
