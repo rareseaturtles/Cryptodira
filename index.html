@@ -302,6 +302,10 @@
         const disconnectBtn = document.getElementById("disconnect-btn");
         const statusEl = document.getElementById("status");
         const tokenInfoEl = document.getElementById("token-info");
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameStatus = document.getElementById('gameStatus');
+        const restartBtn = document.getElementById('restartBtn');
 
         // Firebase config
         const firebaseConfig = {
@@ -487,11 +491,6 @@
         }
 
         // Game Logic
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const gameStatus = document.getElementById('gameStatus');
-        const restartBtn = document.getElementById('restartBtn');
-
         let turtle = { x: 50, y: 150, width: 30, height: 20, speed: 0.5 };
         let obstacles = [];
         let gameOver = false;
@@ -590,19 +589,34 @@
 
         function handleInteraction(e) {
             if (gameOver || gameWon) return;
-            e.preventDefault(); // Prevent default touch behavior (e.g., scrolling)
+            e.preventDefault(); // Prevent default touch behavior
             const rect = canvas.getBoundingClientRect();
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX) || (e.changedTouches && e.changedTouches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY) || (e.changedTouches && e.changedTouches[0].clientY);
+            if (!clientX || !clientY) {
+                console.log('No valid touch coordinates:', e);
+                return;
+            }
             const clickX = clientX - rect.left;
             const clickY = clientY - rect.top;
+            console.log('Tap detected at:', clickX, clickY); // Debug log
+
+            // Draw temporary circle to confirm tap
+            ctx.beginPath();
+            ctx.arc(clickX, clickY, 10, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+            ctx.fill();
+            setTimeout(() => {
+                ctx.clearRect(clickX - 10, clickY - 10, 20, 20);
+                draw(); // Redraw to remove circle
+            }, 200);
 
             obstacles = obstacles.filter(obs => {
                 const hit = (
-                    clickX >= obs.x &&
-                    clickX <= obs.x + obs.width &&
-                    clickY >= obs.y &&
-                    clickY <= obs.y + obs.height
+                    clickX >= obs.x - 5 && // Expanded hit box for easier tapping
+                    clickX <= obs.x + obs.width + 5 &&
+                    clickY >= obs.y - 5 &&
+                    clickY <= obs.y + obs.height + 5
                 );
                 if (hit) score += 10;
                 return !hit;
@@ -611,7 +625,8 @@
         }
 
         canvas.addEventListener('click', handleInteraction);
-        canvas.addEventListener('touchstart', handleInteraction, { passive: false }); // Passive: false to allow preventDefault
+        canvas.addEventListener('touchstart', handleInteraction, { passive: false }); // Allow preventDefault
+        canvas.addEventListener('touchend', handleInteraction, { passive: false }); // Fallback for some devices
 
         function restartGame() {
             turtle.x = 50;
