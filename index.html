@@ -163,6 +163,7 @@
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            touch-action: manipulation; /* Improve touch handling */
         }
         #restartBtn {
             padding: 12px 25px;
@@ -567,8 +568,8 @@
             ctx.shadowBlur = 0;
             ctx.fillStyle = '#1b5e20';
             ctx.font = 'bold 14px Roboto';
-            ctx.fillText('Turtle', turtle.x, turtle.y - 10);
-            // To add turtle image: const turtleImg = new Image(); turtleImg.src = 'https://your-arweave-url/turtle.png'; ctx.drawImage(turtleImg, turtle.x, turtle.y, turtle.width, turtle.height);
+            ctx.textAlign = 'center';
+            ctx.fillText('Turtle', turtle.x + turtle.width / 2, turtle.y - 10);
 
             // Draw obstacles
             for (let obs of obstacles) {
@@ -583,13 +584,13 @@
                 ctx.fill();
                 ctx.shadowBlur = 0;
                 ctx.fillStyle = '#1b5e20';
-                ctx.fillText(obs.type, obs.x, obs.y - 10);
-                // To add obstacle images: const img = new Image(); img.src = `https://your-arweave-url/${obs.type}.png`; ctx.drawImage(img, obs.x, obs.y, obs.width, obs.height);
+                ctx.fillText(obs.type, obs.x + obs.width / 2, obs.y - 10);
             }
         }
 
         function handleInteraction(e) {
             if (gameOver || gameWon) return;
+            e.preventDefault(); // Prevent default touch behavior (e.g., scrolling)
             const rect = canvas.getBoundingClientRect();
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             const clientY = e.clientY || (e.touches && e.touches[0].clientY);
@@ -610,10 +611,7 @@
         }
 
         canvas.addEventListener('click', handleInteraction);
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleInteraction(e);
-        });
+        canvas.addEventListener('touchstart', handleInteraction, { passive: false }); // Passive: false to allow preventDefault
 
         function restartGame() {
             turtle.x = 50;
