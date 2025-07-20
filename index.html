@@ -158,9 +158,11 @@
         }
         #gameCanvas {
             border: 3px solid #2e7d32;
-            background-color: #fff;
+            background: linear-gradient(180deg, #f4a261, #e0c097);
             max-width: 100%;
             height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         #restartBtn {
             padding: 12px 25px;
@@ -174,7 +176,7 @@
             transition: all 0.3s ease;
             min-width: 150px;
             display: none;
-            margin: 10px auto;
+            margin: 15px auto;
         }
         #restartBtn:hover {
             transform: translateY(-2px);
@@ -280,9 +282,9 @@
 
     <div class="content">
         <h2>Save the Sea Turtle Hatchling</h2>
-        <p>Help a sea turtle hatchling reach the ocean by clicking to remove obstacles like trash and predators!</p>
-        <canvas id="gameCanvas" width="600" height="300"></canvas>
-        <div id="gameStatus">Guide the turtle to the ocean by clicking obstacles!</div>
+        <p>Help a sea turtle hatchling reach the ocean by tapping obstacles like trash and predators! Score points for each obstacle cleared.</p>
+        <canvas id="gameCanvas" width="800" height="300"></canvas>
+        <div id="gameStatus">Score: 0 | Guide the turtle to the ocean by tapping obstacles!</div>
         <button id="restartBtn" onclick="restartGame()">Restart Game</button>
     </div>
 
@@ -489,11 +491,12 @@
         const gameStatus = document.getElementById('gameStatus');
         const restartBtn = document.getElementById('restartBtn');
 
-        let turtle = { x: 50, y: 150, width: 30, height: 20, speed: 1 };
+        let turtle = { x: 50, y: 150, width: 30, height: 20, speed: 0.5 };
         let obstacles = [];
         let gameOver = false;
         let gameWon = false;
         let lastObstacleSpawn = 0;
+        let score = 0;
         const obstacleTypes = ['trash', 'crab', 'bird', 'mammal'];
 
         function gameLoop(timestamp) {
@@ -519,18 +522,18 @@
 
             if (turtle.x + turtle.width >= canvas.width - 20) {
                 gameWon = true;
-                gameStatus.textContent = 'You Win! The turtle reached the ocean!';
+                gameStatus.textContent = `You Win! Score: ${score} | The turtle reached the ocean!`;
                 restartBtn.style.display = 'block';
             }
 
-            if (timestamp - lastObstacleSpawn > 2000) {
+            if (timestamp - lastObstacleSpawn > 1500) {
                 spawnObstacle();
                 lastObstacleSpawn = timestamp;
             }
 
-            if (obstacles.length > 8) {
+            if (obstacles.length > 12) {
                 gameOver = true;
-                gameStatus.textContent = 'Game Over! Too many obstacles!';
+                gameStatus.textContent = `Game Over! Score: ${score} | Too many obstacles!`;
                 restartBtn.style.display = 'block';
             }
         }
@@ -546,17 +549,26 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw beach and ocean
-            ctx.fillStyle = '#f4a261';
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#f4a261');
+            gradient.addColorStop(1, '#e0c097');
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00f';
+            ctx.fillStyle = '#40c4ff';
             ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
 
             // Draw turtle
             ctx.fillStyle = '#2e7d32';
-            ctx.fillRect(turtle.x, turtle.y, turtle.width, turtle.height);
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = 5;
+            ctx.beginPath();
+            ctx.arc(turtle.x + turtle.width / 2, turtle.y + turtle.height / 2, turtle.width / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
             ctx.fillStyle = '#1b5e20';
-            ctx.font = '14px Roboto';
-            ctx.fillText('Turtle', turtle.x, turtle.y - 5);
+            ctx.font = 'bold 14px Roboto';
+            ctx.fillText('Turtle', turtle.x, turtle.y - 10);
+            // To add turtle image: const turtleImg = new Image(); turtleImg.src = 'https://your-arweave-url/turtle.png'; ctx.drawImage(turtleImg, turtle.x, turtle.y, turtle.width, turtle.height);
 
             // Draw obstacles
             for (let obs of obstacles) {
@@ -564,35 +576,53 @@
                 else if (obs.type === 'crab') ctx.fillStyle = '#ff4500';
                 else if (obs.type === 'bird') ctx.fillStyle = '#1e90ff';
                 else ctx.fillStyle = '#8b4513';
-                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 5;
+                ctx.beginPath();
+                ctx.arc(obs.x + obs.width / 2, obs.y + obs.height / 2, obs.width / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
                 ctx.fillStyle = '#1b5e20';
-                ctx.fillText(obs.type, obs.x, obs.y - 5);
+                ctx.fillText(obs.type, obs.x, obs.y - 10);
+                // To add obstacle images: const img = new Image(); img.src = `https://your-arweave-url/${obs.type}.png`; ctx.drawImage(img, obs.x, obs.y, obs.width, obs.height);
             }
         }
 
-        canvas.addEventListener('click', (e) => {
+        function handleInteraction(e) {
             if (gameOver || gameWon) return;
             const rect = canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            const clickX = clientX - rect.left;
+            const clickY = clientY - rect.top;
 
             obstacles = obstacles.filter(obs => {
-                return !(
+                const hit = (
                     clickX >= obs.x &&
                     clickX <= obs.x + obs.width &&
                     clickY >= obs.y &&
                     clickY <= obs.y + obs.height
                 );
+                if (hit) score += 10;
+                return !hit;
             });
+            gameStatus.textContent = `Score: ${score} | Guide the turtle to the ocean by tapping obstacles!`;
+        }
+
+        canvas.addEventListener('click', handleInteraction);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleInteraction(e);
         });
 
         function restartGame() {
             turtle.x = 50;
             turtle.y = 150;
             obstacles = [];
+            score = 0;
             gameOver = false;
             gameWon = false;
-            gameStatus.textContent = 'Guide the turtle to the ocean by clicking obstacles!';
+            gameStatus.textContent = `Score: ${score} | Guide the turtle to the ocean by tapping obstacles!`;
             restartBtn.style.display = 'none';
             lastObstacleSpawn = 0;
         }
