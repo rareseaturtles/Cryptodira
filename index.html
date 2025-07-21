@@ -156,39 +156,14 @@
             font-size: 16px;
             color: #1b5e20;
         }
-        #game-container {
-            width: 400px;
-            height: 400px;
-            border: 1px solid black;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(180deg, #f4a261, #e0c097);
-            margin: 0 auto;
+        #gameCanvas {
+            border: 3px solid #2e7d32;
+            background: linear-gradient(180deg, #40c4ff, #a5d6a7); /* Ocean gradient */
+            max-width: 100%;
+            height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .bubble {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            position: absolute;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-        }
-        .bubble:hover {
-            transform: scale(1.1);
-        }
-        #score-board {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 20px;
-            color: #2e7d32;
-            font-weight: bold;
+            touch-action: manipulation;
         }
         #restartBtn {
             padding: 12px 25px;
@@ -215,7 +190,7 @@
             .button, #restartBtn { padding: 10px 20px; font-size: 14px; min-width: 120px; }
             .buttons { flex-direction: column; align-items: center; gap: 10px; }
             .logo { width: 100px; }
-            #game-container { width: 100%; height: 400px; }
+            #gameCanvas { width: 100%; height: 400px; }
         }
         #modal-overlay {
             display: none;
@@ -307,10 +282,10 @@
     </div>
 
     <div class="content">
-        <h2>Save the Sea Turtle Hatchling</h2>
-        <p>Match 3+ obstacles (trash, birds, crabs, raccoons) to clear a path for the turtle to reach the ocean! Moves: <span id="movesLeft">20</span></p>
-        <div id="game-container"></div>
-        <div id="gameStatus">Clear a path for the turtle!</div>
+        <h2>Turtle Rescue Dash</h2>
+        <p>Guide the sea turtle hatchling to safety! Avoid debris and collect conservation tokens. Time: <span id="timeLeft">60</span>s</p>
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div id="gameStatus">Score: <span id="score">0</span></div>
         <button id="restartBtn" onclick="restartGame()">Restart Game</button>
     </div>
 
@@ -327,10 +302,11 @@
         const disconnectBtn = document.getElementById("disconnect-btn");
         const statusEl = document.getElementById("status");
         const tokenInfoEl = document.getElementById("token-info");
-        const gameContainer = document.getElementById('game-container');
+        const gameCanvas = document.getElementById('gameCanvas');
+        const ctx = gameCanvas.getContext('2d');
         const gameStatus = document.getElementById('gameStatus');
         const restartBtn = document.getElementById('restartBtn');
-        const movesLeftEl = document.getElementById('movesLeft');
+        const timeLeftEl = document.getElementById('timeLeft');
         const scoreEl = document.getElementById('score');
 
         // Firebase config
@@ -517,176 +493,154 @@
         }
 
         // Game Logic
-        const ROWS = 10;
-        const COLS = 10;
-        const OBSTACLES = ['trash', 'bird', 'crab', 'raccoon'];
-        const COLORS = {
-            'sand': '#F4A460',
-            'trash': '#808080',
-            'bird': '#0000FF',
-            'crab': '#FF0000',
-            'raccoon': '#8B4513',
-            'turtle': '#2e7d32',
-            'ocean': '#40c4ff'
-        };
-
-        let grid = Array(ROWS).fill().map(() => Array(COLS).fill('sand'));
-        let bubbles = [];
-        let movesLeft = 20;
+        const canvasWidth = 800;
+        const canvasHeight = 400;
+        let turtleX = 50;
+        let turtleY = canvasHeight - 50;
         let score = 0;
-        const turtlePos = { row: 0, col: 5 };
-        const oceanPos = { row: 9, col: 5 };
+        let timeLeft = 60;
+        let gameActive = false;
+        let obstacles = [];
+        let tokens = [];
 
-        // Create a bubble element
-        function createBubble(row, col, type) {
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            const xOffset = Math.random() * (40 - 20) + 10; // Random x within cell (10-30px)
-            const yOffset = Math.random() * (40 - 20) + 10; // Random y within cell (10-30px)
-            bubble.style.left = `${col * 40 + xOffset}px`;
-            bubble.style.top = `${row * 40 + yOffset}px`;
-            bubble.style.backgroundColor = COLORS[type];
-            bubble.textContent = type.charAt(0).toUpperCase();
-            bubble.dataset.row = row;
-            bubble.dataset.col = col;
-            bubble.addEventListener('click', handleBubbleClick);
-            gameContainer.appendChild(bubble);
-            return bubble;
+        // Game objects
+        class Obstacle {
+            constructor() {
+                this.x = canvasWidth;
+                this.y = canvasHeight - 30;
+                this.width = 30;
+                this.height = 30;
+                this.type = Math.random() < 0.5 ? 'debris' : 'net';
+            }
+            update() {
+                this.x -= 2;
+            }
+            draw() {
+                ctx.fillStyle = this.type === 'debris' ? '#666' : '#000';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
         }
 
-        // Initialize grid with bubbles
-        function initializeGrid() {
-            gameContainer.innerHTML = '<div id="score-board">Score: <span id="score">0</span></div>';
-            bubbles = [];
-            for (let i = 0; i < ROWS; i++) {
-                for (let j = 0; j < COLS; j++) {
-                    if (Math.random() < 0.7 && !(i === turtlePos.row && j === turtlePos.col) && !(i === oceanPos.row && j === oceanPos.col)) {
-                        const type = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
-                        grid[i][j] = type;
-                        bubbles.push(createBubble(i, j, type));
-                    }
+        class Token {
+            constructor() {
+                this.x = canvasWidth;
+                this.y = canvasHeight - 50;
+                this.width = 20;
+                this.height = 20;
+            }
+            update() {
+                this.x -= 2;
+            }
+            draw() {
+                ctx.fillStyle = '#ffd700'; // Gold for conservation tokens
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+
+        // Handle input
+        document.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            if (e.key === 'ArrowRight') turtleX += 10;
+            if (e.key === 'ArrowLeft') turtleX -= 10;
+            if (e.key === 'ArrowUp' && turtleY > canvasHeight - 100) turtleY -= 50;
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (!gameActive) return;
+            const touch = e.touches[0];
+            const rect = gameCanvas.getBoundingClientRect();
+            const touchX = touch.clientX - rect.left;
+            if (touchX > turtleX) turtleX += 10;
+            else turtleX -= 10;
+            if (turtleY > canvasHeight - 100) turtleY -= 50;
+        }, { passive: false });
+
+        // Game loop
+        function gameLoop() {
+            if (!gameActive) return;
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            ctx.fillStyle = '#40c4ff'; // Ocean background
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            // Draw turtle
+            ctx.fillStyle = '#2e7d32';
+            ctx.beginPath();
+            ctx.arc(turtleX, turtleY, 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Update and draw obstacles
+            obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
+            obstacles.forEach(obstacle => {
+                obstacle.update();
+                obstacle.draw();
+                if (turtleX < obstacle.x + obstacle.width && turtleX + 20 > obstacle.x &&
+                    turtleY < obstacle.y + obstacle.height && turtleY + 20 > obstacle.y) {
+                    gameActive = false;
+                    gameStatus.textContent = `Game Over! Score: ${score}`;
+                    restartBtn.style.display = 'block';
                 }
-            }
-            grid[turtlePos.row][turtlePos.col] = 'turtle';
-            grid[oceanPos.row][oceanPos.col] = 'ocean';
-            // Add turtle and ocean as static bubbles
-            bubbles.push(createBubble(turtlePos.row, turtlePos.col, 'turtle'));
-            bubbles.push(createBubble(oceanPos.row, oceanPos.col, 'ocean'));
-        }
-
-        // Find a group of identical adjacent bubbles
-        function getGroup(row, col) {
-            if (grid[row][col] === 'sand' || grid[row][col] === 'turtle' || grid[row][col] === 'ocean') return [];
-            let type = grid[row][col];
-            let visited = Array(ROWS).fill().map(() => Array(COLS).fill(false));
-            let queue = [[row, col]];
-            let group = [];
-            
-            while (queue.length > 0) {
-                let [r, c] = queue.shift();
-                if (visited[r][c]) continue;
-                visited[r][c] = true;
-                if (grid[r][c] === type && grid[r][c] !== 'turtle' && grid[r][c] !== 'ocean') {
-                    group.push([r, c]);
-                    if (r > 0 && !visited[r-1][c]) queue.push([r-1, c]);
-                    if (r < ROWS-1 && !visited[r+1][c]) queue.push([r+1, c]);
-                    if (c > 0 && !visited[r][c-1]) queue.push([r, c-1]);
-                    if (c < COLS-1 && !visited[r][c+1]) queue.push([r, c+1]);
-                }
-            }
-            return group;
-        }
-
-        // Remove a group with animation
-        function removeGroup(group) {
-            const totalPoints = group.length * 10;
-            score += totalPoints;
-            scoreEl.textContent = score;
-            let toRemove = [];
-            for (let [r, c] of group) {
-                grid[r][c] = 'sand';
-                toRemove.push(bubbles.find(b => b.dataset.row == r && b.dataset.col == c));
-            }
-            toRemove.forEach(bubble => {
-                bubble.style.opacity = '0';
-                bubble.style.transform = 'scale(0)';
-                setTimeout(() => bubble.remove(), 200); // Remove after animation
             });
-            if (hasPath(turtlePos, oceanPos)) {
-                gameWon = true;
-                gameStatus.textContent = `You Win! Score: ${score} | The turtle reached the ocean!`;
+
+            // Update and draw tokens
+            tokens = tokens.filter(token => token.x + token.width > 0);
+            tokens.forEach(token => {
+                token.update();
+                token.draw();
+                if (turtleX < token.x + token.width && turtleX + 20 > token.x &&
+                    turtleY < token.y + token.height && turtleY + 20 > token.y) {
+                    score += 10;
+                    scoreEl.textContent = score;
+                    token.x = -100; // Remove token
+                }
+            });
+
+            // Spawn new obstacles and tokens
+            if (Math.random() < 0.02) obstacles.push(new Obstacle());
+            if (Math.random() < 0.01) tokens.push(new Token());
+
+            // Update time
+            timeLeft -= 0.016; // Approx 60 FPS
+            timeLeftEl.textContent = Math.ceil(timeLeft);
+            if (timeLeft <= 0) {
+                gameActive = false;
+                gameStatus.textContent = `Time's Up! Score: ${score}`;
                 restartBtn.style.display = 'block';
             }
-        }
 
-        // Check if there’s a path from start to end through sand
-        function hasPath(start, end) {
-            let visited = Array(ROWS).fill().map(() => Array(COLS).fill(false));
-            let queue = [start];
-            visited[start.row][start.col] = true;
-            
-            while (queue.length > 0) {
-                let current = queue.shift();
-                if (current.row === end.row && current.col === end.col) return true;
-                let neighbors = [
-                    { row: current.row-1, col: current.col },
-                    { row: current.row+1, col: current.col },
-                    { row: current.row, col: current.col-1 },
-                    { row: current.row, col: current.col+1 }
-                ];
-                for (let neighbor of neighbors) {
-                    if (neighbor.row >= 0 && neighbor.row < ROWS && 
-                        neighbor.col >= 0 && neighbor.col < COLS && 
-                        (grid[neighbor.row][neighbor.col] === 'sand' || grid[neighbor.row][neighbor.col] === 'ocean') && 
-                        !visited[neighbor.row][neighbor.col]) {
-                        queue.push(neighbor);
-                        visited[neighbor.row][neighbor.col] = true;
-                    }
-                }
+            if (turtleX > canvasWidth) {
+                gameActive = false;
+                gameStatus.textContent = `You Win! Score: ${score} | Turtle reached safety!`;
+                restartBtn.style.display = 'block';
             }
-            return false;
+
+            if (gameActive) requestAnimationFrame(gameLoop);
         }
 
-        // Handle bubble click
-        function handleBubbleClick(e) {
-            if (gameOver || gameWon) return;
-            const row = parseInt(e.target.dataset.row);
-            const col = parseInt(e.target.dataset.col);
-            const group = getGroup(row, col);
-            if (group.length >= 3) {
-                removeGroup(group);
-                movesLeft--;
-                movesLeftEl.textContent = movesLeft;
-                if (movesLeft <= 0) {
-                    gameOver = true;
-                    gameStatus.textContent = `Game Over! Score: ${score} | No moves left!`;
-                    restartBtn.style.display = 'block';
-                } else {
-                    gameStatus.textContent = `Score: ${score} | Moves left: ${movesLeft} | Clear a path for the turtle!`;
-                }
-            }
-        }
-
-        // Game state
-        let gameOver = false;
-        let gameWon = false;
-
-        // Restart the game
-        function restartGame() {
-            grid = Array(ROWS).fill().map(() => Array(COLS).fill('sand'));
-            movesLeft = 20;
+        // Start game
+        function startGame() {
+            gameActive = true;
             score = 0;
-            gameOver = false;
-            gameWon = false;
-            movesLeftEl.textContent = movesLeft;
+            timeLeft = 60;
+            turtleX = 50;
+            turtleY = canvasHeight - 50;
+            obstacles = [];
+            tokens = [];
             scoreEl.textContent = score;
-            gameStatus.textContent = `Score: ${score} | Moves left: ${movesLeft} | Clear a path for the turtle!`;
+            timeLeftEl.textContent = timeLeft;
+            gameStatus.textContent = `Score: ${score} | Time: ${timeLeft}s`;
             restartBtn.style.display = 'none';
-            initializeGrid();
+            gameLoop();
         }
 
-        // Start the game
-        initializeGrid();
+        // Restart game
+        function restartGame() {
+            startGame();
+        }
+
+        // Start on load
+        startGame();
     </script>
 </body>
 </html>
