@@ -405,16 +405,16 @@
         let gameActive = false;
         let items = [];
         let animations = [];
-        let turtleHidden = true; // Tracks if turtle is hidden under trash
+        let turtleRevealed = false; // Tracks if a turtle is currently revealed
 
-        // Item (trash or turtle) object
+        // Item (trash, turtle, or decoy) object
         class Item {
             constructor(type) {
                 this.x = Math.random() * (canvasWidth - 40);
                 this.y = Math.random() * (canvasHeight - 40);
                 this.width = 40;
                 this.height = 40;
-                this.type = type; // 'trash', 'turtle', or 'decoy' (trash not hiding a turtle)
+                this.type = type; // 'trash', 'turtle', or 'decoy'
             }
             draw() {
                 ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
@@ -461,13 +461,16 @@
         // Spawn items (one turtle hidden under trash, plus decoy trash)
         function spawnItems() {
             items = [];
-            // Spawn 5-10 decoy trash items
-            const trashCount = Math.floor(Math.random() * 6) + 5;
+            // Spawn 10-15 decoy trash items
+            const trashCount = Math.floor(Math.random() * 6) + 10; // Increased to 10-15
             for (let i = 0; i < trashCount; i++) {
                 items.push(new Item('decoy'));
             }
-            // Spawn one trash item hiding a turtle
-            items.push(new Item('trash'));
+            // Spawn one trash item hiding a turtle (if not all turtles saved)
+            if (turtlesSaved < totalTurtles) {
+                items.push(new Item('trash'));
+                turtleRevealed = false;
+            }
         }
 
         // Handle clicks/taps
@@ -478,22 +481,23 @@
             const clientY = isTouch ? e.touches[0].clientY : e.clientY;
             const clickX = clientX - rect.left;
             const clickY = clientY - rect.top;
-            items = items.filter(item => {
+
+            items.forEach((item, index) => {
                 if (clickX > item.x && clickX < item.x + item.width &&
                     clickY > item.y && clickY < item.y + item.height) {
                     animations.push(new TapAnimation(item.x, item.y, item.type));
                     playSound(item.type);
-                    if (item.type === 'trash') {
-                        // Reveal turtle
-                        items.push(new Item('turtle'));
-                        turtleHidden = false;
+                    if (item.type === 'trash' && !turtleRevealed) {
+                        // Reveal turtle by replacing trash with turtle
+                        items[index] = new Item('turtle');
+                        turtleRevealed = true;
                         score += 10;
-                    } else if (item.type === 'turtle') {
+                    } else if (item.type === 'turtle' && turtleRevealed) {
                         // Save turtle
                         turtlesSaved++;
+                        items.splice(index, 1); // Remove turtle
                         score += 50;
-                        turtleHidden = true;
-                        spawnItems(); // Spawn new trash and one turtle
+                        turtleRevealed = false;
                         if (turtlesSaved >= totalTurtles) {
                             gameActive = false;
                             gameStatus.textContent = `Victory! Score: ${score} | High Score: ${highScore} | You saved all ${totalTurtles} turtles!`;
@@ -506,9 +510,12 @@
                             ctx.textAlign = 'center';
                             ctx.fillText(`Victory! Score: ${score}`, canvasWidth / 2, canvasHeight / 2 - 20);
                             ctx.fillText(`You saved ${totalTurtles} turtles!`, canvasWidth / 2, canvasHeight / 2 + 20);
+                        } else {
+                            spawnItems(); // Spawn new round
                         }
                     } else {
                         // Decoy trash
+                        items.splice(index, 1); // Remove decoy
                         score += 10;
                     }
                     scoreEl.textContent = score;
@@ -519,9 +526,7 @@
                         highScoreEl.textContent = highScore;
                     }
                     gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | High Score: ${highScore}`;
-                    return false; // Remove tapped item
                 }
-                return true;
             });
         }
 
@@ -557,7 +562,7 @@
         function startGame() {
             score = 0;
             turtlesSaved = 0;
-            turtleHidden = true;
+            turtleRevealed = false;
             items = [];
             animations = [];
             spawnItems();
