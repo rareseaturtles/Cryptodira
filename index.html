@@ -163,7 +163,7 @@
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            touch-action: manipulation; /* Improve touch handling */
+            touch-action: manipulation;
         }
         #restartBtn {
             padding: 12px 25px;
@@ -190,7 +190,7 @@
             .button, #restartBtn { padding: 10px 20px; font-size: 14px; min-width: 120px; }
             .buttons { flex-direction: column; align-items: center; gap: 10px; }
             .logo { width: 100px; }
-            #gameCanvas { width: 100%; height: 200px; }
+            #gameCanvas { width: 100%; height: 400px; } /* Adjusted for 10x10 grid */
         }
         #modal-overlay {
             display: none;
@@ -283,9 +283,9 @@
 
     <div class="content">
         <h2>Save the Sea Turtle Hatchling</h2>
-        <p>Help a sea turtle hatchling reach the ocean by tapping obstacles like trash and predators! Score points for each obstacle cleared.</p>
-        <canvas id="gameCanvas" width="800" height="300"></canvas>
-        <div id="gameStatus">Score: 0 | Guide the turtle to the ocean by tapping obstacles!</div>
+        <p>Clear a path for the sea turtle by tapping groups of 3+ identical obstacles (trash, birds, crabs, raccoons) to reach the ocean!</p>
+        <canvas id="gameCanvas"></canvas>
+        <div id="gameStatus">Clear a path for the turtle!</div>
         <button id="restartBtn" onclick="restartGame()">Restart Game</button>
     </div>
 
@@ -491,156 +491,177 @@
         }
 
         // Game Logic
-        let turtle = { x: 50, y: 150, width: 30, height: 20, speed: 0.5 };
-        let obstacles = [];
-        let gameOver = false;
-        let gameWon = false;
-        let lastObstacleSpawn = 0;
-        let score = 0;
-        const obstacleTypes = ['trash', 'crab', 'bird', 'mammal'];
+        // Game constants
+        const ROWS = 10;
+        const COLS = 10;
+        const CELL_SIZE = 40;
+        canvas.width = COLS * CELL_SIZE; // 400px
+        canvas.height = ROWS * CELL_SIZE; // 400px
 
-        function gameLoop(timestamp) {
-            if (!gameOver && !gameWon) {
-                update(timestamp);
-                draw();
-            }
-            requestAnimationFrame(gameLoop);
-        }
+        const OBSTACLES = ['trash', 'bird', 'crab', 'raccoon'];
+        const COLORS = {
+            'sand': '#F4A460',    // Sandy background
+            'trash': '#808080',   // Gray
+            'bird': '#0000FF',    // Blue
+            'crab': '#FF0000',    // Red
+            'raccoon': '#8B4513', // Brown
+            'turtle': '#2e7d32',  // Green (matches site color)
+            'ocean': '#40c4ff'    // Light blue
+        };
 
-        function update(timestamp) {
-            let canMove = true;
-            for (let obs of obstacles) {
-                if (obs.x > turtle.x && obs.x < turtle.x + turtle.width + 10 &&
-                    Math.abs(obs.y - turtle.y) < turtle.height) {
-                    canMove = false;
-                    break;
+        // Initialize grid
+        let grid = Array(ROWS).fill().map(() => Array(COLS).fill('sand'));
+        for (let i = 0; i < ROWS; i++) {
+            for (let j = 0; j < COLS; j++) {
+                if (Math.random() < 0.7) { // 70% chance of an obstacle
+                    grid[i][j] = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
                 }
             }
-            if (canMove) {
-                turtle.x += turtle.speed;
-            }
-
-            if (turtle.x + turtle.width >= canvas.width - 20) {
-                gameWon = true;
-                gameStatus.textContent = `You Win! Score: ${score} | The turtle reached the ocean!`;
-                restartBtn.style.display = 'block';
-            }
-
-            if (timestamp - lastObstacleSpawn > 1500) {
-                spawnObstacle();
-                lastObstacleSpawn = timestamp;
-            }
-
-            if (obstacles.length > 12) {
-                gameOver = true;
-                gameStatus.textContent = `Game Over! Score: ${score} | Too many obstacles!`;
-                restartBtn.style.display = 'block';
-            }
         }
 
-        function spawnObstacle() {
-            const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
-            const x = turtle.x + 100 + Math.random() * (canvas.width - turtle.x - 150);
-            const y = 50 + Math.random() * (canvas.height - 100);
-            obstacles.push({ x, y, width: 20, height: 20, type });
-        }
+        // Turtle and ocean positions
+        const turtlePos = { row: 0, col: 5 }; // Top middle
+        const oceanPos = { row: 9, col: 5 };  // Bottom middle
+        grid[turtlePos.row][turtlePos.col] = 'sand'; // Ensure start and end are clear
+        grid[oceanPos.row][oceanPos.col] = 'sand';
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw beach and ocean
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#f4a261');
-            gradient.addColorStop(1, '#e0c097');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#40c4ff';
-            ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
-
+        // Draw the grid, turtle, and ocean
+        function drawGrid() {
+            for (let i = 0; i < ROWS; i++) {
+                for (let j = 0; j < COLS; j++) {
+                    ctx.fillStyle = COLORS[grid[i][j]] || COLORS['sand'];
+                    ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    ctx.strokeStyle = '#000';
+                    ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                }
+            }
             // Draw turtle
-            ctx.fillStyle = '#2e7d32';
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-            ctx.shadowBlur = 5;
+            ctx.fillStyle = COLORS['turtle'];
             ctx.beginPath();
-            ctx.arc(turtle.x + turtle.width / 2, turtle.y + turtle.height / 2, turtle.width / 2, 0, Math.PI * 2);
+            ctx.arc((turtlePos.col + 0.5) * CELL_SIZE, (turtlePos.row + 0.5) * CELL_SIZE, CELL_SIZE / 3, 0, Math.PI * 2);
             ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = '#1b5e20';
-            ctx.font = 'bold 14px Roboto';
-            ctx.textAlign = 'center';
-            ctx.fillText('Turtle', turtle.x + turtle.width / 2, turtle.y - 10);
+            // Draw ocean
+            ctx.fillStyle = COLORS['ocean'];
+            ctx.fillRect(oceanPos.col * CELL_SIZE, oceanPos.row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        }
 
-            // Draw obstacles
-            for (let obs of obstacles) {
-                if (obs.type === 'trash') ctx.fillStyle = '#808080';
-                else if (obs.type === 'crab') ctx.fillStyle = '#ff4500';
-                else if (obs.type === 'bird') ctx.fillStyle = '#1e90ff';
-                else ctx.fillStyle = '#8b4513';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-                ctx.shadowBlur = 5;
-                ctx.beginPath();
-                ctx.arc(obs.x + obs.width / 2, obs.y + obs.height / 2, obs.width / 2, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.shadowBlur = 0;
-                ctx.fillStyle = '#1b5e20';
-                ctx.fillText(obs.type, obs.x + obs.width / 2, obs.y - 10);
+        // Find a group of identical adjacent obstacles
+        function getGroup(row, col) {
+            if (grid[row][col] === 'sand') return [];
+            let type = grid[row][col];
+            let visited = Array(ROWS).fill().map(() => Array(COLS).fill(false));
+            let queue = [[row, col]];
+            let group = [];
+            
+            while (queue.length > 0) {
+                let [r, c] = queue.shift();
+                if (visited[r][c]) continue;
+                visited[r][c] = true;
+                if (grid[r][c] === type) {
+                    group.push([r, c]);
+                    if (r > 0 && !visited[r-1][c]) queue.push([r-1, c]);
+                    if (r < ROWS-1 && !visited[r+1][c]) queue.push([r+1, c]);
+                    if (c > 0 && !visited[r][c-1]) queue.push([r, c-1]);
+                    if (c < COLS-1 && !visited[r][c+1]) queue.push([r, c+1]);
+                }
+            }
+            return group;
+        }
+
+        // Remove a group from the grid
+        function removeGroup(group) {
+            for (let [r, c] of group) {
+                grid[r][c] = 'sand';
             }
         }
+
+        // Check if there’s a path from start to end through sand
+        function hasPath(start, end) {
+            let visited = Array(ROWS).fill().map(() => Array(COLS).fill(false));
+            let queue = [start];
+            visited[start.row][start.col] = true;
+            
+            while (queue.length > 0) {
+                let current = queue.shift();
+                if (current.row === end.row && current.col === end.col) return true;
+                let neighbors = [
+                    { row: current.row-1, col: current.col },
+                    { row: current.row+1, col: current.col },
+                    { row: current.row, col: current.col-1 },
+                    { row: current.row, col: current.col+1 }
+                ];
+                for (let neighbor of neighbors) {
+                    if (neighbor.row >= 0 && neighbor.row < ROWS && 
+                        neighbor.col >= 0 && neighbor.col < COLS && 
+                        grid[neighbor.row][neighbor.col] === 'sand' && 
+                        !visited[neighbor.row][neighbor.col]) {
+                        queue.push(neighbor);
+                        visited[neighbor.row][neighbor.col] = true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Handle player clicks/taps
+        canvas.addEventListener('click', (e) => {
+            handleInteraction(e);
+        });
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleInteraction(e);
+        }, { passive: false });
 
         function handleInteraction(e) {
             if (gameOver || gameWon) return;
-            e.preventDefault(); // Prevent default touch behavior
             const rect = canvas.getBoundingClientRect();
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX) || (e.changedTouches && e.changedTouches[0].clientX);
-            const clientY = e.clientY || (e.touches && e.touches[0].clientY) || (e.changedTouches && e.changedTouches[0].clientY);
-            if (!clientX || !clientY) {
-                console.log('No valid touch coordinates:', e);
-                return;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            if (!clientX || !clientY) return;
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            const col = Math.floor(x / CELL_SIZE);
+            const row = Math.floor(y / CELL_SIZE);
+            
+            if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+                const group = getGroup(row, col);
+                if (group.length >= 3) {
+                    removeGroup(group);
+                    drawGrid();
+                    if (hasPath(turtlePos, oceanPos)) {
+                        gameWon = true;
+                        gameStatus.textContent = 'You Win! The turtle reached the ocean!';
+                        restartBtn.style.display = 'block';
+                    }
+                }
             }
-            const clickX = clientX - rect.left;
-            const clickY = clientY - rect.top;
-            console.log('Tap detected at:', clickX, clickY); // Debug log
-
-            // Draw temporary circle to confirm tap
-            ctx.beginPath();
-            ctx.arc(clickX, clickY, 10, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-            ctx.fill();
-            setTimeout(() => {
-                ctx.clearRect(clickX - 10, clickY - 10, 20, 20);
-                draw(); // Redraw to remove circle
-            }, 200);
-
-            obstacles = obstacles.filter(obs => {
-                const hit = (
-                    clickX >= obs.x - 5 && // Expanded hit box for easier tapping
-                    clickX <= obs.x + obs.width + 5 &&
-                    clickY >= obs.y - 5 &&
-                    clickY <= obs.y + obs.height + 5
-                );
-                if (hit) score += 10;
-                return !hit;
-            });
-            gameStatus.textContent = `Score: ${score} | Guide the turtle to the ocean by tapping obstacles!`;
         }
 
-        canvas.addEventListener('click', handleInteraction);
-        canvas.addEventListener('touchstart', handleInteraction, { passive: false }); // Allow preventDefault
-        canvas.addEventListener('touchend', handleInteraction, { passive: false }); // Fallback for some devices
+        // Game state
+        let gameOver = false;
+        let gameWon = false;
 
+        // Restart the game
         function restartGame() {
-            turtle.x = 50;
-            turtle.y = 150;
-            obstacles = [];
-            score = 0;
+            grid = Array(ROWS).fill().map(() => Array(COLS).fill('sand'));
+            for (let i = 0; i < ROWS; i++) {
+                for (let j = 0; j < COLS; j++) {
+                    if (Math.random() < 0.7) {
+                        grid[i][j] = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
+                    }
+                }
+            }
+            grid[turtlePos.row][turtlePos.col] = 'sand';
+            grid[oceanPos.row][oceanPos.col] = 'sand';
             gameOver = false;
             gameWon = false;
-            gameStatus.textContent = `Score: ${score} | Guide the turtle to the ocean by tapping obstacles!`;
+            gameStatus.textContent = 'Clear a path for the turtle!';
             restartBtn.style.display = 'none';
-            lastObstacleSpawn = 0;
+            drawGrid();
         }
 
-        requestAnimationFrame(gameLoop);
+        // Start the game
+        drawGrid();
     </script>
 </body>
 </html>
