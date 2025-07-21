@@ -38,6 +38,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow-y: auto; /* Ensure body can scroll */
         }
         header {
             text-align: center;
@@ -163,7 +164,7 @@
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            touch-action: manipulation;
+            /* Removed touch-action: manipulation */
         }
         #restartBtn {
             padding: 12px 25px;
@@ -546,8 +547,8 @@
         });
 
         document.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (!gameActive) return;
+            if (!gameActive || e.target !== gameCanvas) return; // Only handle touch if on canvas
+            e.preventDefault(); // Prevent default only for game interaction
             const touch = e.touches[0];
             const rect = gameCanvas.getBoundingClientRect();
             const touchX = touch.clientX - rect.left;
