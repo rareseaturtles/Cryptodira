@@ -283,9 +283,9 @@
 
     <div class="content">
         <h2>Save the Sea Turtle Hatchling</h2>
-        <p>Clear a path for the sea turtle by tapping groups of 3+ identical obstacles (trash, birds, crabs, raccoons) to reach the ocean!</p>
+        <p>Match 3+ obstacles (trash, birds, crabs, raccoons) to clear a path for the turtle to reach the ocean! Moves: <span id="movesLeft">20</span></p>
         <canvas id="gameCanvas"></canvas>
-        <div id="gameStatus">Clear a path for the turtle!</div>
+        <div id="gameStatus">Score: <span id="score">0</span> | Clear a path for the turtle!</div>
         <button id="restartBtn" onclick="restartGame()">Restart Game</button>
     </div>
 
@@ -306,6 +306,8 @@
         const ctx = canvas.getContext('2d');
         const gameStatus = document.getElementById('gameStatus');
         const restartBtn = document.getElementById('restartBtn');
+        const movesLeftEl = document.getElementById('movesLeft');
+        const scoreEl = document.getElementById('score');
 
         // Firebase config
         const firebaseConfig = {
@@ -509,24 +511,29 @@
             'ocean': '#40c4ff'    // Light blue
         };
 
-        // Initialize grid
+        // Game state
         let grid = Array(ROWS).fill().map(() => Array(COLS).fill('sand'));
-        for (let i = 0; i < ROWS; i++) {
-            for (let j = 0; j < COLS; j++) {
-                if (Math.random() < 0.7) { // 70% chance of an obstacle
-                    grid[i][j] = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
-                }
-            }
-        }
-
-        // Turtle and ocean positions
+        let movesLeft = 20;
+        let score = 0;
         const turtlePos = { row: 0, col: 5 }; // Top middle
         const oceanPos = { row: 9, col: 5 };  // Bottom middle
-        grid[turtlePos.row][turtlePos.col] = 'sand'; // Ensure start and end are clear
-        grid[oceanPos.row][oceanPos.col] = 'sand';
 
-        // Draw the grid, turtle, and ocean
+        // Initialize grid with obstacles
+        function initializeGrid() {
+            for (let i = 0; i < ROWS; i++) {
+                for (let j = 0; j < COLS; j++) {
+                    if (Math.random() < 0.7 && !(i === turtlePos.row && j === turtlePos.col) && !(i === oceanPos.row && j === oceanPos.col)) {
+                        grid[i][j] = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
+                    }
+                }
+            }
+            grid[turtlePos.row][turtlePos.col] = 'sand';
+            grid[oceanPos.row][oceanPos.col] = 'sand';
+        }
+
+        // Draw the grid, turtle, and ocean with animations
         function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let i = 0; i < ROWS; i++) {
                 for (let j = 0; j < COLS; j++) {
                     ctx.fillStyle = COLORS[grid[i][j]] || COLORS['sand'];
@@ -535,7 +542,7 @@
                     ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 }
             }
-            // Draw turtle
+            // Draw turtle with animation
             ctx.fillStyle = COLORS['turtle'];
             ctx.beginPath();
             ctx.arc((turtlePos.col + 0.5) * CELL_SIZE, (turtlePos.row + 0.5) * CELL_SIZE, CELL_SIZE / 3, 0, Math.PI * 2);
@@ -568,10 +575,25 @@
             return group;
         }
 
-        // Remove a group from the grid
+        // Remove a group with animation
         function removeGroup(group) {
+            const totalPoints = group.length * 10;
+            score += totalPoints;
+            scoreEl.textContent = score;
             for (let [r, c] of group) {
                 grid[r][c] = 'sand';
+                // Simple animation: fade out
+                let alpha = 1;
+                let anim = setInterval(() => {
+                    if (alpha > 0) {
+                        ctx.fillStyle = `rgba(${parseInt(COLORS[OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)].slice(1), 16)], 255, 255, ${alpha})`;
+                        ctx.fillRect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                        alpha -= 0.1;
+                    } else {
+                        clearInterval(anim);
+                        drawGrid();
+                    }
+                }, 50);
             }
         }
 
@@ -604,9 +626,7 @@
         }
 
         // Handle player clicks/taps
-        canvas.addEventListener('click', (e) => {
-            handleInteraction(e);
-        });
+        canvas.addEventListener('click', (e) => handleInteraction(e));
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             handleInteraction(e);
@@ -627,11 +647,18 @@
                 const group = getGroup(row, col);
                 if (group.length >= 3) {
                     removeGroup(group);
-                    drawGrid();
-                    if (hasPath(turtlePos, oceanPos)) {
-                        gameWon = true;
-                        gameStatus.textContent = 'You Win! The turtle reached the ocean!';
+                    movesLeft--;
+                    movesLeftEl.textContent = movesLeft;
+                    if (movesLeft <= 0) {
+                        gameOver = true;
+                        gameStatus.textContent = `Game Over! Score: ${score} | No moves left!`;
                         restartBtn.style.display = 'block';
+                    } else if (hasPath(turtlePos, oceanPos)) {
+                        gameWon = true;
+                        gameStatus.textContent = `You Win! Score: ${score} | The turtle reached the ocean!`;
+                        restartBtn.style.display = 'block';
+                    } else {
+                        gameStatus.textContent = `Score: ${score} | Moves left: ${movesLeft} | Clear a path for the turtle!`;
                     }
                 }
             }
@@ -643,24 +670,20 @@
 
         // Restart the game
         function restartGame() {
-            grid = Array(ROWS).fill().map(() => Array(COLS).fill('sand'));
-            for (let i = 0; i < ROWS; i++) {
-                for (let j = 0; j < COLS; j++) {
-                    if (Math.random() < 0.7) {
-                        grid[i][j] = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
-                    }
-                }
-            }
-            grid[turtlePos.row][turtlePos.col] = 'sand';
-            grid[oceanPos.row][oceanPos.col] = 'sand';
+            initializeGrid();
+            movesLeft = 20;
+            score = 0;
             gameOver = false;
             gameWon = false;
-            gameStatus.textContent = 'Clear a path for the turtle!';
+            movesLeftEl.textContent = movesLeft;
+            scoreEl.textContent = score;
+            gameStatus.textContent = `Score: ${score} | Moves left: ${movesLeft} | Clear a path for the turtle!`;
             restartBtn.style.display = 'none';
             drawGrid();
         }
 
         // Start the game
+        initializeGrid();
         drawGrid();
     </script>
 </body>
