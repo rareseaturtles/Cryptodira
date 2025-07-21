@@ -214,13 +214,6 @@
             <button class="button" onclick="updateTokenInfo()">Refresh</button>
         </div>
 
-        <h3>Tokenomics</h3>
-        <div id="token-info">
-            <p><strong>Mission:</strong> Fund conservation through community participation.</p>
-            <p><strong>Distribution:</strong> NFT stake to earn complete 100k Cryptodira in the conservation fund initial.</p>
-            <button class="button" onclick="updateTokenInfo()">Refresh</button>
-        </div>
-
         <h3>Roadmap to Grow MC and Conservation Funding</h3>
         <div class="roadmap">
             <ul>
@@ -243,9 +236,9 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 300 trash items and save 50 sea turtles! Clear trash (10 points) and save turtles (50 points) to beat your high score!</p>
+        <p>Tap to clear 300 trash items and save 50 sea turtles in 30 seconds! Clear trash (10 points) and save turtles (50 points) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | High Score: <span id="highScore">0</span></div>
+        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
     </div>
 
@@ -265,6 +258,7 @@
         const startBtn = document.getElementById('startBtn');
         const scoreEl = document.getElementById('score');
         const turtlesSavedEl = document.getElementById('turtlesSaved');
+        const timeLeftEl = document.getElementById('timeLeft');
         const highScoreEl = document.getElementById('highScore');
 
         // Solana config
@@ -406,11 +400,12 @@
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
-        const totalTrash = 300; // Doubled from 150
+        const totalTrash = 300;
         const totalTurtles = 50;
         let gameActive = false;
         let items = [];
         let animations = [];
+        let timeLeft = 30; // 30-second timer
 
         // Item (trash or turtle) object
         class Item {
@@ -506,20 +501,6 @@
                         localStorage.setItem('highScore', highScore);
                         highScoreEl.textContent = highScore;
                     }
-                    gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | High Score: ${highScore}`;
-                    if (items.length === 0) {
-                        gameActive = false;
-                        gameStatus.textContent = `Victory! Score: ${score} | High Score: ${highScore} | You saved all ${totalTurtles} turtles!`;
-                        startBtn.textContent = 'Play Again!';
-                        startBtn.style.display = 'block';
-                        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '30px Roboto';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(`Victory! Score: ${score}`, canvasWidth / 2, canvasHeight / 2 - 20);
-                        ctx.fillText(`You saved ${totalTurtles} turtles!`, canvasWidth / 2, canvasHeight / 2 + 20);
-                    }
                 }
             });
         }
@@ -535,15 +516,17 @@
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-            // Draw score and turtle count on canvas
+            // Draw score, turtle count, and time on canvas
             ctx.fillStyle = '#fff';
             ctx.font = '24px Roboto';
             ctx.textAlign = 'left';
             ctx.fillText(`Score: ${score}`, 10, 30);
             ctx.fillText(`Turtles: ${turtlesSaved}/${totalTurtles}`, 10, 60);
+            ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 90);
 
-            // Draw items
-            items.forEach(item => item.draw());
+            // Randomize draw order to hide turtles
+            const shuffledItems = [...items].sort(() => Math.random() - 0.5);
+            shuffledItems.forEach(item => item.draw());
 
             // Update and draw animations
             animations = animations.filter(anim => anim.update());
@@ -552,19 +535,37 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Start game
+        // Start game with timer
         function startGame() {
             score = 0;
             turtlesSaved = 0;
             items = [];
             animations = [];
+            timeLeft = 30;
             spawnCluster();
             scoreEl.textContent = score;
             turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
+            timeLeftEl.textContent = timeLeft;
             highScoreEl.textContent = highScore;
-            gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | High Score: ${highScore}`;
+            gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${timeLeft}s | High Score: ${highScore}`;
             gameActive = true;
             startBtn.style.display = 'none';
+
+            // Start timer
+            const timerInterval = setInterval(() => {
+                timeLeft -= 0.016; // Approximately 60 FPS
+                timeLeftEl.textContent = Math.ceil(timeLeft);
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    gameActive = false;
+                    if (items.length > 0) {
+                        gameStatus.textContent = `Game Over! Score: ${score} | High Score: ${highScore} | Time's up!`;
+                        startBtn.textContent = 'Try Again!';
+                        startBtn.style.display = 'block';
+                    }
+                }
+            }, 1000 / 60);
+
             gameLoop();
         }
 
