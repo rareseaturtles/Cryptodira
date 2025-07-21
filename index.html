@@ -309,9 +309,7 @@
     <div class="content">
         <h2>Save the Sea Turtle Hatchling</h2>
         <p>Match 3+ obstacles (trash, birds, crabs, raccoons) to clear a path for the turtle to reach the ocean! Moves: <span id="movesLeft">20</span></p>
-        <div id="game-container">
-            <div id="score-board">Score: <span id="score">0</span></div>
-        </div>
+        <div id="game-container"></div>
         <div id="gameStatus">Clear a path for the turtle!</div>
         <button id="restartBtn" onclick="restartGame()">Restart Game</button>
     </div>
@@ -539,41 +537,41 @@
         const turtlePos = { row: 0, col: 5 };
         const oceanPos = { row: 9, col: 5 };
 
+        // Create a bubble element
+        function createBubble(row, col, type) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const xOffset = Math.random() * (40 - 20) + 10; // Random x within cell (10-30px)
+            const yOffset = Math.random() * (40 - 20) + 10; // Random y within cell (10-30px)
+            bubble.style.left = `${col * 40 + xOffset}px`;
+            bubble.style.top = `${row * 40 + yOffset}px`;
+            bubble.style.backgroundColor = COLORS[type];
+            bubble.textContent = type.charAt(0).toUpperCase();
+            bubble.dataset.row = row;
+            bubble.dataset.col = col;
+            bubble.addEventListener('click', handleBubbleClick);
+            gameContainer.appendChild(bubble);
+            return bubble;
+        }
+
         // Initialize grid with bubbles
         function initializeGrid() {
+            gameContainer.innerHTML = '<div id="score-board">Score: <span id="score">0</span></div>';
+            bubbles = [];
             for (let i = 0; i < ROWS; i++) {
                 for (let j = 0; j < COLS; j++) {
                     if (Math.random() < 0.7 && !(i === turtlePos.row && j === turtlePos.col) && !(i === oceanPos.row && j === oceanPos.col)) {
-                        grid[i][j] = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
+                        const type = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
+                        grid[i][j] = type;
+                        bubbles.push(createBubble(i, j, type));
                     }
                 }
             }
             grid[turtlePos.row][turtlePos.col] = 'turtle';
             grid[oceanPos.row][oceanPos.col] = 'ocean';
-            renderBubbles();
-        }
-
-        // Render bubbles as div elements
-        function renderBubbles() {
-            gameContainer.innerHTML = '<div id="score-board">Score: <span id="score">0</span></div>';
-            bubbles = [];
-            for (let i = 0; i < ROWS; i++) {
-                for (let j = 0; j < COLS; j++) {
-                    if (grid[i][j] !== 'sand') {
-                        const bubble = document.createElement('div');
-                        bubble.className = 'bubble';
-                        bubble.style.left = `${j * 40}px`;
-                        bubble.style.top = `${i * 40}px`;
-                        bubble.style.backgroundColor = COLORS[grid[i][j]];
-                        bubble.textContent = grid[i][j].charAt(0).toUpperCase(); // Initial for visibility
-                        bubble.dataset.row = i;
-                        bubble.dataset.col = j;
-                        bubble.addEventListener('click', handleBubbleClick);
-                        gameContainer.appendChild(bubble);
-                        bubbles.push(bubble);
-                    }
-                }
-            }
+            // Add turtle and ocean as static bubbles
+            bubbles.push(createBubble(turtlePos.row, turtlePos.col, 'turtle'));
+            bubbles.push(createBubble(oceanPos.row, oceanPos.col, 'ocean'));
         }
 
         // Find a group of identical adjacent bubbles
