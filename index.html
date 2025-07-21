@@ -130,7 +130,7 @@
         }
         .roadmap {
             margin: 20px 0;
-            padding: 20px;
+            padding: 8px;
             background: rgba(232, 245, 233, 0.8);
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -159,14 +159,13 @@
         }
         #gameCanvas {
             border: 3px solid #2e7d32;
-            background: linear-gradient(180deg, #40c4ff, #a5d6a7); /* Ocean gradient */
+            background: linear-gradient(180deg, #40c4ff, #0288d1); /* Ocean gradient */
             max-width: 100%;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            /* Removed touch-action: manipulation */
         }
-        #restartBtn {
+        #startBtn {
             padding: 12px 25px;
             font-size: 16px;
             color: #fff;
@@ -177,10 +176,9 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
             min-width: 150px;
-            display: none;
             margin: 15px auto;
         }
-        #restartBtn:hover {
+        #startBtn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
             background: linear-gradient(135deg, #1b5e20, #103d15);
@@ -188,7 +186,7 @@
         @media (max-width: 600px) {
             header h1 { font-size: 32px; }
             .content { padding: 15px; margin: 15px; width: 95%; }
-            .button, #restartBtn { padding: 10px 20px; font-size: 14px; min-width: 120px; }
+            .button, #startBtn { padding: 10px 20px; font-size: 14px; min-width: 120px; }
             .buttons { flex-direction: column; align-items: center; gap: 10px; }
             .logo { width: 100px; }
             #gameCanvas { width: 100%; height: 400px; }
@@ -283,11 +281,11 @@
     </div>
 
     <div class="content">
-        <h2>Turtle Rescue Dash</h2>
-        <p>Guide the sea turtle hatchling to safety! Avoid debris and collect conservation tokens. Time: <span id="timeLeft">60</span>s</p>
+        <h2>Ocean Cleanup</h2>
+        <p>Help save sea turtles! Tap or click trash to clean the ocean and collect sea turtles for bonus points. Time: <span id="timeLeft">30</span>s</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span></div>
-        <button id="restartBtn" onclick="restartGame()">Restart Game</button>
+        <button id="startBtn">Start Cleaning!</button>
     </div>
 
     <div id="modal-overlay"></div>
@@ -306,7 +304,7 @@
         const gameCanvas = document.getElementById('gameCanvas');
         const ctx = gameCanvas.getContext('2d');
         const gameStatus = document.getElementById('gameStatus');
-        const restartBtn = document.getElementById('restartBtn');
+        const startBtn = document.getElementById('startBtn');
         const timeLeftEl = document.getElementById('timeLeft');
         const scoreEl = document.getElementById('score');
 
@@ -396,7 +394,7 @@
                 walletProvider = window.solflare;
                 walletName = "Solflare";
             } else {
-                statusEl.innerHTML = 'No supported wallet detected. Install <a href="https://phantom.app/" target="_blank" style="color: #2e7d32;">Phantom</a>.';
+                statusEl.textContent = 'No supported wallet detected. Install <a href="https://phantom.app/" target="_blank" style="color: #2e7d32;">Phantom</a>.';
                 return;
             }
 
@@ -493,155 +491,117 @@
             }
         }
 
-        // Game Logic
+        // Game Logic for Ocean Cleanup
         const canvasWidth = 800;
         const canvasHeight = 400;
-        let turtleX = 50;
-        let turtleY = canvasHeight - 50;
         let score = 0;
-        let timeLeft = 60;
+        let timeLeft = 30;
         let gameActive = false;
-        let obstacles = [];
-        let tokens = [];
+        let items = [];
 
-        // Game objects
-        class Obstacle {
+        // Item (trash or turtle) object
+        class Item {
             constructor() {
-                this.x = canvasWidth;
-                this.y = canvasHeight - 30;
-                this.width = 30;
-                this.height = 30;
-                this.type = Math.random() < 0.5 ? 'debris' : 'net';
-            }
-            update() {
-                this.x -= 2;
+                this.x = Math.random() * (canvasWidth - 40);
+                this.y = Math.random() * (canvasHeight - 40);
+                this.width = 40;
+                this.height = 40;
+                this.type = Math.random() < 0.2 ? 'turtle' : 'trash'; // 20% chance for turtle
+                this.lifetime = 3000; // Disappears after 3 seconds
+                this.spawnTime = Date.now();
             }
             draw() {
-                ctx.fillStyle = this.type === 'debris' ? '#666' : '#000';
-                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = this.type === 'trash' ? '#666' : '#2e7d32'; // Gray for trash, green for turtle
+                ctx.beginPath();
+                ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
+                ctx.fill();
+                // Optional: Add text label for clarity
+                ctx.fillStyle = '#fff';
+                ctx.font = '12px Roboto';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.type === 'trash' ? 'Trash' : 'Turtle', this.x + this.width / 2, this.y + this.height / 2 + 5);
+            }
+            isExpired() {
+                return Date.now() - this.spawnTime > this.lifetime;
             }
         }
 
-        class Token {
-            constructor() {
-                this.x = canvasWidth;
-                this.y = canvasHeight - 50;
-                this.width = 20;
-                this.height = 20;
-            }
-            update() {
-                this.x -= 2;
-            }
-            draw() {
-                ctx.fillStyle = '#ffd700'; // Gold for conservation tokens
-                ctx.fillRect(this.x, this.y, this.width, this.height);
-            }
-        }
-
-        // Handle input
-        document.addEventListener('keydown', (e) => {
+        // Handle clicks/taps
+        gameCanvas.addEventListener('click', (e) => {
             if (!gameActive) return;
-            if (e.key === 'ArrowRight') turtleX += 10;
-            if (e.key === 'ArrowLeft') turtleX -= 10;
-            if (e.key === 'ArrowUp' && turtleY > canvasHeight - 100) turtleY -= 50;
+            const rect = gameCanvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            items = items.filter(item => {
+                if (clickX > item.x && clickX < item.x + item.width &&
+                    clickY > item.y && clickY < item.y + item.height) {
+                    score += item.type === 'trash' ? 10 : 50; // 10 points for trash, 50 for turtle
+                    scoreEl.textContent = score;
+                    return false; // Remove clicked item
+                }
+                return true;
+            });
         });
 
-        document.addEventListener('touchstart', (e) => {
-            if (!gameActive || e.target !== gameCanvas) return; // Only handle touch if on canvas
-            e.preventDefault(); // Prevent default only for game interaction
+        gameCanvas.addEventListener('touchstart', (e) => {
+            if (!gameActive) return;
+            e.preventDefault(); // Prevent default touch behavior
             const touch = e.touches[0];
             const rect = gameCanvas.getBoundingClientRect();
             const touchX = touch.clientX - rect.left;
-            if (touchX > turtleX) turtleX += 10;
-            else turtleX -= 10;
-            if (turtleY > canvasHeight - 100) turtleY -= 50;
+            const touchY = touch.clientY - rect.top;
+            items = items.filter(item => {
+                if (touchX > item.x && touchX < item.x + item.width &&
+                    touchY > item.y && touchY < item.y + item.height) {
+                    score += item.type === 'trash' ? 10 : 50;
+                    scoreEl.textContent = score;
+                    return false;
+                }
+                return true;
+            });
         }, { passive: false });
 
         // Game loop
         function gameLoop() {
             if (!gameActive) return;
-
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            ctx.fillStyle = '#40c4ff'; // Ocean background
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            if (Math.random() < 0.05) items.push(new Item()); // Spawn new item
+            items = items.filter(item => !item.isExpired()); // Remove expired
+            items.forEach(item => item.draw());
+            requestAnimationFrame(gameLoop);
+        }
 
-            // Draw turtle
-            ctx.fillStyle = '#2e7d32';
-            ctx.beginPath();
-            ctx.arc(turtleX, turtleY, 20, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Update and draw obstacles
-            obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
-            obstacles.forEach(obstacle => {
-                obstacle.update();
-                obstacle.draw();
-                if (turtleX < obstacle.x + obstacle.width && turtleX + 20 > obstacle.x &&
-                    turtleY < obstacle.y + obstacle.height && turtleY + 20 > obstacle.y) {
+        // Timer
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                timeLeftEl.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
                     gameActive = false;
                     gameStatus.textContent = `Game Over! Score: ${score}`;
-                    restartBtn.style.display = 'block';
+                    startBtn.textContent = 'Restart Cleaning!';
+                    startBtn.style.display = 'block';
                 }
-            });
-
-            // Update and draw tokens
-            tokens = tokens.filter(token => token.x + token.width > 0);
-            tokens.forEach(token => {
-                token.update();
-                token.draw();
-                if (turtleX < token.x + token.width && turtleX + 20 > token.x &&
-                    turtleY < token.y + token.height && turtleY + 20 > token.y) {
-                    score += 10;
-                    scoreEl.textContent = score;
-                    token.x = -100; // Remove token
-                }
-            });
-
-            // Spawn new obstacles and tokens
-            if (Math.random() < 0.02) obstacles.push(new Obstacle());
-            if (Math.random() < 0.01) tokens.push(new Token());
-
-            // Update time
-            timeLeft -= 0.016; // Approx 60 FPS
-            timeLeftEl.textContent = Math.ceil(timeLeft);
-            if (timeLeft <= 0) {
-                gameActive = false;
-                gameStatus.textContent = `Time's Up! Score: ${score}`;
-                restartBtn.style.display = 'block';
-            }
-
-            if (turtleX > canvasWidth) {
-                gameActive = false;
-                gameStatus.textContent = `You Win! Score: ${score} | Turtle reached safety!`;
-                restartBtn.style.display = 'block';
-            }
-
-            if (gameActive) requestAnimationFrame(gameLoop);
+            }, 1000);
         }
 
         // Start game
         function startGame() {
-            gameActive = true;
             score = 0;
-            timeLeft = 60;
-            turtleX = 50;
-            turtleY = canvasHeight - 50;
-            obstacles = [];
-            tokens = [];
+            timeLeft = 30;
+            items = [];
             scoreEl.textContent = score;
             timeLeftEl.textContent = timeLeft;
-            gameStatus.textContent = `Score: ${score} | Time: ${timeLeft}s`;
-            restartBtn.style.display = 'none';
+            gameStatus.textContent = `Score: ${score}`;
+            gameActive = true;
+            startBtn.style.display = 'none';
+            startTimer();
             gameLoop();
         }
 
-        // Restart game
-        function restartGame() {
-            startGame();
-        }
-
-        // Start on load
-        startGame();
+        // Button event
+        startBtn.addEventListener('click', startGame);
     </script>
 </body>
 </html>
