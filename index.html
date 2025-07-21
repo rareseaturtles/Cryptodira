@@ -238,9 +238,9 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Save the ocean! Tap trash (10 points) and sea turtles (50 points) to clean up and protect wildlife. Beat your high score! Time: <span id="timeLeft">30</span>s</p>
+        <p>Save 50 sea turtles! Tap trash to reveal a turtle, then tap the turtle to save it. Clear trash (10 points) and save turtles (50 points) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <div id="gameStatus">Score: <span id="score">0</span> | High Score: <span id="highScore">0</span></div>
+        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
     </div>
 
@@ -258,8 +258,8 @@
         const ctx = gameCanvas.getContext('2d');
         const gameStatus = document.getElementById('gameStatus');
         const startBtn = document.getElementById('startBtn');
-        const timeLeftEl = document.getElementById('timeLeft');
         const scoreEl = document.getElementById('score');
+        const turtlesSavedEl = document.getElementById('turtlesSaved');
         const highScoreEl = document.getElementById('highScore');
 
         // Solana config
@@ -400,29 +400,31 @@
         const canvasHeight = 400;
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
-        let timeLeft = 30;
+        let turtlesSaved = 0;
+        const totalTurtles = 50;
         let gameActive = false;
         let items = [];
         let animations = [];
+        let turtleHidden = true; // Tracks if turtle is hidden under trash
 
         // Item (trash or turtle) object
         class Item {
-            constructor() {
+            constructor(type) {
                 this.x = Math.random() * (canvasWidth - 40);
                 this.y = Math.random() * (canvasHeight - 40);
                 this.width = 40;
                 this.height = 40;
-                this.type = Math.random() < 0.2 ? 'turtle' : 'trash';
+                this.type = type; // 'trash', 'turtle', or 'decoy' (trash not hiding a turtle)
             }
             draw() {
-                ctx.fillStyle = this.type === 'trash' ? '#666' : '#2e7d32';
+                ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
                 ctx.beginPath();
                 ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = '#fff';
                 ctx.font = '12px Roboto';
                 ctx.textAlign = 'center';
-                ctx.fillText(this.type === 'trash' ? 'Trash' : 'Turtle', this.x + this.width / 2, this.y + this.height / 2 + 5);
+                ctx.fillText(this.type === 'turtle' ? 'Turtle' : 'Trash', this.x + this.width / 2, this.y + this.height / 2 + 5);
             }
         }
 
@@ -443,7 +445,7 @@
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = this.type === 'trash' ? '#666' : '#2e7d32';
+                ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
                 ctx.beginPath();
                 ctx.arc(this.x + 20, this.y + 20, 20, 0, Math.PI * 2);
                 ctx.fill();
@@ -454,6 +456,18 @@
         // Optional: Sound effects (placeholder)
         function playSound(type) {
             console.log(`Playing sound for ${type}`);
+        }
+
+        // Spawn items (one turtle hidden under trash, plus decoy trash)
+        function spawnItems() {
+            items = [];
+            // Spawn 5-10 decoy trash items
+            const trashCount = Math.floor(Math.random() * 6) + 5;
+            for (let i = 0; i < trashCount; i++) {
+                items.push(new Item('decoy'));
+            }
+            // Spawn one trash item hiding a turtle
+            items.push(new Item('trash'));
         }
 
         // Handle clicks/taps
@@ -467,18 +481,45 @@
             items = items.filter(item => {
                 if (clickX > item.x && clickX < item.x + item.width &&
                     clickY > item.y && clickY < item.y + item.height) {
-                    const points = item.type === 'trash' ? 10 : 50;
-                    score += points;
-                    scoreEl.textContent = score;
                     animations.push(new TapAnimation(item.x, item.y, item.type));
                     playSound(item.type);
+                    if (item.type === 'trash') {
+                        // Reveal turtle
+                        items.push(new Item('turtle'));
+                        turtleHidden = false;
+                        score += 10;
+                    } else if (item.type === 'turtle') {
+                        // Save turtle
+                        turtlesSaved++;
+                        score += 50;
+                        turtleHidden = true;
+                        spawnItems(); // Spawn new trash and one turtle
+                        if (turtlesSaved >= totalTurtles) {
+                            gameActive = false;
+                            gameStatus.textContent = `Victory! Score: ${score} | High Score: ${highScore} | You saved all ${totalTurtles} turtles!`;
+                            startBtn.textContent = 'Play Again!';
+                            startBtn.style.display = 'block';
+                            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                            ctx.fillStyle = '#fff';
+                            ctx.font = '30px Roboto';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(`Victory! Score: ${score}`, canvasWidth / 2, canvasHeight / 2 - 20);
+                            ctx.fillText(`You saved ${totalTurtles} turtles!`, canvasWidth / 2, canvasHeight / 2 + 20);
+                        }
+                    } else {
+                        // Decoy trash
+                        score += 10;
+                    }
+                    scoreEl.textContent = score;
+                    turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
                     if (score > highScore) {
                         highScore = score;
                         localStorage.setItem('highScore', highScore);
                         highScoreEl.textContent = highScore;
                     }
-                    gameStatus.textContent = `Score: ${score} | High Score: ${highScore}`;
-                    return false;
+                    gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | High Score: ${highScore}`;
+                    return false; // Remove tapped item
                 }
                 return true;
             });
@@ -495,14 +536,12 @@
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-            // Draw score on canvas
+            // Draw score and turtle count on canvas
             ctx.fillStyle = '#fff';
             ctx.font = '24px Roboto';
             ctx.textAlign = 'left';
             ctx.fillText(`Score: ${score}`, 10, 30);
-
-            // Spawn new items
-            if (Math.random() < 0.1) items.push(new Item());
+            ctx.fillText(`Turtles: ${turtlesSaved}/${totalTurtles}`, 10, 60);
 
             // Draw items
             items.forEach(item => item.draw());
@@ -514,43 +553,20 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Timer
-        function startTimer() {
-            const timer = setInterval(() => {
-                timeLeft--;
-                timeLeftEl.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    gameActive = false;
-                    const turtlesSaved = Math.floor(score / 50);
-                    gameStatus.textContent = `Game Over! Score: ${score} | High Score: ${highScore} | You saved ${turtlesSaved} turtles!`;
-                    startBtn.textContent = 'Restart Cleaning!';
-                    startBtn.style.display = 'block';
-                    // Display end message on canvas
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '30px Roboto';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`Game Over! Score: ${score}`, canvasWidth / 2, canvasHeight / 2 - 20);
-                    ctx.fillText(`You saved ${turtlesSaved} turtles!`, canvasWidth / 2, canvasHeight / 2 + 20);
-                }
-            }, 1000);
-        }
-
         // Start game
         function startGame() {
             score = 0;
-            timeLeft = 30;
+            turtlesSaved = 0;
+            turtleHidden = true;
             items = [];
             animations = [];
+            spawnItems();
             scoreEl.textContent = score;
-            timeLeftEl.textContent = timeLeft;
+            turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
             highScoreEl.textContent = highScore;
-            gameStatus.textContent = `Score: ${score} | High Score: ${highScore}`;
+            gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | High Score: ${highScore}`;
             gameActive = true;
             startBtn.style.display = 'none';
-            startTimer();
             gameLoop();
         }
 
