@@ -6,19 +6,19 @@
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cryptodira - Protecting Sea Turtles">
-    <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation with monthly giveaways for holders!">
+    <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation with NFT staking!">
     <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta name="twitter:site" content="@rareseaturtles">
     <meta name="twitter:creator" content="@rareseaturtles">
     <!-- Open Graph Metadata -->
     <meta property="og:title" content="Cryptodira - Protecting Sea Turtles">
-    <meta property="og:description" content="Cryptodira: A Solana token for sea turtle conservation with monthly giveaways. Connect your wallet to join!">
+    <meta property="og:description" content="Cryptodira: A Solana token for sea turtle conservation with NFT staking. Connect your wallet to join!">
     <meta property="og:url" content="https://cryptodira.netlify.app/">
     <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta property="og:type" content="website">
     <!-- Additional Metadata -->
     <title>Cryptodira - Protecting Sea Turtles</title>
-    <meta name="description" content="Cryptodira is a Solana token dedicated to sea turtle conservation with monthly giveaways for holders.">
+    <meta name="description" content="Cryptodira is a Solana token dedicated to sea turtle conservation with NFT staking.">
     <!-- Favicon -->
     <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
     <!-- External Scripts -->
@@ -200,7 +200,7 @@
 
     <div class="content">
         <h2>Welcome to Cryptodira ($DIRA)</h2>
-        <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and supporting Earth conservation through community engagement and monthly giveaways for holders.</p>
+        <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and supporting Earth conservation through community participation.</p>
         
         <div class="buttons">
             <button class="button" id="connect-btn" onclick="connectWallet()">Connect Wallet</button>
@@ -214,16 +214,21 @@
             <button class="button" onclick="updateTokenInfo()">Refresh</button>
         </div>
 
-        <h3>Roadmap to 10K Liquidity & 500 Holders</h3>
+        <h3>Tokenomics</h3>
+        <div id="token-info">
+            <p><strong>Mission:</strong> Fund conservation through community participation.</p>
+            <p><strong>Distribution:</strong> NFT stake to earn complete 100k Cryptodira in the conservation fund initial.</p>
+            <button class="button" onclick="updateTokenInfo()">Refresh</button>
+        </div>
+
+        <h3>Roadmap to Grow MC and Conservation Funding</h3>
         <div class="roadmap">
             <ul>
-                <li><strong>April 2025:</strong> Reach 1K liquidity via Meteora pool, launch monthly giveaways for 100+ DIRA holders.</li>
-                <li><strong>May 2025:</strong> Grow to 200 holders and hit 2k liquidity.</li>
-                <li><strong>June 2025:</strong> Hit 3K liquidity, expand to 300 holders.</li>
-                <li><strong>July 2025:</strong> Achieve 400 holders, and 4k Liquidity.</li>
-                <li><strong>August 2025:</strong> Grow to 500 holders and hit 5k liquidity.</li>
-                <li><strong>September 2025:</strong> Hit 6K liquidity, expand to 600 holders.</li>
-                <li><strong>October 2025:</strong> Achieve 700 holders, and 7k Liquidity.</li>
+                <li><strong>August 2025:</strong> Achieve 15k MC, increase conservation fund to 120k $DIRA.</li>
+                <li><strong>September 2025:</strong> Reach 20k MC, grow conservation fund to 150k $DIRA.</li>
+                <li><strong>October 2025:</strong> Hit 25k MC, expand conservation fund to 200k $DIRA.</li>
+                <li><strong>November 2025:</strong> Target 30k MC, raise conservation fund to 250k $DIRA.</li>
+                <li><strong>December 2025:</strong> Aim for 35k MC, boost conservation fund to 300k $DIRA.</li>
             </ul>
         </div>
 
@@ -238,7 +243,7 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 150 trash items and save 50 sea turtles! Clear trash (10 points) and save turtles (50 points) to beat your high score!</p>
+        <p>Tap to clear 300 trash items and save 50 sea turtles! Clear trash (10 points) and save turtles (50 points) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
@@ -293,8 +298,8 @@
                 tokenInfoEl.innerHTML = `
                     <p><strong>Price:</strong> $${data.data.value.toFixed(6)}</p>
                     <p><strong>Liquidity:</strong> $${data.data.liquidity.toFixed(2)}</p>
-                    <p><strong>Mission:</strong> Fund conservation through monthly giveaways and community participation.</p>
-                    <p><strong>Distribution:</strong> 20% liquidity (locked on Meteora), 15% team, 10% treasury.</p>
+                    <p><strong>Mission:</strong> Fund conservation through community participation.</p>
+                    <p><strong>Distribution:</strong> NFT stake to earn complete 100k Cryptodira in the conservation fund initial.</p>
                     <p><strong>Track:</strong> <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" target="_blank">Birdeye</a></p>
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
@@ -401,7 +406,7 @@
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
-        const totalTrash = 150;
+        const totalTrash = 300; // Doubled from 150
         const totalTurtles = 50;
         let gameActive = false;
         let items = [];
@@ -410,9 +415,9 @@
         // Item (trash or turtle) object
         class Item {
             constructor(type) {
-                // Cluster in lower half with tight range
-                this.x = Math.random() * 300 + 250; // x between 250 and 550
-                this.y = Math.random() * 150 + 250; // y between 250 and 400
+                // Center cluster with tight range
+                this.x = Math.random() * 200 + 300; // x between 300 and 500
+                this.y = Math.random() * 100 + 150; // y between 150 and 250
                 this.width = 40;
                 this.height = 40;
                 this.type = type; // 'trash' or 'turtle'
@@ -459,10 +464,10 @@
             console.log(`Playing sound for ${type}`);
         }
 
-        // Spawn initial cluster of 150 trash and 50 turtles
+        // Spawn initial cluster of 300 trash and 50 turtles
         function spawnCluster() {
             items = [];
-            // Spawn 150 trash items
+            // Spawn 300 trash items
             for (let i = 0; i < totalTrash; i++) {
                 items.push(new Item('trash'));
             }
