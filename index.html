@@ -83,7 +83,7 @@
             border: 3px solid #4caf50;
             text-align: center;
         }
-        .content h2, .content h3 {
+        .content h2, .content h pull h3 {
             color: #2e7d32;
             margin-bottom: 15px;
         }
@@ -242,9 +242,9 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 150 trash items in 30 seconds to save 50 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
+        <p>Tap to clear 150 trash items in 30 seconds to save 33 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
+        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/33</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
         <button id="resetBtn">Reset Game</button>
     </div>
@@ -409,7 +409,7 @@
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
         const totalTrash = 150;
-        const totalTurtles = 50;
+        const totalTurtles = 33;
         let gameActive = false;
         let trashItems = [];
         let turtles = [];
@@ -420,10 +420,11 @@
         // Item (trash or turtle) object
         class Item {
             constructor(type) {
-                this.width = 80;
-                this.height = 80;
-                this.x = Math.random() * (canvasWidth - this.width - 40) + 20;
-                this.y = Math.random() * (canvasHeight - this.height - 40) + 20;
+                this.width = type === 'turtle' ? 80 : 40; // Turtles 80x80, trash 40x40
+                this.height = this.width;
+                // Restrict spawning to avoid top-left 150x150 status area
+                this.x = Math.random() * (canvasWidth - this.width - 150) + 150;
+                this.y = Math.random() * (canvasHeight - this.height - 150) + 150;
                 this.type = type;
                 this.centerX = this.x + this.width / 2;
                 this.centerY = this.y + this.height / 2;
@@ -435,7 +436,7 @@
                 ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = '#fff';
-                ctx.font = '16px Roboto';
+                ctx.font = this.type === 'turtle' ? '16px Roboto' : '12px Roboto'; // Smaller font for trash
                 ctx.textAlign = 'center';
                 ctx.fillText(this.type === 'turtle' ? 'Turtle' : 'Trash', this.x + this.width / 2, this.y + this.height / 2 + 10);
             }
@@ -459,7 +460,7 @@
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
                 ctx.beginPath();
-                ctx.arc(this.x + 40, this.y + 40, 40 * (1 - this.timer), 0, Math.PI * 2);
+                ctx.arc(this.x + (this.type === 'turtle' ? 40 : 20), this.y + (this.type === 'turtle' ? 40 : 20), (this.type === 'turtle' ? 40 : 20) * (1 - this.timer), 0, Math.PI * 2);
                 ctx.fillStyle = this.type === 'turtle' ? 'rgba(46, 125, 50, 0.5)' : 'rgba(102, 102, 102, 0.5)';
                 ctx.fill();
                 ctx.restore();
@@ -520,9 +521,18 @@
             trashItems = [];
             turtles = [];
 
-            // Spawn exactly 50 turtles, allowing turtle-turtle overlap
+            // Spawn exactly 33 turtles, preventing turtle-turtle overlap
             for (let i = 0; i < totalTurtles; i++) {
-                turtles.push(new Item('turtle'));
+                let turtle;
+                let attempts = 0;
+                const maxAttempts = 100; // Increased attempts for turtles
+                do {
+                    turtle = new Item('turtle');
+                    attempts++;
+                } while (isOverlapping(turtle, turtles) && attempts < maxAttempts);
+                if (attempts < maxAttempts) {
+                    turtles.push(turtle);
+                }
             }
 
             // Spawn exactly 150 trash items, allowing overlap with turtles
@@ -546,7 +556,7 @@
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 30) { // 30px radius for tap accuracy
+                if (distance < 20) { // 20px radius for smaller trash
                     animations.push(new TapAnimation(item.x, item.y, item.type));
                     playSound(item.type);
                     trashItems.splice(index, 1);
