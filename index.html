@@ -243,7 +243,7 @@
     <div class="content">
         <h2>Ocean Cleanup</h2>
         <p>Tap to clear 69 trash items in 30 seconds to save 33 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/33</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
         <button id="resetBtn">Reset Game</button>
@@ -412,7 +412,7 @@
 
         // Game Logic for Ocean Cleanup
         const canvasWidth = 800;
-        const canvasHeight = 400;
+        const canvasHeight = 600;
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
@@ -549,12 +549,32 @@
                 }
             }
 
-            // Spawn exactly 69 trash items in a grid with ±10px offsets, preventing trash-trash overlap
+            // Spawn trash: 33 for turtle overlaps + remaining for total of 69, no trash-trash overlap
             const gridCols = 10;
-            const gridRows = Math.ceil(totalTrash / gridCols);
-            const gridWidth = (canvasWidth - 150 - 40) / gridCols; // Account for trash width
+            const gridRows = Math.ceil((totalTrash - totalTurtles) / gridCols);
+            const gridWidth = (canvasWidth - 150 - 40) / gridCols;
             const gridHeight = (canvasHeight - 150 - 40) / gridRows;
             let trashCount = 0;
+
+            // Ensure one trash overlaps each turtle
+            for (const turtle of turtles) {
+                let trash;
+                let attempts = 0;
+                const maxAttempts = 50;
+                do {
+                    // Place trash near turtle center to guarantee overlap (within 50px)
+                    const offsetX = (Math.random() * 40 - 20); // ±20px from turtle center
+                    const offsetY = (Math.random() * 40 - 20);
+                    trash = new Item('trash', turtle.centerX + offsetX, turtle.centerY + offsetY);
+                    attempts++;
+                } while (isOverlapping(trash, trashItems) && attempts < maxAttempts);
+                if (attempts < maxAttempts) {
+                    trashItems.push(trash);
+                    trashCount++;
+                }
+            }
+
+            // Spawn remaining trash items in a grid
             for (let row = 0; row < gridRows && trashCount < totalTrash; row++) {
                 for (let col = 0; col < gridCols && trashCount < totalTrash; col++) {
                     let trash;
