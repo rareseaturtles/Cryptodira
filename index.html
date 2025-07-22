@@ -223,10 +223,11 @@
         <div class="roadmap">
             <ul>
                 <li><strong>August 2025:</strong> Achieve 15k MC, increase conservation fund to 120k $DIRA.</li>
+.emit
                 <li><strong>September 2025:</strong> Reach 20k MC, grow conservation fund to 150k $DIRA.</li>
                 <li><strong>October 2025:</strong> Hit 25k MC, expand conservation fund to 200k $DIRA.</li>
                 <li><strong>November 2025:</strong> Target 30k MC, raise conservation fund to 250k $DIRA.</li>
-                <li><strong>December 2025:</strong> Aim for 35k MC, boost conservation fund to 300k $DIRA.</li>
+                <li><strong>December 2025:</strong> Aim for 35k MC, boost conservation fund to 300k $DIRT</li>
             </ul>
         </div>
 
@@ -242,7 +243,7 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 150 trash items and save 50 sea turtles in 30 seconds! Tap near the center for accuracy (10 points for trash, 50 for turtles) to beat your high score!</p>
+        <p>Tap to clear 150 trash items in 30 seconds to save all 50 sea turtles! Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
@@ -411,7 +412,8 @@
         const totalTrash = 150;
         const totalTurtles = 50;
         let gameActive = false;
-        let items = [];
+        let trashItems = [];
+        let turtles = []; // Separate array for turtles
         let animations = [];
         let timeLeft = 30; // 30-second timer
         let timerInterval;
@@ -419,10 +421,11 @@
         // Item (trash or turtle) object
         class Item {
             constructor(type) {
-                this.x = Math.random() * 580 + 110; // x between 110 and 690 (approx 20px gap)
-                this.y = Math.random() * 280 + 60;  // y between 60 and 340 (approx 20px gap)
                 this.width = 80;
                 this.height = 80;
+                // Position items to avoid canvas edges
+                this.x = Math.random() * (canvasWidth - this.width - 40) + 20;
+                this.y = Math.random() * (canvasHeight - this.height - 40) + 20;
                 this.type = type; // 'trash' or 'turtle'
                 this.centerX = this.x + this.width / 2;
                 this.centerY = this.y + this.height / 2;
@@ -470,19 +473,55 @@
             audio.play().catch(e => console.log("Audio error:", e));
         }
 
-        // Spawn initial cluster of 150 trash and 50 turtles
-        function spawnCluster() {
-            items = [];
-            for (let i = 0; i < totalTrash; i++) {
-                items.push(new Item('trash'));
+        // Check if two items overlap
+        function isOverlapping(newItem, existingItems) {
+            for (const item of existingItems) {
+                const dx = (newItem.x + newItem.width / 2) - (item.x + item.width / 2);
+                const dy = (newItem.y + newItem.height / 2) - (item.y + item.height / 2);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < (newItem.width / 2 + item.width / 2)) {
+                    return true;
+                }
             }
-            for (let i = 0; i < totalTurtles; i++) {
-                items.push(new Item('turtle'));
-            }
-            console.log(`Spawned ${items.length} items`);
+            return false;
         }
 
-        // Handle clicks/taps with moderate center accuracy
+        // Spawn turtles and trash without overlap
+        function spawnCluster() {
+            trashItems = [];
+            turtles = [];
+
+            // Spawn turtles first
+            for (let i = 0; i < totalTurtles; i++) {
+                let turtle;
+                let attempts = 0;
+                const maxAttempts = 50;
+                do {
+                    turtle = new Item('turtle');
+                    attempts++;
+                } while (isOverlapping(turtle, turtles) && attempts < maxAttempts);
+                if (attempts < maxAttempts) {
+                    turtles.push(turtle);
+                }
+            }
+
+            // Spawn trash, ensuring no overlap with turtles
+            for (let i = 0; i < totalTrash; i++) {
+                let trash;
+                let attempts = 0;
+                const maxAttempts = 50;
+                do {
+                    trash = new Item('trash');
+                    attempts++;
+                } while (isOverlapping(trash, [...turtles, ...trashItems]) && attempts < maxAttempts);
+                if (attempts < maxAttempts) {
+                    trashItems.push(trash);
+                }
+            }
+            console.log(`Spawned ${turtles.length} turtles and ${trashItems.length} trash items`);
+        }
+
+        // Handle clicks/taps for trash only
         function handleTap(e, isTouch = false) {
             if (!gameActive) return;
             const rect = gameCanvas.getBoundingClientRect();
@@ -491,29 +530,26 @@
             const clickX = clientX - rect.left;
             const clickY = clientY - rect.top;
 
-            items.forEach((item, index) => {
+            trashItems.forEach((item, index) => {
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 30) { // 30px radius (60x60 effective area)
+                if (distance < 30) { // 30px radius for tap accuracy
                     animations.push(new TapAnimation(item.x, item.y, item.type));
                     playSound(item.type);
-                    if (item.type === 'trash') {
-                        items.splice(index, 1);
-                        score += 10;
-                    } else if (item.type === 'turtle') {
-                        items.splice(index, 1);
-                        turtlesSaved++;
-                        score += 50;
-                    }
+                    trashItems.splice(index, 1);
+                    score += 10;
                     scoreEl.textContent = score;
-                    turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
+                    if (trashItems.length === 0) {
+                        turtlesSaved = turtles.length; // All turtles saved when trash is cleared
+                        turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
+                        endGame(true); // Victory when all trash is cleared
+                    }
                     if (score > highScore) {
                         highScore = score;
                         localStorage.setItem('highScore', highScore);
                         highScoreEl.textContent = highScore;
                     }
-                    if (items.length === 0) endGame(true); // Victory condition
                 }
             });
         }
@@ -529,17 +565,23 @@
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+            // Draw status text
             ctx.fillStyle = '#fff';
             ctx.font = '24px Roboto';
             ctx.textAlign = 'left';
             ctx.fillText(`Score: ${score}`, 10, 30);
             ctx.fillText(`Turtles: ${turtlesSaved}/${totalTurtles}`, 10, 60);
             ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 90);
-            ctx.fillText(`Items: ${200 - items.length}/200`, 10, 120);
+            ctx.fillText(`Trash: ${totalTrash - trashItems.length}/${totalTrash}`, 10, 120);
 
-            const shuffledItems = [...items].sort(() => Math.random() - 0.5);
-            shuffledItems.forEach(item => item.draw());
+            // Draw turtles first (background)
+            turtles.forEach(turtle => turtle.draw());
 
+            // Draw trash on top
+            const shuffledTrash = [...trashItems].sort(() => Math.random() - 0.5);
+            shuffledTrash.forEach(item => item.draw());
+
+            // Draw animations
             animations = animations.filter(anim => anim.update());
             animations.forEach(anim => anim.draw());
 
@@ -550,7 +592,8 @@
         function startGame() {
             score = 0;
             turtlesSaved = 0;
-            items = [];
+            trashItems = [];
+            turtles = [];
             animations = [];
             timeLeft = 30;
             spawnCluster();
@@ -590,7 +633,7 @@
             ctx.font = '30px Roboto';
             ctx.textAlign = 'center';
             if (isVictory) {
-                gameStatus.textContent = `Victory! Score: ${score} | High Score: ${highScore} | You saved all ${totalTurtles} turtles!`;
+                gameStatus.textContent = `Victory! Score: ${score} | High Score: ${highScore} | You saved all ${turtlesSaved} turtles!`;
                 ctx.fillText('Victory!', canvasWidth / 2, canvasHeight / 2 - 20);
                 ctx.fillText(`Score: ${score}`, canvasWidth / 2, canvasHeight / 2 + 20);
                 for (let i = 0; i < 50; i++) {
