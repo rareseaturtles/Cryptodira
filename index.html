@@ -162,7 +162,7 @@
         }
         #gameCanvas {
             border: 3px solid #2e7d32;
-            background: url('https://www.arweave.net/path/to/ocean-bg.jpg') no-repeat center/cover; /* Placeholder */
+            background: linear-gradient(180deg, #40c4ff, #0288d1); /* Fallback gradient */
             max-width: 100%;
             height: auto;
             border-radius: 10px;
@@ -180,7 +180,6 @@
             transition: all 0.3s ease;
             min-width: 150px;
             margin: 15px auto;
-            display: none;
         }
         #startBtn:hover, #resetBtn:hover {
             transform: translateY(-2px);
@@ -420,7 +419,6 @@
         // Item (trash or turtle) object
         class Item {
             constructor(type) {
-                // Adjusted range to fit 80x80 items
                 this.x = Math.random() * 150 + 250; // x between 250 and 400
                 this.y = Math.random() * 50 + 100;  // y between 100 and 150
                 this.width = 80;
@@ -428,9 +426,14 @@
                 this.type = type; // 'trash' or 'turtle'
             }
             draw() {
-                const trashImg = new Image(); trashImg.src = 'https://www.arweave.net/path/to/trash.png'; // Replace with your URL
-                const turtleImg = new Image(); turtleImg.src = 'https://www.arweave.net/path/to/turtle.png'; // Replace with your URL
-                ctx.drawImage(this.type === 'turtle' ? turtleImg : trashImg, this.x, this.y, this.width, this.height);
+                ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
+                ctx.beginPath();
+                ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = '16px Roboto';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.type === 'turtle' ? 'Turtle' : 'Trash', this.x + this.width / 2, this.y + this.height / 2 + 10);
             }
         }
 
