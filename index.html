@@ -419,32 +419,13 @@
         // Item (trash or turtle) object
         class Item {
             constructor(type) {
-                this.x = Math.random() * 560 + 120; // x between 120 and 680 (20px gap)
-                this.y = Math.random() * 260 + 70;  // y between 70 and 330 (20px gap)
+                this.x = Math.random() * 580 + 110; // x between 110 and 690 (approx 20px gap)
+                this.y = Math.random() * 280 + 60;  // y between 60 and 340 (approx 20px gap)
                 this.width = 80;
                 this.height = 80;
                 this.type = type; // 'trash' or 'turtle'
                 this.centerX = this.x + this.width / 2;
                 this.centerY = this.y + this.height / 2;
-                // Simple overlap check
-                let overlap = true;
-                while (overlap) {
-                    overlap = false;
-                    for (let i = 0; i < items.length; i++) {
-                        const other = items[i];
-                        const dx = this.centerX - other.centerX;
-                        const dy = this.centerY - other.centerY;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance < 80) { // 80px minimum distance
-                            this.x = Math.random() * 560 + 120;
-                            this.y = Math.random() * 260 + 70;
-                            this.centerX = this.x + this.width / 2;
-                            this.centerY = this.y + this.height / 2;
-                            overlap = true;
-                            break;
-                        }
-                    }
-                }
             }
             draw() {
                 ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
