@@ -241,9 +241,9 @@
     </div>
 
     <div class="content">
-        <h2>Mariano Tap to clear 69 trash items in 30 seconds to save 33 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
+        <h2>Mariano Tap to clear 25 trash items in 30 seconds to save 5 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/33</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
+        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/5</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
         <button id="resetBtn">Reset Game</button>
     </div>
@@ -421,8 +421,8 @@
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
-        const totalTrash = 69;
-        const totalTurtles = 33;
+        const totalTrash = 25; // Reduced to 25
+        const totalTurtles = 5; // Reduced to 5
         let gameActive = false;
         let trashItems = [];
         let turtles = [];
@@ -433,16 +433,16 @@
         // Item (turtle or trash) object
         class Item {
             constructor(type, x = null, y = null) {
-                this.width = type === 'turtle' ? 70 : 50; // Turtles 70x70, trash 50x50
+                this.width = type === 'turtle' ? 210 : 150; // Turtles 210x210, trash 150x150 (3x previous)
                 this.height = this.width;
                 if (x === null || y === null) {
                     // Restrict spawning to centered 400x400 area (x: 200-600, y: 150-550)
                     this.x = Math.random() * (400 - this.width) + 200;
                     this.y = Math.random() * (400 - this.height) + 150;
                 } else {
-                    // Use provided coordinates with ±10px offset for trash
-                    this.x = x + (Math.random() * 20 - 10);
-                    this.y = y + (Math.random() * 20 - 10);
+                    // Use provided coordinates with ±30px offset for trash
+                    this.x = x + (Math.random() * 60 - 30);
+                    this.y = y + (Math.random() * 60 - 30);
                 }
                 this.type = type;
                 this.centerX = this.x + this.width / 2;
@@ -481,7 +481,7 @@
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
                 ctx.beginPath();
-                ctx.arc(this.x + (this.type === 'turtle' ? 35 : 25), this.y + (this.type === 'turtle' ? 35 : 25), (this.type === 'turtle' ? 35 : 25) * (1 - this.timer), 0, Math.PI * 2);
+                ctx.arc(this.x + (this.type === 'turtle' ? 105 : 75), this.y + (this.type === 'turtle' ? 105 : 75), (this.type === 'turtle' ? 105 : 75) * (1 - this.timer), 0, Math.PI * 2);
                 ctx.fillStyle = this.type === 'turtle' ? 'rgba(46, 125, 50, 0.5)' : 'rgba(102, 102, 102, 0.5)';
                 ctx.fill();
                 ctx.restore();
@@ -542,7 +542,7 @@
             trashItems = [];
             turtles = [];
 
-            // Spawn exactly 33 turtles in centered area, no turtle-turtle overlap
+            // Spawn exactly 5 turtles in centered area, no turtle-turtle overlap
             for (let i = 0; i < totalTurtles; i++) {
                 let turtle;
                 let attempts = 0;
@@ -556,11 +556,11 @@
                 }
             }
 
-            // Spawn trash: 33 for turtle overlaps + remaining for total of 69, no trash-trash overlap
-            const gridCols = 10;
+            // Spawn trash: 5 for turtle overlaps + remaining for total of 25, no trash-trash overlap
+            const gridCols = 5;
             const gridRows = Math.ceil((totalTrash - totalTurtles) / gridCols);
-            const gridWidth = (400 - 50) / gridCols; // Adjusted for 50x50 trash
-            const gridHeight = (400 - 50) / gridRows;
+            const gridWidth = (400 - 150) / gridCols; // Adjusted for 150x150 trash
+            const gridHeight = (400 - 150) / gridRows;
             let trashCount = 0;
 
             // Ensure one trash overlaps each turtle
@@ -569,9 +569,9 @@
                 let attempts = 0;
                 const maxAttempts = 50;
                 do {
-                    // Place trash near turtle center to guarantee overlap (within 60px: 35px + 25px)
-                    const offsetX = (Math.random() * 50 - 25); // ±25px from turtle center
-                    const offsetY = (Math.random() * 50 - 25);
+                    // Place trash near turtle center to guarantee overlap (within 180px: 105px + 75px)
+                    const offsetX = (Math.random() * 150 - 75); // ±75px from turtle center
+                    const offsetY = (Math.random() * 150 - 75);
                     trash = new Item('trash', turtle.centerX + offsetX, turtle.centerY + offsetY);
                     attempts++;
                 } while (isOverlapping(trash, trashItems) && attempts < maxAttempts);
@@ -621,7 +621,7 @@
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 50 && distance < minDistance) { // Adjusted to 50px for 50x50 trash
+                if (distance < 150 && distance < minDistance) { // Adjusted to 150px for 150x150 trash
                     closestItem = { item, index };
                     minDistance = distance;
                 }
@@ -642,7 +642,7 @@
                 }
                 updateSavedTurtles();
             } else {
-                console.log('No trash hit within 50px radius');
+                console.log('No trash hit within 150px radius');
             }
         }
 
