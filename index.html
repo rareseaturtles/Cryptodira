@@ -63,7 +63,7 @@
             margin: 20px auto;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
-            animationI float 2s infinite ease-in-out;
+            animation: float 2s infinite ease-in-out;
         }
         @keyframes float {
             0%, 100% { transform: translateY(0); }
@@ -285,8 +285,8 @@
         // Fetch token price, liquidity, and market cap
         async function updateTokenInfo() {
             try {
-                // Try Price Volume API for price, liquidity, and market cap
-                const response = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=true", {
+                // Fetch price and liquidity
+                const response = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
                     headers: {
                         "X-API-KEY": BIRDEYE_API_KEY,
                         "x-chain": "solana",
@@ -299,12 +299,12 @@
                 }
                 const data = await response.json();
 
-                // Check for valid data
+                // Check for valid price and liquidity
                 const price = data.data?.value != null ? data.data.value.toFixed(6) : "N/A";
                 const liquidity = data.data?.liquidity != null ? data.data.liquidity.toFixed(2) : "N/A";
                 let marketCap = data.data?.market_cap != null ? data.data.market_cap.toFixed(2) : null;
 
-                // Fallback to Token Overview API for market cap if needed
+                // Fallback to token_overview for market cap
                 if (!marketCap) {
                     const overviewResponse = await fetch("https://public-api.birdeye.so/defi/token_overview?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8", {
                         headers: {
@@ -592,7 +592,7 @@
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 25 && distance < minDistance) { // Increased to 25px for better tap detection
+                if (distance < 25 && distance < minDistance) {
                     closestItem = { item, index };
                     minDistance = distance;
                 }
@@ -638,7 +638,7 @@
             turtles.forEach(turtle => turtle.draw());
 
             // Draw trash on top
-            trashItems.forEach(item => item.draw()); // Removed shuffling to prevent flickering
+            trashItems.forEach(item => item.draw()); // No shuffling to prevent flickering
 
             // Draw animations
             animations = animations.filter(anim => anim.update());
