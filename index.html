@@ -241,9 +241,9 @@
     </div>
 
     <div class="content">
-        <h2>Tap to clear 50 trash items in 30 seconds to save 5 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
+        <h2>Tap to clear 50 trash items in 30 seconds to save 5 sea turtles! Turtles are saved when no trash overlaps them.</p>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/5</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
+        <div id="gameStatus">Turtles Saved: <span id="turtlesSaved">0/5</span> | Time: <span id="timeLeft">30</span>s</div>
         <button id="startBtn">Start Cleaning!</button>
         <button id="resetBtn">Reset Game</button>
     </div>
@@ -263,10 +263,8 @@
         const gameStatus = document.getElementById('gameStatus');
         const startBtn = document.getElementById('startBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const scoreEl = document.getElementById('score');
         const turtlesSavedEl = document.getElementById('turtlesSaved');
         const timeLeftEl = document.getElementById('timeLeft');
-        const highScoreEl = document.getElementById('highScore');
 
         // Solana config
         const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
@@ -422,8 +420,6 @@
         // Game Logic for Ocean Cleanup
         const canvasWidth = 800;
         const canvasHeight = 600;
-        let score = 0;
-        let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
         const totalTrash = 50;
         const totalTurtles = 5;
@@ -654,13 +650,6 @@
                 animations.push(new TapAnimation(item.x, item.y, item.type));
                 playSound(item.type);
                 trashItems.splice(index, 1);
-                score += 10;
-                scoreEl.textContent = score;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('highScore', highScore);
-                    highScoreEl.textContent = highScore;
-                }
                 updateSavedTurtles();
             } else {
                 console.log('No trash hit within 50px radius');
@@ -682,10 +671,9 @@
             ctx.fillStyle = '#fff';
             ctx.font = '24px Roboto';
             ctx.textAlign = 'left';
-            ctx.fillText(`Score: ${score}`, 10, 30);
-            ctx.fillText(`Turtles: ${turtlesSaved}/${totalTurtles}`, 10, 60);
-            ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 90);
-            ctx.fillText(`Trash: ${totalTrash - trashItems.length}/${totalTrash}`, 10, 120);
+            ctx.fillText(`Turtles Saved: ${turtlesSaved}/${totalTurtles}`, 10, 30);
+            ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 60);
+            ctx.fillText(`Trash Remaining: ${trashItems.length}/${totalTrash}`, 10, 90);
 
             // Update and draw turtles with movement
             turtles.forEach(turtle => {
@@ -712,17 +700,15 @@
                 return;
             }
 
-            score = 0;
             turtlesSaved = 0;
             trashItems = [];
             turtles = [];
             animations = [];
             timeLeft = 30;
             spawnCluster();
-            scoreEl.textContent = score;
             turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
             timeLeftEl.textContent = Math.ceil(timeLeft);
-            gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${Math.ceil(timeLeft)}s | High Score: ${highScore}`;
+            gameStatus.textContent = `Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${Math.ceil(timeLeft)}s`;
             gameActive = true;
             startBtn.style.display = 'none';
             resetBtn.style.display = 'none';
@@ -731,7 +717,7 @@
             timerInterval = setInterval(() => {
                 timeLeft -= 1;
                 timeLeftEl.textContent = Math.max(0, Math.ceil(timeLeft));
-                gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${Math.ceil(timeLeft)}s | High Score: ${highScore}`;
+                gameStatus.textContent = `Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${Math.ceil(timeLeft)}s`;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     endGame(false);
@@ -757,11 +743,8 @@
             ctx.fillText(isVictory ? 'Victory!' : 'Game Over!', canvasWidth / 2, canvasHeight / 2 - 60);
             ctx.font = '36px Roboto'; // Emphasize turtles saved
             ctx.fillText(`Turtles Saved: ${turtlesSaved}/${totalTurtles}`, canvasWidth / 2, canvasHeight / 2);
-            ctx.font = '24px Roboto';
-            ctx.fillText(`Score: ${score}`, canvasWidth / 2, canvasHeight / 2 + 40);
-            ctx.fillText(`High Score: ${highScore}`, canvasWidth / 2, canvasHeight / 2 + 80);
             if (isVictory) {
-                gameStatus.textContent = `Victory! Turtles Saved: ${turtlesSaved}/${totalTurtles} | Score: ${score} | High Score: ${highScore}`;
+                gameStatus.textContent = `Victory! Turtles Saved: ${turtlesSaved}/${totalTurtles}`;
                 for (let i = 0; i < 50; i++) {
                     ctx.beginPath();
                     ctx.arc(Math.random() * canvasWidth, Math.random() * canvasHeight, 5, 0, Math.PI * 2);
@@ -770,7 +753,7 @@
                 }
                 playSound('turtle');
             } else {
-                gameStatus.textContent = `Game Over! Turtles Saved: ${turtlesSaved}/${totalTurtles} | Score: ${score} | High Score: ${highScore}`;
+                gameStatus.textContent = `Game Over! Turtles Saved: ${turtlesSaved}/${totalTurtles}`;
             }
             startBtn.style.display = 'block';
             resetBtn.style.display = 'block';
@@ -779,9 +762,6 @@
         // Button events
         startBtn.addEventListener('click', startGame);
         resetBtn.addEventListener('click', resetGame);
-
-        // Initialize high score display
-        highScoreEl.textContent = highScore;
     </script>
 </body>
 </html>
