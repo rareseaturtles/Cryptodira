@@ -241,9 +241,9 @@
     </div>
 
     <div class="content">
-        <h2>Mariano Tap to clear 50 trash items in 30 seconds to save 3 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
+        <h2>Tap to clear 50 trash items in 30 seconds to save 5 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/3</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
+        <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/5</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
         <button id="resetBtn">Reset Game</button>
     </div>
@@ -287,6 +287,10 @@
         turtleImage.src = '/assets/turtle.png';
         const trashImage = new Image();
         trashImage.src = '/assets/trash.png';
+        const trash2Image = new Image();
+        trash2Image.src = '/assets/trash2.png';
+        const trash3Image = new Image();
+        trash3Image.src = '/assets/trash3.png';
 
         // Fetch token price and liquidity, calculate market cap
         async function updateTokenInfo() {
@@ -421,8 +425,8 @@
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
-        const totalTrash = 50; // Increased to 50
-        const totalTurtles = 3; // Reduced to 3
+        const totalTrash = 50;
+        const totalTurtles = 5; // Increased to 5
         let gameActive = false;
         let trashItems = [];
         let turtles = [];
@@ -433,10 +437,22 @@
         // Item (turtle or trash) object
         class Item {
             constructor(type, x = null, y = null) {
-                this.width = type === 'turtle' ? 180 : 50; // Turtles 180x180, trash 50x50
+                this.width = type === 'turtle' ? 150 : 50; // Turtles 150x150, trash 50x50
                 this.height = this.width;
-                if (x === null || y === null) {
-                    // 450x450 centered area (x: 175-625, y: 125-575)
+                if (type === 'turtle') {
+                    // Fixed positions for 5 turtles within 450x450 area
+                    const fixedPositions = [
+                        { x: 200, y: 150 }, // Turtle 1
+                        { x: 350, y: 150 }, // Turtle 2
+                        { x: 200, y: 300 }, // Turtle 3
+                        { x: 350, y: 300 }, // Turtle 4
+                        { x: 275, y: 450 }  // Turtle 5
+                    ];
+                    const index = turtles.length;
+                    this.x = fixedPositions[index].x;
+                    this.y = fixedPositions[index].y;
+                } else if (x === null || y === null) {
+                    // Random positions for trash within 450x450 area
                     this.x = Math.random() * (450 - this.width) + 175;
                     this.y = Math.random() * (450 - this.height) + 125;
                 } else {
@@ -448,16 +464,17 @@
                 this.centerX = this.x + this.width / 2;
                 this.centerY = this.y + this.height / 2;
                 this.isSaved = type === 'turtle' ? false : undefined; // Track if turtle is saved
+                this.image = type === 'turtle' ? turtleImage : [trashImage, trash2Image, trash3Image][Math.floor(Math.random() * 3)]; // Random trash image
             }
             draw() {
                 if (this.type === 'turtle') {
                     ctx.save();
                     ctx.globalAlpha = this.isSaved ? 1 : 0.7; // Slightly transparent when unsaved
-                    ctx.drawImage(turtleImage, this.x, this.y, this.width, this.height);
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
                     ctx.restore();
                 } else {
                     ctx.save();
-                    ctx.drawImage(trashImage, this.x, this.y, this.width, this.height);
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
                     ctx.restore();
                 }
             }
@@ -481,7 +498,7 @@
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
                 ctx.beginPath();
-                ctx.arc(this.x + (this.type === 'turtle' ? 90 : 25), this.y + (this.type === 'turtle' ? 90 : 25), (this.type === 'turtle' ? 90 : 25) * (1 - this.timer), 0, Math.PI * 2);
+                ctx.arc(this.x + (this.type === 'turtle' ? 75 : 25), this.y + (this.type === 'turtle' ? 75 : 25), (this.type === 'turtle' ? 75 : 25) * (1 - this.timer), 0, Math.PI * 2);
                 ctx.fillStyle = this.type === 'turtle' ? 'rgba(46, 125, 50, 0.5)' : 'rgba(102, 102, 102, 0.5)';
                 ctx.fill();
                 ctx.restore();
@@ -542,25 +559,21 @@
             trashItems = [];
             turtles = [];
 
-            // Spawn exactly 3 turtles in centered area, with increased attempts
+            // Spawn exactly 5 turtles at fixed positions
+            const fixedPositions = [
+                { x: 200, y: 150 }, // Turtle 1
+                { x: 350, y: 150 }, // Turtle 2
+                { x: 200, y: 300 }, // Turtle 3
+                { x: 350, y: 300 }, // Turtle 4
+                { x: 275, y: 450 }  // Turtle 5
+            ];
             for (let i = 0; i < totalTurtles; i++) {
-                let turtle;
-                let attempts = 0;
-                const maxAttempts = 200; // Ensure 3 turtles
-                do {
-                    turtle = new Item('turtle');
-                    attempts++;
-                } while (isOverlapping(turtle, turtles) && attempts < maxAttempts);
-                if (attempts < maxAttempts) {
-                    turtles.push(turtle);
-                } else {
-                    console.warn(`Max attempts reached for turtle ${i + 1}, forcing placement at ${turtle.x}, ${turtle.y}`);
-                    turtles.push(turtle);
-                }
+                const turtle = new Item('turtle', fixedPositions[i].x, fixedPositions[i].y);
+                turtles.push(turtle);
             }
             console.log(`Spawned ${turtles.length} turtles`);
 
-            // Spawn trash: 3 for turtle overlaps + remaining for total of 50, no trash-trash overlap
+            // Spawn trash: 5 for turtle overlaps + remaining for total of 50, no trash-trash overlap
             const gridCols = 10;
             const gridRows = Math.ceil((totalTrash - totalTurtles) / gridCols);
             const gridWidth = (450 - 50) / gridCols; // Adjusted for 50x50 trash
@@ -573,7 +586,7 @@
                 let attempts = 0;
                 const maxAttempts = 50;
                 do {
-                    // Place trash near turtle center to guarantee overlap (within 115px: 90px + 25px)
+                    // Place trash near turtle center to guarantee overlap (within 100px: 75px + 25px)
                     const offsetX = (Math.random() * 50 - 25); // ±25px from turtle center
                     const offsetY = (Math.random() * 50 - 25);
                     trash = new Item('trash', turtle.centerX + offsetX, turtle.centerY + offsetY);
@@ -686,7 +699,7 @@
         // Start or reset game
         function startGame() {
             // Ensure images are loaded before starting
-            if (!turtleImage.complete || !trashImage.complete) {
+            if (!turtleImage.complete || !trashImage.complete || !trash2Image.complete || !trash3Image.complete) {
                 console.log('Waiting for images to load...');
                 setTimeout(startGame, 100);
                 return;
