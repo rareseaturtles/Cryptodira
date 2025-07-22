@@ -426,7 +426,7 @@
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
         const totalTrash = 50;
-        const totalTurtles = 5; // Increased to 5
+        const totalTurtles = 5;
         let gameActive = false;
         let trashItems = [];
         let turtles = [];
@@ -440,17 +440,17 @@
                 this.width = type === 'turtle' ? 150 : 50; // Turtles 150x150, trash 50x50
                 this.height = this.width;
                 if (type === 'turtle') {
-                    // Fixed positions for 5 turtles within 450x450 area
-                    const fixedPositions = [
-                        { x: 200, y: 150 }, // Turtle 1
-                        { x: 350, y: 150 }, // Turtle 2
-                        { x: 200, y: 300 }, // Turtle 3
-                        { x: 350, y: 300 }, // Turtle 4
-                        { x: 275, y: 450 }  // Turtle 5
-                    ];
-                    const index = turtles.length;
-                    this.x = fixedPositions[index].x;
-                    this.y = fixedPositions[index].y;
+                    // Fixed circular pattern for 5 turtles
+                    const centerX = 400; // Center of 450x450 area
+                    const centerY = 350;
+                    const radius = 100; // Distance from center for even spacing
+                    const angle = (2 * Math.PI * turtles.length) / totalTurtles;
+                    this.initialX = centerX + radius * Math.cos(angle) - this.width / 2;
+                    this.initialY = centerY + radius * Math.sin(angle) - this.height / 2;
+                    this.x = this.initialX;
+                    this.y = this.initialY;
+                    this.dx = Math.random() * 0.5 - 0.25; // Small random movement
+                    this.dy = Math.random() * 0.5 - 0.25;
                 } else if (x === null || y === null) {
                     // Random positions for trash within 450x450 area
                     this.x = Math.random() * (450 - this.width) + 175;
@@ -465,6 +465,17 @@
                 this.centerY = this.y + this.height / 2;
                 this.isSaved = type === 'turtle' ? false : undefined; // Track if turtle is saved
                 this.image = type === 'turtle' ? turtleImage : [trashImage, trash2Image, trash3Image][Math.floor(Math.random() * 3)]; // Random trash image
+            }
+            update() {
+                if (this.type === 'turtle' && gameActive) {
+                    // Add slight movement animation, bouncing within bounds
+                    this.x += this.dx;
+                    this.y += this.dy;
+                    if (this.x < 175 || this.x + this.width > 625) this.dx = -this.dx;
+                    if (this.y < 125 || this.y + this.height > 575) this.dy = -this.dy;
+                    this.centerX = this.x + this.width / 2;
+                    this.centerY = this.y + this.height / 2;
+                }
             }
             draw() {
                 if (this.type === 'turtle') {
@@ -559,16 +570,9 @@
             trashItems = [];
             turtles = [];
 
-            // Spawn exactly 5 turtles at fixed positions
-            const fixedPositions = [
-                { x: 200, y: 150 }, // Turtle 1
-                { x: 350, y: 150 }, // Turtle 2
-                { x: 200, y: 300 }, // Turtle 3
-                { x: 350, y: 300 }, // Turtle 4
-                { x: 275, y: 450 }  // Turtle 5
-            ];
+            // Spawn 5 turtles in a circular, evenly spaced pattern
             for (let i = 0; i < totalTurtles; i++) {
-                const turtle = new Item('turtle', fixedPositions[i].x, fixedPositions[i].y);
+                const turtle = new Item('turtle');
                 turtles.push(turtle);
             }
             console.log(`Spawned ${turtles.length} turtles`);
@@ -683,8 +687,11 @@
             ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 90);
             ctx.fillText(`Trash: ${totalTrash - trashItems.length}/${totalTrash}`, 10, 120);
 
-            // Draw turtles first (background)
-            turtles.forEach(turtle => turtle.draw());
+            // Update and draw turtles with movement
+            turtles.forEach(turtle => {
+                turtle.update();
+                turtle.draw();
+            });
 
             // Draw trash on top
             trashItems.forEach(item => item.draw());
