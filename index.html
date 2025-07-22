@@ -45,7 +45,7 @@
         }
         header h1 {
             font-size: 48px;
-            color: #1b5e20; /* Darker green for contrast */
+            color: #1b5e20;
             margin: 10px 0;
             text-shadow: 2px 2px 4px rgba(46, 125, 50, 0.3);
             font-family: 'Trebuchet MS', sans-serif;
@@ -73,7 +73,7 @@
             transform: scale(1.05);
         }
         .content {
-            background: #ffffff; /* Solid white for better contrast */
+            background: #ffffff;
             padding: 25px;
             margin: 20px;
             border-radius: 15px;
@@ -162,7 +162,7 @@
         }
         #gameCanvas {
             border: 3px solid #2e7d32;
-            background: linear-gradient(180deg, #40c4ff, #0288d1); /* Fallback gradient */
+            background: linear-gradient(180deg, #40c4ff, #0288d1);
             max-width: 100%;
             height: auto;
             border-radius: 10px;
@@ -242,7 +242,7 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 300 trash items and save 50 sea turtles in 30 seconds! Clear trash (10 points) and save turtles (50 points) to beat your high score!</p>
+        <p>Tap to clear 300 trash items and save 50 sea turtles in 30 seconds! Tap the center for accuracy (10 points for trash, 50 for turtles) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
@@ -419,11 +419,13 @@
         // Item (trash or turtle) object
         class Item {
             constructor(type) {
-                this.x = Math.random() * 150 + 250; // x between 250 and 400
-                this.y = Math.random() * 50 + 100;  // y between 100 and 150
+                this.x = Math.random() * 600 + 100; // x between 100 and 700
+                this.y = Math.random() * 300 + 50;  // y between 50 and 350
                 this.width = 80;
                 this.height = 80;
                 this.type = type; // 'trash' or 'turtle'
+                this.centerX = this.x + this.width / 2;
+                this.centerY = this.y + this.height / 2;
             }
             draw() {
                 ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
@@ -480,7 +482,7 @@
             console.log(`Spawned ${items.length} items`);
         }
 
-        // Handle clicks/taps
+        // Handle clicks/taps with center accuracy
         function handleTap(e, isTouch = false) {
             if (!gameActive) return;
             const rect = gameCanvas.getBoundingClientRect();
@@ -490,8 +492,11 @@
             const clickY = clientY - rect.top;
 
             items.forEach((item, index) => {
-                if (clickX > item.x && clickX < item.x + item.width &&
-                    clickY > item.y && clickY < item.y + item.height) {
+                // Check if tap is within 20px of the center (40x40 effective area)
+                const dx = clickX - item.centerX;
+                const dy = clickY - item.centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 20) { // Center tap required
                     animations.push(new TapAnimation(item.x, item.y, item.type));
                     playSound(item.type);
                     if (item.type === 'trash') {
@@ -593,14 +598,13 @@
                 gameStatus.textContent = `Victory! Score: ${score} | High Score: ${highScore} | You saved all ${totalTurtles} turtles!`;
                 ctx.fillText('Victory!', canvasWidth / 2, canvasHeight / 2 - 20);
                 ctx.fillText(`Score: ${score}`, canvasWidth / 2, canvasHeight / 2 + 20);
-                // Confetti effect
                 for (let i = 0; i < 50; i++) {
                     ctx.beginPath();
                     ctx.arc(Math.random() * canvasWidth, Math.random() * canvasHeight, 5, 0, Math.PI * 2);
                     ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
                     ctx.fill();
                 }
-                playSound('turtle'); // Victory sound
+                playSound('turtle');
             } else {
                 gameStatus.textContent = `Game Over! Score: ${score} | High Score: ${highScore} | Time's up!`;
                 ctx.fillText('Game Over!', canvasWidth / 2, canvasHeight / 2 - 20);
