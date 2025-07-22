@@ -192,7 +192,7 @@
             .button, #startBtn, #resetBtn { padding: 10px 20px; font-size: 14px; min-width: 120px; }
             .buttons { flex-direction: column; align-items: center; gap: 10px; }
             .logo { width: 100px; }
-            #gameCanvas { width: 100%; height: 400px; }
+            #gameCanvas { width: 100%; height: 500px; } /* Adjusted for mobile */
         }
     </style>
 </head>
@@ -241,8 +241,7 @@
     </div>
 
     <div class="content">
-        <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 69 trash items in 30 seconds to save 33 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
+        <h2 Mariano Tap to clear 69 trash items in 30 seconds to save 33 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/33</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
@@ -431,9 +430,9 @@
                 this.width = type === 'turtle' ? 60 : 40; // Turtles 60x60, trash 40x40
                 this.height = this.width;
                 if (x === null || y === null) {
-                    // Restrict spawning to avoid top-left 150x150 status area
-                    this.x = Math.random() * (canvasWidth - this.width - 150) + 150;
-                    this.y = Math.random() * (canvasHeight - this.height - 150) + 150;
+                    // Restrict spawning to centered 400x400 area (x: 200-600, y: 150-550)
+                    this.x = Math.random() * (400 - this.width) + 200;
+                    this.y = Math.random() * (400 - this.height) + 150;
                 } else {
                     // Use provided coordinates with ±10px offset for trash
                     this.x = x + (Math.random() * 20 - 10);
@@ -535,7 +534,7 @@
             trashItems = [];
             turtles = [];
 
-            // Spawn exactly 33 turtles, preventing turtle-turtle overlap
+            // Spawn exactly 33 turtles in centered area, no turtle-turtle overlap
             for (let i = 0; i < totalTurtles; i++) {
                 let turtle;
                 let attempts = 0;
@@ -552,8 +551,8 @@
             // Spawn trash: 33 for turtle overlaps + remaining for total of 69, no trash-trash overlap
             const gridCols = 10;
             const gridRows = Math.ceil((totalTrash - totalTurtles) / gridCols);
-            const gridWidth = (canvasWidth - 150 - 40) / gridCols;
-            const gridHeight = (canvasHeight - 150 - 40) / gridRows;
+            const gridWidth = (400 - 40) / gridCols; // 400px wide area (200-600)
+            const gridHeight = (400 - 40) / gridRows; // 400px tall area (150-550)
             let trashCount = 0;
 
             // Ensure one trash overlaps each turtle
@@ -574,13 +573,13 @@
                 }
             }
 
-            // Spawn remaining trash items in a grid
+            // Spawn remaining trash items in a centered grid
             for (let row = 0; row < gridRows && trashCount < totalTrash; row++) {
                 for (let col = 0; col < gridCols && trashCount < totalTrash; col++) {
                     let trash;
                     let attempts = 0;
                     const maxAttempts = 100;
-                    const baseX = 150 + col * gridWidth + gridWidth / 2;
+                    const baseX = 200 + col * gridWidth + gridWidth / 2;
                     const baseY = 150 + row * gridHeight + gridHeight / 2;
                     do {
                         trash = new Item('trash', baseX, baseY);
@@ -614,7 +613,7 @@
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 30 && distance < minDistance) {
+                if (distance < 40 && distance < minDistance) { // Increased to 40px
                     closestItem = { item, index };
                     minDistance = distance;
                 }
@@ -635,7 +634,7 @@
                 }
                 updateSavedTurtles();
             } else {
-                console.log('No trash hit within 30px radius');
+                console.log('No trash hit within 40px radius');
             }
         }
 
