@@ -433,7 +433,7 @@
         // Item (turtle or trash) object
         class Item {
             constructor(type, x = null, y = null) {
-                this.width = type === 'turtle' ? 60 : 40; // Turtles 60x60, trash 40x40
+                this.width = type === 'turtle' ? 70 : 50; // Turtles 70x70, trash 50x50
                 this.height = this.width;
                 if (x === null || y === null) {
                     // Restrict spawning to centered 400x400 area (x: 200-600, y: 150-550)
@@ -455,18 +455,10 @@
                     ctx.globalAlpha = this.isSaved ? 1 : 0.7; // Slightly transparent when unsaved
                     ctx.drawImage(turtleImage, this.x, this.y, this.width, this.height);
                     ctx.restore();
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '14px Roboto';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('Turtle', this.x + this.width / 2, this.y + this.height / 2 + 10);
                 } else {
                     ctx.save();
                     ctx.drawImage(trashImage, this.x, this.y, this.width, this.height);
                     ctx.restore();
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '12px Roboto';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('Trash', this.x + this.width / 2, this.y + this.height / 2 + 10);
                 }
             }
         }
@@ -489,7 +481,7 @@
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
                 ctx.beginPath();
-                ctx.arc(this.x + (this.type === 'turtle' ? 30 : 20), this.y + (this.type === 'turtle' ? 30 : 20), (this.type === 'turtle' ? 30 : 20) * (1 - this.timer), 0, Math.PI * 2);
+                ctx.arc(this.x + (this.type === 'turtle' ? 35 : 25), this.y + (this.type === 'turtle' ? 35 : 25), (this.type === 'turtle' ? 35 : 25) * (1 - this.timer), 0, Math.PI * 2);
                 ctx.fillStyle = this.type === 'turtle' ? 'rgba(46, 125, 50, 0.5)' : 'rgba(102, 102, 102, 0.5)';
                 ctx.fill();
                 ctx.restore();
@@ -567,8 +559,8 @@
             // Spawn trash: 33 for turtle overlaps + remaining for total of 69, no trash-trash overlap
             const gridCols = 10;
             const gridRows = Math.ceil((totalTrash - totalTurtles) / gridCols);
-            const gridWidth = (400 - 40) / gridCols; // 400px wide area (200-600)
-            const gridHeight = (400 - 40) / gridRows; // 400px tall area (150-550)
+            const gridWidth = (400 - 50) / gridCols; // Adjusted for 50x50 trash
+            const gridHeight = (400 - 50) / gridRows;
             let trashCount = 0;
 
             // Ensure one trash overlaps each turtle
@@ -577,9 +569,9 @@
                 let attempts = 0;
                 const maxAttempts = 50;
                 do {
-                    // Place trash near turtle center to guarantee overlap (within 50px)
-                    const offsetX = (Math.random() * 40 - 20); // ±20px from turtle center
-                    const offsetY = (Math.random() * 40 - 20);
+                    // Place trash near turtle center to guarantee overlap (within 60px: 35px + 25px)
+                    const offsetX = (Math.random() * 50 - 25); // ±25px from turtle center
+                    const offsetY = (Math.random() * 50 - 25);
                     trash = new Item('trash', turtle.centerX + offsetX, turtle.centerY + offsetY);
                     attempts++;
                 } while (isOverlapping(trash, trashItems) && attempts < maxAttempts);
@@ -629,7 +621,7 @@
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 40 && distance < minDistance) { // 40px tap radius
+                if (distance < 50 && distance < minDistance) { // Adjusted to 50px for 50x50 trash
                     closestItem = { item, index };
                     minDistance = distance;
                 }
@@ -650,7 +642,7 @@
                 }
                 updateSavedTurtles();
             } else {
-                console.log('No trash hit within 40px radius');
+                console.log('No trash hit within 50px radius');
             }
         }
 
