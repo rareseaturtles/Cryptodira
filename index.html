@@ -45,7 +45,7 @@
         }
         header h1 {
             font-size: 48px;
-            color: #2e7d32;
+            color: #1b5e20; /* Darker green for contrast */
             margin: 10px 0;
             text-shadow: 2px 2px 4px rgba(46, 125, 50, 0.3);
             font-family: 'Trebuchet MS', sans-serif;
@@ -63,12 +63,17 @@
             margin: 20px auto;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
+            animation: float 2s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         .logo:hover {
             transform: scale(1.05);
         }
         .content {
-            background: rgba(255, 255, 255, 0.9);
+            background: #ffffff; /* Solid white for better contrast */
             padding: 25px;
             margin: 20px;
             border-radius: 15px;
@@ -157,13 +162,13 @@
         }
         #gameCanvas {
             border: 3px solid #2e7d32;
-            background: linear-gradient(180deg, #40c4ff, #0288d1);
+            background: url('https://www.arweave.net/path/to/ocean-bg.jpg') no-repeat center/cover; /* Placeholder */
             max-width: 100%;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        #startBtn {
+        #startBtn, #resetBtn {
             padding: 12px 25px;
             font-size: 16px;
             color: #fff;
@@ -175,8 +180,9 @@
             transition: all 0.3s ease;
             min-width: 150px;
             margin: 15px auto;
+            display: none;
         }
-        #startBtn:hover {
+        #startBtn:hover, #resetBtn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
             background: linear-gradient(135deg, #1b5e20, #103d15);
@@ -184,7 +190,7 @@
         @media (max-width: 600px) {
             header h1 { font-size: 32px; }
             .content { padding: 15px; margin: 15px; width: 95%; }
-            .button, #startBtn { padding: 10px 20px; font-size: 14px; min-width: 120px; }
+            .button, #startBtn, #resetBtn { padding: 10px 20px; font-size: 14px; min-width: 120px; }
             .buttons { flex-direction: column; align-items: center; gap: 10px; }
             .logo { width: 100px; }
             #gameCanvas { width: 100%; height: 400px; }
@@ -193,7 +199,7 @@
 </head>
 <body>
     <header>
-        <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Logo">
+        <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Sea Turtle Conservation Logo">
         <h1>Cryptodira</h1>
         <p>A Solana Token for Sea Turtle Conservation</p>
     </header>
@@ -241,6 +247,7 @@
         <canvas id="gameCanvas" width="800" height="400"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
+        <button id="resetBtn">Reset Game</button>
     </div>
 
     <footer>
@@ -257,6 +264,7 @@
         const ctx = gameCanvas.getContext('2d');
         const gameStatus = document.getElementById('gameStatus');
         const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const scoreEl = document.getElementById('score');
         const turtlesSavedEl = document.getElementById('turtlesSaved');
         const timeLeftEl = document.getElementById('timeLeft');
@@ -407,26 +415,22 @@
         let items = [];
         let animations = [];
         let timeLeft = 30; // 30-second timer
+        let timerInterval;
 
         // Item (trash or turtle) object
         class Item {
             constructor(type) {
-                // Center cluster with tight range
-                this.x = Math.random() * 200 + 300; // x between 300 and 500
-                this.y = Math.random() * 100 + 150; // y between 150 and 250
-                this.width = 80; // Doubled from 40
-                this.height = 80; // Doubled from 40
+                // Adjusted range to fit 80x80 items
+                this.x = Math.random() * 150 + 250; // x between 250 and 400
+                this.y = Math.random() * 50 + 100;  // y between 100 and 150
+                this.width = 80;
+                this.height = 80;
                 this.type = type; // 'trash' or 'turtle'
             }
             draw() {
-                ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
-                ctx.beginPath();
-                ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#fff';
-                ctx.font = '16px Roboto'; // Adjusted font size for larger items
-                ctx.textAlign = 'center';
-                ctx.fillText(this.type === 'turtle' ? 'Turtle' : 'Trash', this.x + this.width / 2, this.y + this.height / 2 + 10);
+                const trashImg = new Image(); trashImg.src = 'https://www.arweave.net/path/to/trash.png'; // Replace with your URL
+                const turtleImg = new Image(); turtleImg.src = 'https://www.arweave.net/path/to/turtle.png'; // Replace with your URL
+                ctx.drawImage(this.type === 'turtle' ? turtleImg : trashImg, this.x, this.y, this.width, this.height);
             }
         }
 
@@ -447,30 +451,30 @@
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
                 ctx.beginPath();
-                ctx.arc(this.x + 40, this.y + 40, 40, 0, Math.PI * 2); // Adjusted for doubled size
+                ctx.arc(this.x + 40, this.y + 40, 40 * (1 - this.timer), 0, Math.PI * 2);
+                ctx.fillStyle = this.type === 'turtle' ? 'rgba(46, 125, 50, 0.5)' : 'rgba(102, 102, 102, 0.5)';
                 ctx.fill();
                 ctx.restore();
             }
         }
 
-        // Optional: Sound effects (placeholder)
+        // Sound effects
         function playSound(type) {
-            console.log(`Playing sound for ${type}`);
+            const audio = new Audio(type === 'turtle' ? 'https://www.arweave.net/path/to/turtle.wav' : 'https://www.arweave.net/path/to/trash.wav'); // Replace with your URLs
+            audio.play().catch(e => console.log("Audio error:", e));
         }
 
         // Spawn initial cluster of 300 trash and 50 turtles
         function spawnCluster() {
             items = [];
-            // Spawn 300 trash items
             for (let i = 0; i < totalTrash; i++) {
                 items.push(new Item('trash'));
             }
-            // Spawn 50 turtles
             for (let i = 0; i < totalTurtles; i++) {
                 items.push(new Item('turtle'));
             }
+            console.log(`Spawned ${items.length} items`);
         }
 
         // Handle clicks/taps
@@ -502,6 +506,7 @@
                         localStorage.setItem('highScore', highScore);
                         highScoreEl.textContent = highScore;
                     }
+                    if (items.length === 0) endGame(true); // Victory condition
                 }
             });
         }
@@ -517,13 +522,14 @@
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-            // Draw score, turtle count, and time on canvas
+            // Draw score, turtle count, time, and progress
             ctx.fillStyle = '#fff';
             ctx.font = '24px Roboto';
             ctx.textAlign = 'left';
             ctx.fillText(`Score: ${score}`, 10, 30);
             ctx.fillText(`Turtles: ${turtlesSaved}/${totalTurtles}`, 10, 60);
             ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 90);
+            ctx.fillText(`Items: ${350 - items.length}/350`, 10, 120);
 
             // Randomize draw order to hide turtles
             const shuffledItems = [...items].sort(() => Math.random() - 0.5);
@@ -536,7 +542,7 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Start game with timer
+        // Start or reset game
         function startGame() {
             score = 0;
             turtlesSaved = 0;
@@ -551,27 +557,59 @@
             gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${timeLeft}s | High Score: ${highScore}`;
             gameActive = true;
             startBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
 
             // Start timer
-            const timerInterval = setInterval(() => {
-                timeLeft -= 0.016; // Approximately 60 FPS
-                timeLeftEl.textContent = Math.ceil(timeLeft);
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft -= 1 / 60;
+                timeLeftEl.textContent = Math.max(0, Math.ceil(timeLeft));
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    gameActive = false;
-                    if (items.length > 0) {
-                        gameStatus.textContent = `Game Over! Score: ${score} | High Score: ${highScore} | Time's up!`;
-                        startBtn.textContent = 'Try Again!';
-                        startBtn.style.display = 'block';
-                    }
+                    endGame(false);
                 }
             }, 1000 / 60);
 
             gameLoop();
         }
 
-        // Button event
+        function resetGame() {
+            clearInterval(timerInterval);
+            startGame();
+        }
+
+        function endGame(isVictory) {
+            gameActive = false;
+            clearInterval(timerInterval);
+            ctx.fillStyle = isVictory ? 'rgba(0, 128, 0, 0.7)' : 'rgba(128, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            ctx.fillStyle = '#fff';
+            ctx.font = '30px Roboto';
+            ctx.textAlign = 'center';
+            if (isVictory) {
+                gameStatus.textContent = `Victory! Score: ${score} | High Score: ${highScore} | You saved all ${totalTurtles} turtles!`;
+                ctx.fillText('Victory!', canvasWidth / 2, canvasHeight / 2 - 20);
+                ctx.fillText(`Score: ${score}`, canvasWidth / 2, canvasHeight / 2 + 20);
+                // Confetti effect
+                for (let i = 0; i < 50; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random() * canvasWidth, Math.random() * canvasHeight, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    ctx.fill();
+                }
+                playSound('turtle'); // Victory sound
+            } else {
+                gameStatus.textContent = `Game Over! Score: ${score} | High Score: ${highScore} | Time's up!`;
+                ctx.fillText('Game Over!', canvasWidth / 2, canvasHeight / 2 - 20);
+                ctx.fillText(`Score: ${score}`, canvasWidth / 2, canvasHeight / 2 + 20);
+            }
+            startBtn.style.display = 'block';
+            resetBtn.style.display = 'block';
+        }
+
+        // Button events
         startBtn.addEventListener('click', startGame);
+        resetBtn.addEventListener('click', resetGame);
 
         // Initialize high score display
         highScoreEl.textContent = highScore;
