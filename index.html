@@ -63,7 +63,7 @@
             margin: 20px auto;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
-            animation: float 2s infinite ease-in-out;
+            animationI float 2s infinite ease-in-out;
         }
         @keyframes float {
             0%, 100% { transform: translateY(0); }
@@ -299,8 +299,12 @@
                 }
                 const data = await response.json();
 
-                // If market cap is not available, try Token Overview API
-                let marketCap = data.data.market_cap || null;
+                // Check for valid data
+                const price = data.data?.value != null ? data.data.value.toFixed(6) : "N/A";
+                const liquidity = data.data?.liquidity != null ? data.data.liquidity.toFixed(2) : "N/A";
+                let marketCap = data.data?.market_cap != null ? data.data.market_cap.toFixed(2) : null;
+
+                // Fallback to Token Overview API for market cap if needed
                 if (!marketCap) {
                     const overviewResponse = await fetch("https://public-api.birdeye.so/defi/token_overview?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8", {
                         headers: {
@@ -311,16 +315,16 @@
                     });
                     if (overviewResponse.ok) {
                         const overviewData = await overviewResponse.json();
-                        marketCap = overviewData.data?.market_cap || "N/A";
+                        marketCap = overviewData.data?.market_cap != null ? overviewData.data.market_cap.toFixed(2) : "N/A";
                     } else {
                         marketCap = "N/A (API access limited)";
                     }
                 }
 
                 tokenInfoEl.innerHTML = `
-                    <p><strong>Price:</strong> $${data.data.value.toFixed(6)}</p>
-                    <p><strong>Liquidity:</strong> $${data.data.liquidity.toFixed(2)}</p>
-                    <p><strong>Market Cap:</strong> ${typeof marketCap === 'number' ? '$' + marketCap.toFixed(2) : marketCap}</p>
+                    <p><strong>Price:</strong> ${price !== "N/A" ? "$" + price : price}</p>
+                    <p><strong>Liquidity:</strong> ${liquidity !== "N/A" ? "$" + liquidity : liquidity}</p>
+                    <p><strong>Market Cap:</strong> ${marketCap !== "N/A" ? "$" + marketCap : marketCap}</p>
                     <p><strong>Mission:</strong> Fund conservation through community participation.</p>
                     <p><strong>Distribution:</strong> NFT stake to earn complete 100k Cryptodira in the conservation fund initial.</p>
                     <p><strong>Track:</strong> <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" target="_blank">Birdeye</a></p>
@@ -328,7 +332,7 @@
                 `;
             } catch (error) {
                 tokenInfoEl.innerHTML = `
-                    <p>Error fetching token data: ${error.message}</p>
+                    <p>Error fetching token data: ${error.message}. Check API key or token address.</p>
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
             }
@@ -556,9 +560,18 @@
                 }
             }
 
-            // Spawn exactly 69 trash items, allowing overlap with turtles
+            // Spawn exactly 69 trash items, preventing trash-trash overlap, allowing trash-turtle overlap
             for (let i = 0; i < totalTrash; i++) {
-                trashItems.push(new Item('trash'));
+                let trash;
+                let attempts = 0;
+                const maxAttempts = 100;
+                do {
+                    trash = new Item('trash');
+                    attempts++;
+                } while (isOverlapping(trash, trashItems) && attempts < maxAttempts);
+                if (attempts < maxAttempts) {
+                    trashItems.push(trash);
+                }
             }
             console.log(`Spawned ${turtles.length} turtles and ${trashItems.length} trash items`);
         }
@@ -572,26 +585,31 @@
             const clickX = clientX - rect.left;
             const clickY = clientY - rect.top;
 
-            let trashRemoved = false;
+            // Find the closest trash item within tap radius
+            let closestItem = null;
+            let minDistance = Infinity;
             trashItems.forEach((item, index) => {
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 20) { // 20px radius for smaller trash
-                    animations.push(new TapAnimation(item.x, item.y, item.type));
-                    playSound(item.type);
-                    trashItems.splice(index, 1);
-                    score += 10;
-                    scoreEl.textContent = score;
-                    trashRemoved = true;
-                    if (score > highScore) {
-                        highScore = score;
-                        localStorage.setItem('highScore', highScore);
-                        highScoreEl.textContent = highScore;
-                    }
+                if (distance < 25 && distance < minDistance) { // Increased to 25px for better tap detection
+                    closestItem = { item, index };
+                    minDistance = distance;
                 }
             });
-            if (trashRemoved) {
+
+            if (closestItem) {
+                const { item, index } = closestItem;
+                animations.push(new TapAnimation(item.x, item.y, item.type));
+                playSound(item.type);
+                trashItems.splice(index, 1);
+                score += 10;
+                scoreEl.textContent = score;
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('highScore', highScore);
+                    highScoreEl.textContent = highScore;
+                }
                 updateSavedTurtles();
             }
         }
@@ -620,8 +638,7 @@
             turtles.forEach(turtle => turtle.draw());
 
             // Draw trash on top
-            const shuffledTrash = [...trashItems].sort(() => Math.random() - 0.5);
-            shuffledTrash.forEach(item => item.draw());
+            trashItems.forEach(item => item.draw()); // Removed shuffling to prevent flickering
 
             // Draw animations
             animations = animations.filter(anim => anim.update());
