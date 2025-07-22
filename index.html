@@ -242,7 +242,7 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 300 trash items and save 50 sea turtles in 30 seconds! Tap the center for accuracy (10 points for trash, 50 for turtles) to beat your high score!</p>
+        <p>Tap to clear 150 trash items and save 50 sea turtles in 30 seconds! Tap near the center for accuracy (10 points for trash, 50 for turtles) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
@@ -408,7 +408,7 @@
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
-        const totalTrash = 300;
+        const totalTrash = 150; // Reduced from 300
         const totalTurtles = 50;
         let gameActive = false;
         let items = [];
@@ -470,7 +470,7 @@
             audio.play().catch(e => console.log("Audio error:", e));
         }
 
-        // Spawn initial cluster of 300 trash and 50 turtles
+        // Spawn initial cluster of 150 trash and 50 turtles
         function spawnCluster() {
             items = [];
             for (let i = 0; i < totalTrash; i++) {
@@ -482,7 +482,7 @@
             console.log(`Spawned ${items.length} items`);
         }
 
-        // Handle clicks/taps with center accuracy
+        // Handle clicks/taps with moderate center accuracy
         function handleTap(e, isTouch = false) {
             if (!gameActive) return;
             const rect = gameCanvas.getBoundingClientRect();
@@ -492,11 +492,11 @@
             const clickY = clientY - rect.top;
 
             items.forEach((item, index) => {
-                // Check if tap is within 20px of the center (40x40 effective area)
+                // Check if tap is within 30px of the center (60x60 effective area)
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 20) { // Center tap required
+                if (distance < 30) { // Moderate center tap required
                     animations.push(new TapAnimation(item.x, item.y, item.type));
                     playSound(item.type);
                     if (item.type === 'trash') {
@@ -537,7 +537,7 @@
             ctx.fillText(`Score: ${score}`, 10, 30);
             ctx.fillText(`Turtles: ${turtlesSaved}/${totalTurtles}`, 10, 60);
             ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 90);
-            ctx.fillText(`Items: ${350 - items.length}/350`, 10, 120);
+            ctx.fillText(`Items: ${200 - items.length}/200`, 10, 120);
 
             // Randomize draw order to hide turtles
             const shuffledItems = [...items].sort(() => Math.random() - 0.5);
