@@ -83,7 +83,7 @@
             border: 3px solid #4caf50;
             text-align: center;
         }
-        .content h2, .content h pull h3 {
+        .content h2, .content h3 {
             color: #2e7d32;
             margin-bottom: 15px;
         }
@@ -242,7 +242,7 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 150 trash items in 30 seconds to save 33 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
+        <p>Tap to clear 69 trash items in 30 seconds to save 33 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/33</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
@@ -282,10 +282,11 @@
         // Birdeye API key
         const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db";
 
-        // Fetch token price and liquidity
+        // Fetch token price, liquidity, and market cap
         async function updateTokenInfo() {
             try {
-                const response = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
+                // Try Price Volume API for price, liquidity, and market cap
+                const response = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=true", {
                     headers: {
                         "X-API-KEY": BIRDEYE_API_KEY,
                         "x-chain": "solana",
@@ -297,9 +298,29 @@
                     throw new Error(`Birdeye HTTP ${response.status}: ${errorText}`);
                 }
                 const data = await response.json();
+
+                // If market cap is not available, try Token Overview API
+                let marketCap = data.data.market_cap || null;
+                if (!marketCap) {
+                    const overviewResponse = await fetch("https://public-api.birdeye.so/defi/token_overview?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8", {
+                        headers: {
+                            "X-API-KEY": BIRDEYE_API_KEY,
+                            "x-chain": "solana",
+                            "accept": "application/json"
+                        }
+                    });
+                    if (overviewResponse.ok) {
+                        const overviewData = await overviewResponse.json();
+                        marketCap = overviewData.data?.market_cap || "N/A";
+                    } else {
+                        marketCap = "N/A (API access limited)";
+                    }
+                }
+
                 tokenInfoEl.innerHTML = `
                     <p><strong>Price:</strong> $${data.data.value.toFixed(6)}</p>
                     <p><strong>Liquidity:</strong> $${data.data.liquidity.toFixed(2)}</p>
+                    <p><strong>Market Cap:</strong> ${typeof marketCap === 'number' ? '$' + marketCap.toFixed(2) : marketCap}</p>
                     <p><strong>Mission:</strong> Fund conservation through community participation.</p>
                     <p><strong>Distribution:</strong> NFT stake to earn complete 100k Cryptodira in the conservation fund initial.</p>
                     <p><strong>Track:</strong> <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" target="_blank">Birdeye</a></p>
@@ -408,7 +429,7 @@
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
         let turtlesSaved = 0;
-        const totalTrash = 150;
+        const totalTrash = 69;
         const totalTurtles = 33;
         let gameActive = false;
         let trashItems = [];
@@ -420,7 +441,7 @@
         // Item (trash or turtle) object
         class Item {
             constructor(type) {
-                this.width = type === 'turtle' ? 80 : 40; // Turtles 80x80, trash 40x40
+                this.width = type === 'turtle' ? 60 : 40; // Turtles 60x60, trash 40x40
                 this.height = this.width;
                 // Restrict spawning to avoid top-left 150x150 status area
                 this.x = Math.random() * (canvasWidth - this.width - 150) + 150;
@@ -436,7 +457,7 @@
                 ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = '#fff';
-                ctx.font = this.type === 'turtle' ? '16px Roboto' : '12px Roboto'; // Smaller font for trash
+                ctx.font = this.type === 'turtle' ? '14px Roboto' : '12px Roboto';
                 ctx.textAlign = 'center';
                 ctx.fillText(this.type === 'turtle' ? 'Turtle' : 'Trash', this.x + this.width / 2, this.y + this.height / 2 + 10);
             }
@@ -460,7 +481,7 @@
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
                 ctx.beginPath();
-                ctx.arc(this.x + (this.type === 'turtle' ? 40 : 20), this.y + (this.type === 'turtle' ? 40 : 20), (this.type === 'turtle' ? 40 : 20) * (1 - this.timer), 0, Math.PI * 2);
+                ctx.arc(this.x + (this.type === 'turtle' ? 30 : 20), this.y + (this.type === 'turtle' ? 30 : 20), (this.type === 'turtle' ? 30 : 20) * (1 - this.timer), 0, Math.PI * 2);
                 ctx.fillStyle = this.type === 'turtle' ? 'rgba(46, 125, 50, 0.5)' : 'rgba(102, 102, 102, 0.5)';
                 ctx.fill();
                 ctx.restore();
@@ -525,7 +546,7 @@
             for (let i = 0; i < totalTurtles; i++) {
                 let turtle;
                 let attempts = 0;
-                const maxAttempts = 100; // Increased attempts for turtles
+                const maxAttempts = 100;
                 do {
                     turtle = new Item('turtle');
                     attempts++;
@@ -535,7 +556,7 @@
                 }
             }
 
-            // Spawn exactly 150 trash items, allowing overlap with turtles
+            // Spawn exactly 69 trash items, allowing overlap with turtles
             for (let i = 0; i < totalTrash; i++) {
                 trashItems.push(new Item('trash'));
             }
@@ -621,7 +642,6 @@
             scoreEl.textContent = score;
             turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
             timeLeftEl.textContent = Math.ceil(timeLeft);
-            highScoreEl.textContent = highScore;
             gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${Math.ceil(timeLeft)}s | High Score: ${highScore}`;
             gameActive = true;
             startBtn.style.display = 'none';
