@@ -231,6 +231,7 @@
             <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" class="button" target="_blank">Birdeye Chart</a>
             <a href="https://x.com/rareseaturtles" class="button" target="_blank">Follow on X</a>
             <a href="https://t.me/+FsJKNuEXxRRmZGRh" class="button" target="_blank">Join Telegram</a>
+            <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy" class="button" target="_blank">CDCF Wallet</a>
         </div>
     </div>
 
@@ -413,8 +414,8 @@
                 // Center cluster with tight range
                 this.x = Math.random() * 200 + 300; // x between 300 and 500
                 this.y = Math.random() * 100 + 150; // y between 150 and 250
-                this.width = 40;
-                this.height = 40;
+                this.width = 80; // Doubled from 40
+                this.height = 80; // Doubled from 40
                 this.type = type; // 'trash' or 'turtle'
             }
             draw() {
@@ -423,9 +424,9 @@
                 ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = '#fff';
-                ctx.font = '12px Roboto';
+                ctx.font = '16px Roboto'; // Adjusted font size for larger items
                 ctx.textAlign = 'center';
-                ctx.fillText(this.type === 'turtle' ? 'Turtle' : 'Trash', this.x + this.width / 2, this.y + this.height / 2 + 5);
+                ctx.fillText(this.type === 'turtle' ? 'Turtle' : 'Trash', this.x + this.width / 2, this.y + this.height / 2 + 10);
             }
         }
 
@@ -448,7 +449,7 @@
                 ctx.globalAlpha = this.opacity;
                 ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
                 ctx.beginPath();
-                ctx.arc(this.x + 20, this.y + 20, 20, 0, Math.PI * 2);
+                ctx.arc(this.x + 40, this.y + 40, 40, 0, Math.PI * 2); // Adjusted for doubled size
                 ctx.fill();
                 ctx.restore();
             }
