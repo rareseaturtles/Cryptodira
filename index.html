@@ -223,11 +223,10 @@
         <div class="roadmap">
             <ul>
                 <li><strong>August 2025:</strong> Achieve 15k MC, increase conservation fund to 120k $DIRA.</li>
-.emit
                 <li><strong>September 2025:</strong> Reach 20k MC, grow conservation fund to 150k $DIRA.</li>
                 <li><strong>October 2025:</strong> Hit 25k MC, expand conservation fund to 200k $DIRA.</li>
                 <li><strong>November 2025:</strong> Target 30k MC, raise conservation fund to 250k $DIRA.</li>
-                <li><strong>December 2025:</strong> Aim for 35k MC, boost conservation fund to 300k $DIRT</li>
+                <li><strong>December 2025:</strong> Aim for 35k MC, boost conservation fund to 300k $DIRA.</li>
             </ul>
         </div>
 
@@ -243,7 +242,7 @@
 
     <div class="content">
         <h2>Ocean Cleanup</h2>
-        <p>Tap to clear 150 trash items in 30 seconds to save all 50 sea turtles! Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
+        <p>Tap to clear 150 trash items in 30 seconds to save 50 sea turtles! Turtles are saved when no trash overlaps them. Tap near the center of trash for accuracy (10 points per trash) to beat your high score!</p>
         <canvas id="gameCanvas" width="800" height="400"></canvas>
         <div id="gameStatus">Score: <span id="score">0</span> | Turtles Saved: <span id="turtlesSaved">0/50</span> | Time: <span id="timeLeft">30</span>s | High Score: <span id="highScore">0</span></div>
         <button id="startBtn">Start Cleaning!</button>
@@ -413,9 +412,9 @@
         const totalTurtles = 50;
         let gameActive = false;
         let trashItems = [];
-        let turtles = []; // Separate array for turtles
+        let turtles = [];
         let animations = [];
-        let timeLeft = 30; // 30-second timer
+        let timeLeft = 30;
         let timerInterval;
 
         // Item (trash or turtle) object
@@ -423,15 +422,15 @@
             constructor(type) {
                 this.width = 80;
                 this.height = 80;
-                // Position items to avoid canvas edges
                 this.x = Math.random() * (canvasWidth - this.width - 40) + 20;
                 this.y = Math.random() * (canvasHeight - this.height - 40) + 20;
-                this.type = type; // 'trash' or 'turtle'
+                this.type = type;
                 this.centerX = this.x + this.width / 2;
                 this.centerY = this.y + this.height / 2;
+                this.isSaved = type === 'turtle' ? false : undefined; // Track if turtle is saved
             }
             draw() {
-                ctx.fillStyle = this.type === 'turtle' ? '#2e7d32' : '#666';
+                ctx.fillStyle = this.type === 'turtle' ? (this.isSaved ? '#4caf50' : '#2e7d32') : '#666';
                 ctx.beginPath();
                 ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
                 ctx.fill();
@@ -486,37 +485,49 @@
             return false;
         }
 
-        // Spawn turtles and trash without overlap
+        // Check if a turtle is overlapped by any trash
+        function isTurtleOverlapped(turtle) {
+            for (const trash of trashItems) {
+                const dx = (turtle.x + turtle.width / 2) - (trash.x + trash.width / 2);
+                const dy = (turtle.y + turtle.height / 2) - (trash.y + trash.height / 2);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < (turtle.width / 2 + trash.width / 2)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Update saved turtles count
+        function updateSavedTurtles() {
+            turtlesSaved = 0;
+            turtles.forEach(turtle => {
+                if (!isTurtleOverlapped(turtle)) {
+                    turtle.isSaved = true;
+                    turtlesSaved++;
+                } else {
+                    turtle.isSaved = false;
+                }
+            });
+            turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
+            if (turtlesSaved === turtles.length) {
+                endGame(true); // Victory when all turtles are saved
+            }
+        }
+
+        // Spawn turtles and trash
         function spawnCluster() {
             trashItems = [];
             turtles = [];
 
-            // Spawn turtles first
+            // Spawn exactly 50 turtles, allowing turtle-turtle overlap
             for (let i = 0; i < totalTurtles; i++) {
-                let turtle;
-                let attempts = 0;
-                const maxAttempts = 50;
-                do {
-                    turtle = new Item('turtle');
-                    attempts++;
-                } while (isOverlapping(turtle, turtles) && attempts < maxAttempts);
-                if (attempts < maxAttempts) {
-                    turtles.push(turtle);
-                }
+                turtles.push(new Item('turtle'));
             }
 
-            // Spawn trash, ensuring no overlap with turtles
+            // Spawn exactly 150 trash items, allowing overlap with turtles
             for (let i = 0; i < totalTrash; i++) {
-                let trash;
-                let attempts = 0;
-                const maxAttempts = 50;
-                do {
-                    trash = new Item('trash');
-                    attempts++;
-                } while (isOverlapping(trash, [...turtles, ...trashItems]) && attempts < maxAttempts);
-                if (attempts < maxAttempts) {
-                    trashItems.push(trash);
-                }
+                trashItems.push(new Item('trash'));
             }
             console.log(`Spawned ${turtles.length} turtles and ${trashItems.length} trash items`);
         }
@@ -530,6 +541,7 @@
             const clickX = clientX - rect.left;
             const clickY = clientY - rect.top;
 
+            let trashRemoved = false;
             trashItems.forEach((item, index) => {
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
@@ -540,11 +552,7 @@
                     trashItems.splice(index, 1);
                     score += 10;
                     scoreEl.textContent = score;
-                    if (trashItems.length === 0) {
-                        turtlesSaved = turtles.length; // All turtles saved when trash is cleared
-                        turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
-                        endGame(true); // Victory when all trash is cleared
-                    }
+                    trashRemoved = true;
                     if (score > highScore) {
                         highScore = score;
                         localStorage.setItem('highScore', highScore);
@@ -552,6 +560,9 @@
                     }
                 }
             });
+            if (trashRemoved) {
+                updateSavedTurtles();
+            }
         }
 
         gameCanvas.addEventListener('click', handleTap);
@@ -599,22 +610,23 @@
             spawnCluster();
             scoreEl.textContent = score;
             turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
-            timeLeftEl.textContent = timeLeft;
+            timeLeftEl.textContent = Math.ceil(timeLeft);
             highScoreEl.textContent = highScore;
-            gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${timeLeft}s | High Score: ${highScore}`;
+            gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${Math.ceil(timeLeft)}s | High Score: ${highScore}`;
             gameActive = true;
             startBtn.style.display = 'none';
             resetBtn.style.display = 'none';
 
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
-                timeLeft -= 1 / 60;
+                timeLeft -= 1;
                 timeLeftEl.textContent = Math.max(0, Math.ceil(timeLeft));
+                gameStatus.textContent = `Score: ${score} | Turtles Saved: ${turtlesSaved}/${totalTurtles} | Time: ${Math.ceil(timeLeft)}s | High Score: ${highScore}`;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     endGame(false);
                 }
-            }, 1000 / 60);
+            }, 1000); // Update every second
 
             gameLoop();
         }
