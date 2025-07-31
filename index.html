@@ -317,22 +317,22 @@
                 }
                 const priceData = await priceResponse.json();
 
-                // Fetch holder count from Birdeye token overview
+                // Fetch holder count from Birdeye Token - Holder List API
                 let holderCount = "N/A";
                 try {
-                    const overviewResponse = await fetch(`https://public-api.birdeye.so/defi/token_overview?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8`, {
+                    const holderResponse = await fetch(`https://public-api.birdeye.so/defi/v3/token/holder?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&limit=1`, {
                         headers: {
                             "X-API-KEY": BIRDEYE_API_KEY,
                             "x-chain": "solana",
                             "accept": "application/json"
                         }
                     });
-                    if (!overviewResponse.ok) {
-                        const errorText = await overviewResponse.text();
-                        throw new Error(`Birdeye Overview HTTP ${overviewResponse.status}: ${errorText}`);
+                    if (!holderResponse.ok) {
+                        const errorText = await holderResponse.text();
+                        throw new Error(`Birdeye Holder HTTP ${holderResponse.status}: ${errorText}`);
                     }
-                    const overviewData = await overviewResponse.json();
-                    holderCount = overviewData.data?.holders != null ? overviewData.data.holders : "N/A";
+                    const holderData = await holderResponse.json();
+                    holderCount = holderData.data?.total != null ? holderData.data.total : "N/A";
                 } catch (error) {
                     console.warn("Failed to fetch holder count:", error.message);
                 }
@@ -368,7 +368,7 @@
                 return new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
             } catch (error) {
                 console.warn("Primary RPC failed, switching to fallback:", error);
-                return new new solanaWeb3.Connection(FALLBACK_RPC_ENDPOINT, "confirmed");
+                return new solanaWeb3.Connection(FALLBACK_RPC_ENDPOINT, "confirmed");
             }
         }
 
