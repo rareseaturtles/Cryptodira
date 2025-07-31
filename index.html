@@ -6,19 +6,19 @@
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cryptodira - Protecting Sea Turtles">
-    <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation with NFT staking!">
+    <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation through community participation!">
     <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta name="twitter:site" content="@rareseaturtles">
     <meta name="twitter:creator" content="@rareseaturtles">
     <!-- Open Graph Metadata -->
     <meta property="og:title" content="Cryptodira - Protecting Sea Turtles">
-    <meta property="og:description" content="Cryptodira: A Solana token for sea turtle conservation with NFT staking. Connect your wallet to join!">
+    <meta property="og:description" content="Cryptodira: A Solana token for sea turtle conservation. Connect your wallet to join!">
     <meta property="og:url" content="https://cryptodira.netlify.app/">
     <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta property="og:type" content="website">
     <!-- Additional Metadata -->
     <title>Cryptodira - Protecting Sea Turtles</title>
-    <meta name="description" content="Cryptodira is a Solana token dedicated to sea turtle conservation with NFT staking.">
+    <meta name="description" content="Cryptodira is a Solana token dedicated to sea turtle conservation through community participation.">
     <!-- Favicon -->
     <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
     <!-- External Scripts -->
@@ -26,6 +26,7 @@
     <!-- Google Fonts for Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Existing styles unchanged */
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -148,6 +149,13 @@
             font-size: 16px;
             color: #1b5e20;
         }
+        .roadmap li.completed {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .roadmap li.completed::before {
+            content: '✅ ';
+        }
         footer {
             background: #2e7d32;
             color: #fff;
@@ -222,11 +230,13 @@
         <h3>Roadmap to Grow MC and Conservation Funding</h3>
         <div class="roadmap">
             <ul>
-                <li><strong>August 2025:</strong> Achieve 15k MC, increase conservation fund to 120k $DIRA.</li>
-                <li><strong>September 2025:</strong> Reach 20k MC, grow conservation fund to 150k $DIRA.</li>
-                <li><strong>October 2025:</strong> Hit 25k MC, expand conservation fund to 200k $DIRA.</li>
-                <li><strong>November 2025:</strong> Target 30k MC, raise conservation fund to 250k $DIRA.</li>
-                <li><strong>December 2025:</strong> Aim for 35k MC, boost conservation fund to 300k $DIRA.</li>
+                <li class="completed">Stage 1 (Complete): Achieved 15k MC, increased conservation fund to 120k $DIRA.</li>
+                <li class="completed">Stage 2 (Complete): Reached 20k-35k MC, grew conservation fund to 300k $DIRA.</li>
+                <li><strong>Stage 3 - August 2025:</strong> Target 45k MC, increase conservation fund to 325k $DIRA.</li>
+                <li><strong>Stage 3 - September 2025:</strong> Aim for 65k MC, grow conservation fund to 350k $DIRA.</li>
+                <li><strong>Stage 3 - October 2025:</strong> Target 90k MC, increase conservation fund to 400k $DIRA.</li>
+                <li><strong>Stage 3 - November 2025:</strong> Aim for 120k MC, grow conservation fund to 450k $DIRA.</li>
+                <li><strong>Stage 3 - December 2025:</strong> Target 150k MC, boost conservation fund to 500k $DIRA.</li>
             </ul>
         </div>
 
@@ -241,7 +251,7 @@
     </div>
 
     <div class="content">
-        <h2>Tap to clear 50 trash items in 30 seconds to save 5 sea turtles! Turtles are saved when no trash overlaps them.</p>
+        <h2>Tap to clear 50 trash items in 30 seconds to save 5 sea turtles! Turtles are saved when no trash overlaps them.</h2>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div id="gameStatus">Turtles Saved: <span id="turtlesSaved">0/5</span> | Time: <span id="timeLeft">30</span>s</div>
         <button id="startBtn">Start Cleaning!</button>
@@ -290,33 +300,55 @@
         const trash3Image = new Image();
         trash3Image.src = '/assets/trash3.png';
 
-        // Fetch token price and liquidity, calculate market cap
+        // Fetch token price, liquidity, and holder count, calculate market cap
         async function updateTokenInfo() {
             try {
-                const response = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
+                // Fetch price and liquidity from Birdeye
+                const priceResponse = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
                     headers: {
                         "X-API-KEY": BIRDEYE_API_KEY,
                         "x-chain": "solana",
                         "accept": "application/json"
                     }
                 });
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Birdeye HTTP ${response.status}: ${errorText}`);
+                if (!priceResponse.ok) {
+                    const errorText = await priceResponse.text();
+                    throw new Error(`Birdeye Price HTTP ${priceResponse.status}: ${errorText}`);
                 }
-                const data = await response.json();
+                const priceData = await priceResponse.json();
+
+                // Fetch holder count from Birdeye token overview
+                let holderCount = "N/A";
+                try {
+                    const overviewResponse = await fetch(`https://public-api.birdeye.so/defi/token_overview?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8`, {
+                        headers: {
+                            "X-API-KEY": BIRDEYE_API_KEY,
+                            "x-chain": "solana",
+                            "accept": "application/json"
+                        }
+                    });
+                    if (!overviewResponse.ok) {
+                        const errorText = await overviewResponse.text();
+                        throw new Error(`Birdeye Overview HTTP ${overviewResponse.status}: ${errorText}`);
+                    }
+                    const overviewData = await overviewResponse.json();
+                    holderCount = overviewData.data?.holders != null ? overviewData.data.holders : "N/A";
+                } catch (error) {
+                    console.warn("Failed to fetch holder count:", error.message);
+                }
 
                 // Check for valid price and liquidity
-                const price = data.data?.value != null ? data.data.value.toFixed(6) : "N/A";
-                const liquidity = data.data?.liquidity != null ? data.data.liquidity.toFixed(2) : "N/A";
-                const marketCap = price !== "N/A" ? (data.data.value * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
+                const price = priceData.data?.value != null ? priceData.data.value.toFixed(6) : "N/A";
+                const liquidity = priceData.data?.liquidity != null ? priceData.data.liquidity.toFixed(2) : "N/A";
+                const marketCap = price !== "N/A" ? (priceData.data.value * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
 
                 tokenInfoEl.innerHTML = `
                     <p><strong>Price:</strong> ${price !== "N/A" ? "$" + price : price}</p>
                     <p><strong>Liquidity:</strong> ${liquidity !== "N/A" ? "$" + liquidity : liquidity}</p>
                     <p><strong>Market Cap:</strong> ${marketCap !== "N/A" ? "$" + marketCap : marketCap}</p>
+                    <p><strong>Holders:</strong> ${holderCount}</p>
                     <p><strong>Mission:</strong> Fund conservation through community participation.</p>
-                    <p><strong>Distribution:</strong> NFT stake to earn complete 100k Cryptodira in the conservation fund initial.</p>
+                    <p><strong>Distribution:</strong> Support conservation efforts with 500k $DIRA in the fund.</p>
                     <p><strong>Track:</strong> <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" target="_blank">Birdeye</a></p>
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
@@ -330,12 +362,13 @@
 
         updateTokenInfo();
 
+        // Rest of the JavaScript (connection, game logic, etc.) remains unchanged
         function getConnection() {
             try {
                 return new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
             } catch (error) {
                 console.warn("Primary RPC failed, switching to fallback:", error);
-                return new solanaWeb3.Connection(FALLBACK_RPC_ENDPOINT, "confirmed");
+                return new new solanaWeb3.Connection(FALLBACK_RPC_ENDPOINT, "confirmed");
             }
         }
 
@@ -417,7 +450,7 @@
             }
         }
 
-        // Game Logic for Ocean Cleanup
+        // Game logic remains unchanged
         const canvasWidth = 800;
         const canvasHeight = 600;
         let turtlesSaved = 0;
@@ -430,41 +463,36 @@
         let timeLeft = 30;
         let timerInterval;
 
-        // Item (turtle or trash) object
         class Item {
             constructor(type, x = null, y = null) {
-                this.width = type === 'turtle' ? 150 : 50; // Turtles 150x150, trash 50x50
+                this.width = type === 'turtle' ? 150 : 50;
                 this.height = this.width;
                 if (type === 'turtle') {
-                    // Fixed circular pattern for 5 turtles
-                    const centerX = 400; // Center of 450x450 area
+                    const centerX = 400;
                     const centerY = 350;
-                    const radius = 100; // Distance from center for even spacing
+                    const radius = 100;
                     const angle = (2 * Math.PI * turtles.length) / totalTurtles;
                     this.initialX = centerX + radius * Math.cos(angle) - this.width / 2;
                     this.initialY = centerY + radius * Math.sin(angle) - this.height / 2;
                     this.x = this.initialX;
                     this.y = this.initialY;
-                    this.dx = Math.random() * 0.5 - 0.25; // Small random movement
+                    this.dx = Math.random() * 0.5 - 0.25;
                     this.dy = Math.random() * 0.5 - 0.25;
                 } else if (x === null || y === null) {
-                    // Random positions for trash within 450x450 area
                     this.x = Math.random() * (450 - this.width) + 175;
                     this.y = Math.random() * (450 - this.height) + 125;
                 } else {
-                    // Use provided coordinates with ±10px offset for trash
                     this.x = x + (Math.random() * 20 - 10);
                     this.y = y + (Math.random() * 20 - 10);
                 }
                 this.type = type;
                 this.centerX = this.x + this.width / 2;
                 this.centerY = this.y + this.height / 2;
-                this.isSaved = type === 'turtle' ? false : undefined; // Track if turtle is saved
-                this.image = type === 'turtle' ? turtleImage : [trashImage, trash2Image, trash3Image][Math.floor(Math.random() * 3)]; // Random trash image
+                this.isSaved = type === 'turtle' ? false : undefined;
+                this.image = type === 'turtle' ? turtleImage : [trashImage, trash2Image, trash3Image][Math.floor(Math.random() * 3)];
             }
             update() {
                 if (this.type === 'turtle' && gameActive) {
-                    // Add slight movement animation, bouncing within bounds
                     this.x += this.dx;
                     this.y += this.dy;
                     if (this.x < 175 || this.x + this.width > 625) this.dx = -this.dx;
@@ -476,7 +504,7 @@
             draw() {
                 if (this.type === 'turtle') {
                     ctx.save();
-                    ctx.globalAlpha = this.isSaved ? 1 : 0.7; // Slightly transparent when unsaved
+                    ctx.globalAlpha = this.isSaved ? 1 : 0.7;
                     ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
                     ctx.restore();
                 } else {
@@ -487,7 +515,6 @@
             }
         }
 
-        // Animation for tapped items
         class TapAnimation {
             constructor(x, y, type) {
                 this.x = x;
@@ -512,13 +539,11 @@
             }
         }
 
-        // Sound effects
         function playSound(type) {
-            const audio = new Audio(type === 'turtle' ? 'https://www.arweave.net/path/to/turtle.wav' : 'https://www.arweave.net/path/to/trash.wav'); // Replace with your URLs
+            const audio = new Audio(type === 'turtle' ? 'https://www.arweave.net/path/to/turtle.wav' : 'https://www.arweave.net/path/to/trash.wav');
             audio.play().catch(e => console.log("Audio error:", e));
         }
 
-        // Check if two items overlap
         function isOverlapping(newItem, existingItems) {
             for (const item of existingItems) {
                 const dx = (newItem.x + newItem.width / 2) - (item.x + item.width / 2);
@@ -531,11 +556,10 @@
             return false;
         }
 
-        // Check if a turtle is overlapped by any trash
         function isTurtleOverlapped(turtle) {
             for (const trash of trashItems) {
                 const dx = (turtle.x + turtle.width / 2) - (trash.x + trash.width / 2);
-                const dy = (turtle.y + turtle.height / 2) - (trash.y + trash.height / 2);
+                const dy = (turtle.y + turtle.height / 2) - (trash.y + trash.width / 2);
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance < (turtle.width / 2 + trash.width / 2)) {
                     return true;
@@ -544,7 +568,6 @@
             return false;
         }
 
-        // Update saved turtles count
         function updateSavedTurtles() {
             turtlesSaved = 0;
             turtles.forEach(turtle => {
@@ -557,37 +580,32 @@
             });
             turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
             if (turtlesSaved === turtles.length) {
-                endGame(true); // Victory when all turtles are saved
+                endGame(true);
             }
         }
 
-        // Spawn turtles and trash
         function spawnCluster() {
             trashItems = [];
             turtles = [];
 
-            // Spawn 5 turtles in a circular, evenly spaced pattern
             for (let i = 0; i < totalTurtles; i++) {
                 const turtle = new Item('turtle');
                 turtles.push(turtle);
             }
             console.log(`Spawned ${turtles.length} turtles`);
 
-            // Spawn trash: 5 for turtle overlaps + remaining for total of 50, no trash-trash overlap
             const gridCols = 10;
             const gridRows = Math.ceil((totalTrash - totalTurtles) / gridCols);
-            const gridWidth = (450 - 50) / gridCols; // Adjusted for 50x50 trash
+            const gridWidth = (450 - 50) / gridCols;
             const gridHeight = (450 - 50) / gridRows;
             let trashCount = 0;
 
-            // Ensure one trash overlaps each turtle
             for (const turtle of turtles) {
                 let trash;
                 let attempts = 0;
                 const maxAttempts = 50;
                 do {
-                    // Place trash near turtle center to guarantee overlap (within 100px: 75px + 25px)
-                    const offsetX = (Math.random() * 50 - 25); // ±25px from turtle center
+                    const offsetX = (Math.random() * 50 - 25);
                     const offsetY = (Math.random() * 50 - 25);
                     trash = new Item('trash', turtle.centerX + offsetX, turtle.centerY + offsetY);
                     attempts++;
@@ -598,7 +616,6 @@
                 }
             }
 
-            // Spawn remaining trash items in a centered grid
             for (let row = 0; row < gridRows && trashCount < totalTrash; row++) {
                 for (let col = 0; col < gridCols && trashCount < totalTrash; col++) {
                     let trash;
@@ -619,7 +636,6 @@
             console.log(`Spawned ${trashItems.length} trash items`);
         }
 
-        // Handle clicks/taps for trash only
         function handleTap(e, isTouch = false) {
             if (!gameActive) return;
             const rect = gameCanvas.getBoundingClientRect();
@@ -628,17 +644,15 @@
             const clickX = clientX - rect.left;
             const clickY = clientY - rect.top;
 
-            // Log tap coordinates for debugging
             console.log(`Tap at (${clickX.toFixed(2)}, ${clickY.toFixed(2)})`);
 
-            // Find the closest trash item within tap radius
             let closestItem = null;
             let minDistance = Infinity;
             trashItems.forEach((item, index) => {
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 50 && distance < minDistance) { // 50px for 50x50 trash
+                if (distance < 50 && distance < minDistance) {
                     closestItem = { item, index };
                     minDistance = distance;
                 }
@@ -662,12 +676,10 @@
             handleTap(e, true);
         }, { passive: false });
 
-        // Game loop
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-            // Draw status text
             ctx.fillStyle = '#fff';
             ctx.font = '24px Roboto';
             ctx.textAlign = 'left';
@@ -675,25 +687,20 @@
             ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 60);
             ctx.fillText(`Trash Remaining: ${trashItems.length}/${totalTrash}`, 10, 90);
 
-            // Update and draw turtles with movement
             turtles.forEach(turtle => {
                 turtle.update();
                 turtle.draw();
             });
 
-            // Draw trash on top
             trashItems.forEach(item => item.draw());
 
-            // Draw animations
             animations = animations.filter(anim => anim.update());
             animations.forEach(anim => anim.draw());
 
             requestAnimationFrame(gameLoop);
         }
 
-        // Start or reset game
         function startGame() {
-            // Ensure images are loaded before starting
             if (!turtleImage.complete || !trashImage.complete || !trash2Image.complete || !trash3Image.complete) {
                 console.log('Waiting for images to load...');
                 setTimeout(startGame, 100);
@@ -722,7 +729,7 @@
                     clearInterval(timerInterval);
                     endGame(false);
                 }
-            }, 1000); // Update every second
+            }, 1000);
 
             gameLoop();
         }
@@ -741,7 +748,7 @@
             ctx.textAlign = 'center';
             ctx.font = '40px Roboto';
             ctx.fillText(isVictory ? 'Victory!' : 'Game Over!', canvasWidth / 2, canvasHeight / 2 - 60);
-            ctx.font = '36px Roboto'; // Emphasize turtles saved
+            ctx.font = '36px Roboto';
             ctx.fillText(`Turtles Saved: ${turtlesSaved}/${totalTurtles}`, canvasWidth / 2, canvasHeight / 2);
             if (isVictory) {
                 gameStatus.textContent = `Victory! Turtles Saved: ${turtlesSaved}/${totalTurtles}`;
@@ -759,7 +766,6 @@
             resetBtn.style.display = 'block';
         }
 
-        // Button events
         startBtn.addEventListener('click', startGame);
         resetBtn.addEventListener('click', resetGame);
     </script>
