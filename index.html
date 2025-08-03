@@ -307,75 +307,63 @@
                 const liquidity = birdeyeData.data?.liquidity?.toFixed(2) || "N/A";
                 const marketCap = price !== "N/A" ? (birdeyeData.data.value * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
 
-                // Fetch holder count using Solana RPC with pagination
+                // Fetch holder count with timeout
                 let holderCount = "N/A";
-                try {
-                    const connection = new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
-                    const tokenProgramId = new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-                    const mintAddress = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
+                const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve("Timeout"), 3000)); // 3s timeout
+                const fetchHolders = async () => {
+                    try {
+                        const connection = new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
+                        let allAccounts = [];
+                        let cursor = null;
+                        const pageSize = 500; // Smaller page size for faster initial load
 
-                    // Fetch token accounts with pagination
-                    let allAccounts = [];
-                    let cursor = null;
-                    const pageSize = 1000; // Max accounts per request
-                    while (true) {
-                        const config = {
-                            filters: [
-                                { dataSize: 165 }, // Size of a token account
-                                { memcmp: { offset: 0, bytes: mintAddress.toBase58() } } // Match mint address
-                            ],
-                            commitment: "confirmed",
-                            before: cursor
-                        };
-                        const accounts = await connection.getProgramAccounts(tokenProgramId, config);
-                        allAccounts = allAccounts.concat(accounts);
-                        if (accounts.length < pageSize) break; // No more accounts
-                        cursor = accounts[accounts.length - 1].pubkey.toBase58(); // Set cursor for next page
-                    }
-
-                    // Parse token accounts and count unique owners with non-zero balance
-                    const uniqueHolders = new Set();
-                    for (const acc of allAccounts) {
-                        const data = acc.account.data;
-                        const balance = data.readBigUInt64LE(64); // Balance at offset 64
-                        if (balance > 0) { // Only count accounts with non-zero balance
-                            const owner = new solanaWeb3.PublicKey(data.slice(32, 64)).toString(); // Owner at offset 32
-                            uniqueHolders.add(owner);
+                        while (true) {
+                            const response = await connection.getProgramAccounts(
+                                new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+                                {
+                                    filters: [
+                                        { dataSize: 165 }, // Size of a token account
+                                        { memcmp: { offset: 0, bytes: TOKEN_MINT_ADDRESS.toBase58() } } // Match mint address
+                                    ],
+                                    commitment: "confirmed",
+                                    dataSlice: { offset: 32, length: 40 }, // Fetch owner (32 bytes) + balance (8 bytes)
+                                    before: cursor
+                                }
+                            );
+                            allAccounts = allAccounts.concat(response);
+                            if (response.length < pageSize) break;
+                            cursor = response[response.length - 1].pubkey.toBase58();
                         }
-                    }
-                    holderCount = uniqueHolders.size > 0 ? uniqueHolders.size : "N/A";
 
-                    // Fallback to secondary RPC if primary fails
-                    if (holderCount === "N/A") {
-                        const fallbackConnection = new solanaWeb3.Connection(FALLBACK_RPC_ENDPOINT, "confirmed");
-                        const accounts = await fallbackConnection.getProgramAccounts(tokenProgramId, {
-                            filters: [
-                                { dataSize: 165 },
-                                { memcmp: { offset: 0, bytes: mintAddress.toBase58() } }
-                            ],
-                            commitment: "confirmed"
-                        });
-                        const uniqueHoldersFallback = new Set();
-                        for (const acc of accounts) {
+                        // Count unique holders with non-zero balance
+                        const uniqueHolders = new Set();
+                        for (const acc of allAccounts) {
                             const data = acc.account.data;
-                            const balance = data.readBigUInt64LE(64);
+                            const balance = data.readBigUInt64LE(8); // Balance at offset 8 (after owner)
                             if (balance > 0) {
-                                const owner = new solanaWeb3.PublicKey(data.slice(32, 64)).toString();
-                                uniqueHoldersFallback.add(owner);
+                                const owner = new solanaWeb3.PublicKey(data.slice(0, 32)).toString();
+                                uniqueHolders.add(owner);
                             }
                         }
-                        holderCount = uniqueHoldersFallback.size > 0 ? uniqueHoldersFallback.size : "N/A";
+                        return uniqueHolders.size > 0 ? uniqueHolders.size : "N/A";
+                    } catch (rpcError) {
+                        console.warn("RPC fetch failed:", rpcError.message);
+                        return "N/A";
                     }
-                } catch (rpcError) {
-                    console.warn("180:", rpcError.message);
-                    holderCount = "N/A"; // Fallback to N/A instead of arbitrary 180
+                };
+
+                // Race fetchHolders against timeout
+                holderCount = await Promise.race([fetchHolders(), timeoutPromise]);
+                if (holderCount === "Timeout") {
+                    console.warn("Holder count fetch timed out after 3 seconds");
+                    holderCount = "N/A";
                 }
 
                 tokenInfoEl.innerHTML = `
                     <p><strong>Price:</strong> ${price !== "N/A" ? "$" + price : price}</p>
                     <p><strong>Liquidity:</strong> ${liquidity !== "N/A" ? "$" + liquidity : liquidity}</p>
                     <p><strong>Market Cap:</strong> ${marketCap !== "N/A" ? "$" + marketCap : marketCap}</p>
-                    <p><strong>Holders:</strong> ${holderCount !== "N/A" ? holderCount : "Unable to fetch holder count"}</p>
+                    <p><strong>Holders:</strong> ${holderCount !== "N/A" ? holderCount : "Unable to fetch, check <a href='https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8#holders' target='_blank'>Solscan</a>"}</p>
                     <p><strong>Mission:</strong> Fund conservation through community participation.</p>
                     <p><strong>Distribution:</strong> NFT stake to earn complete 100k Cryptodira in the conservation fund initial.</p>
                     <p><strong>Track:</strong> <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" target="_blank">Birdeye</a></p>
