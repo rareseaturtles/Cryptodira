@@ -6,19 +6,19 @@
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cryptodira - Protecting Sea Turtles">
-    <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation through community participation!">
+    <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation with NFT staking!">
     <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta name="twitter:site" content="@rareseaturtles">
     <meta name="twitter:creator" content="@rareseaturtles">
     <!-- Open Graph Metadata -->
     <meta property="og:title" content="Cryptodira - Protecting Sea Turtles">
-    <meta property="og:description" content="Cryptodira: A Solana token for sea turtle conservation. Connect your wallet to join!">
+    <meta property="og:description" content="Cryptodira: A Solana token for sea turtle conservation with NFT staking. Connect your wallet to join!">
     <meta property="og:url" content="https://cryptodira.netlify.app/">
     <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta property="og:type" content="website">
     <!-- Additional Metadata -->
     <title>Cryptodira - Protecting Sea Turtles</title>
-    <meta name="description" content="Cryptodira is a Solana token dedicated to sea turtle conservation through community participation.">
+    <meta name="description" content="Cryptodira is a Solana token dedicated to sea turtle conservation with NFT staking.">
     <!-- Favicon -->
     <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
     <!-- External Scripts -->
@@ -148,13 +148,6 @@
             font-size: 16px;
             color: #1b5e20;
         }
-        .roadmap li.completed {
-            color: #2e7d32;
-            font-weight: bold;
-        }
-        .roadmap li.completed::before {
-            content: '✅ ';
-        }
         footer {
             background: #2e7d32;
             color: #fff;
@@ -229,13 +222,11 @@
         <h3>Roadmap to Grow MC and Conservation Funding</h3>
         <div class="roadmap">
             <ul>
-                <li class="completed">Stage 1 (Complete): Achieved 15k MC, increased conservation fund to 120k $DIRA.</li>
-                <li class="completed">Stage 2 (Complete): Reached 20k-35k MC, grew conservation fund to 300k $DIRA.</li>
-                <li><strong>Stage 3 - August 2025:</strong> Target 45k MC, increase conservation fund to 325k $DIRA.</li>
-                <li><strong>Stage 3 - September 2025:</strong> Aim for 65k MC, grow conservation fund to 350k $DIRA.</li>
-                <li><strong>Stage 3 - October 2025:</strong> Target 90k MC, increase conservation fund to 400k $DIRA.</li>
-                <li><strong>Stage 3 - November 2025:</strong> Aim for 120k MC, grow conservation fund to 450k $DIRA.</li>
-                <li><strong>Stage 3 - December 2025:</strong> Target 150k MC, boost conservation fund to 500k $DIRA.</li>
+                <li><strong>August 2025:</strong> Achieve 15k MC, increase conservation fund to 120k $DIRA.</li>
+                <li><strong>September 2025:</strong> Reach 20k MC, grow conservation fund to 150k $DIRA.</li>
+                <li><strong>October 2025:</strong> Hit 25k MC, expand conservation fund to 200k $DIRA.</li>
+                <li><strong>November 2025:</strong> Target 30k MC, raise conservation fund to 250k $DIRA.</li>
+                <li><strong>December 2025:</strong> Aim for 35k MC, boost conservation fund to 300k $DIRA.</li>
             </ul>
         </div>
 
@@ -289,10 +280,6 @@
         const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db";
         const TOTAL_TOKEN_SUPPLY = 4880000; // 4.88M tokens
 
-        // Cache for holder count to avoid rate limits
-        let holderCache = { count: null, timestamp: 0 };
-        const CACHE_DURATION = 60 * 1000; // Cache for 1 minute
-
         // Load images
         const turtleImage = new Image();
         turtleImage.src = '/assets/turtle.png';
@@ -303,90 +290,100 @@
         const trash3Image = new Image();
         trash3Image.src = '/assets/trash3.png';
 
-        // Fetch token price, liquidity, and holder count, calculate market cap
+        // Fetch token price, liquidity, market cap, and holder count
         async function updateTokenInfo() {
             try {
-                // Check cache for holder count
-                const now = Date.now();
-                let holderCount = "N/A";
-                if (holderCache.count && now - holderCache.timestamp < CACHE_DURATION) {
-                    holderCount = holderCache.count;
-                } else {
-                    // Fetch holder count from Birdeye Token - Holder List API
-                    try {
-                        const holderResponse = await fetch(`https://public-api.birdeye.so/defi/v3/token/holder?address=${TOKEN_MINT_ADDRESS}&limit=1`, {
-                            headers: {
-                                "X-API-KEY": BIRDEYE_API_KEY,
-                                "x-chain": "solana",
-                                "accept": "application/json"
-                            }
-                        });
-                        if (!holderResponse.ok) {
-                            const errorText = await holderResponse.text();
-                            throw new Error(`Birdeye Holder HTTP ${holderResponse.status}: ${errorText}`);
-                        }
-                        const holderData = await holderResponse.json();
-                        holderCount = holderData.data?.total != null ? holderData.data.total : "N/A";
-                        // Update cache
-                        holderCache = { count: holderCount, timestamp: now };
-                    } catch (holderError) {
-                        console.warn("Failed to fetch holder count from /defi/v3/token/holder:", holderError.message);
-                        // Fallback to token overview endpoint
-                        try {
-                            const overviewResponse = await fetch(`https://public-api.birdeye.so/defi/token_overview?address=${TOKEN_MINT_ADDRESS}`, {
-                                headers: {
-                                    "X-API-KEY": BIRDEYE_API_KEY,
-                                    "x-chain": "solana",
-                                    "accept": "application/json"
-                                }
-                            });
-                            if (!overviewResponse.ok) {
-                                const errorText = await overviewResponse.text();
-                                throw new Error(`Birdeye Overview HTTP ${overviewResponse.status}: ${errorText}`);
-                            }
-                            const overviewData = await overviewResponse.json();
-                            holderCount = overviewData.data?.holders != null ? overviewData.data.holders : "N/A";
-                            // Update cache
-                            holderCache = { count: holderCount, timestamp: now };
-                        } catch (overviewError) {
-                            console.warn("Failed to fetch holder count from /defi/token_overview:", overviewError.message);
-                        }
-                    }
-                }
-
-                // Fetch price and liquidity from Birdeye
-                const priceResponse = await fetch(`https://public-api.birdeye.so/defi/price?address=${TOKEN_MINT_ADDRESS}&check_liquidity=100&include_liquidity=true`, {
+                // Fetch price, liquidity, and market cap from Birdeye
+                const birdeyeResponse = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
                     headers: {
                         "X-API-KEY": BIRDEYE_API_KEY,
                         "x-chain": "solana",
                         "accept": "application/json"
                     }
                 });
-                if (!priceResponse.ok) {
-                    const errorText = await priceResponse.text();
-                    throw new Error(`Birdeye Price HTTP ${priceResponse.status}: ${errorText}`);
-                }
-                const priceData = await priceResponse.json();
+                if (!birdeyeResponse.ok) throw new Error(`Birdeye HTTP ${birdeyeResponse.status}`);
+                const birdeyeData = await birdeyeResponse.json();
+                const price = birdeyeData.data?.value?.toFixed(6) || "N/A";
+                const liquidity = birdeyeData.data?.liquidity?.toFixed(2) || "N/A";
+                const marketCap = price !== "N/A" ? (birdeyeData.data.value * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
 
-                // Check for valid price and liquidity
-                const price = priceData.data?.value != null ? priceData.data.value.toFixed(6) : "N/A";
-                const liquidity = priceData.data?.liquidity != null ? priceData.data.liquidity.toFixed(2) : "N/A";
-                const marketCap = price !== "N/A" ? (priceData.data.value * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
+                // Fetch holder count using Solana RPC with pagination
+                let holderCount = "N/A";
+                try {
+                    const connection = new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
+                    const tokenProgramId = new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+                    const mintAddress = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
+
+                    // Fetch token accounts with pagination
+                    let allAccounts = [];
+                    let cursor = null;
+                    const pageSize = 1000; // Max accounts per request
+                    while (true) {
+                        const config = {
+                            filters: [
+                                { dataSize: 165 }, // Size of a token account
+                                { memcmp: { offset: 0, bytes: mintAddress.toBase58() } } // Match mint address
+                            ],
+                            commitment: "confirmed",
+                            before: cursor
+                        };
+                        const accounts = await connection.getProgramAccounts(tokenProgramId, config);
+                        allAccounts = allAccounts.concat(accounts);
+                        if (accounts.length < pageSize) break; // No more accounts
+                        cursor = accounts[accounts.length - 1].pubkey.toBase58(); // Set cursor for next page
+                    }
+
+                    // Parse token accounts and count unique owners with non-zero balance
+                    const uniqueHolders = new Set();
+                    for (const acc of allAccounts) {
+                        const data = acc.account.data;
+                        const balance = data.readBigUInt64LE(64); // Balance at offset 64
+                        if (balance > 0) { // Only count accounts with non-zero balance
+                            const owner = new solanaWeb3.PublicKey(data.slice(32, 64)).toString(); // Owner at offset 32
+                            uniqueHolders.add(owner);
+                        }
+                    }
+                    holderCount = uniqueHolders.size > 0 ? uniqueHolders.size : "N/A";
+
+                    // Fallback to secondary RPC if primary fails
+                    if (holderCount === "N/A") {
+                        const fallbackConnection = new solanaWeb3.Connection(FALLBACK_RPC_ENDPOINT, "confirmed");
+                        const accounts = await fallbackConnection.getProgramAccounts(tokenProgramId, {
+                            filters: [
+                                { dataSize: 165 },
+                                { memcmp: { offset: 0, bytes: mintAddress.toBase58() } }
+                            ],
+                            commitment: "confirmed"
+                        });
+                        const uniqueHoldersFallback = new Set();
+                        for (const acc of accounts) {
+                            const data = acc.account.data;
+                            const balance = data.readBigUInt64LE(64);
+                            if (balance > 0) {
+                                const owner = new solanaWeb3.PublicKey(data.slice(32, 64)).toString();
+                                uniqueHoldersFallback.add(owner);
+                            }
+                        }
+                        holderCount = uniqueHoldersFallback.size > 0 ? uniqueHoldersFallback.size : "N/A";
+                    }
+                } catch (rpcError) {
+                    console.warn("Failed to fetch holder count:", rpcError.message);
+                    holderCount = "N/A"; // Fallback to N/A instead of arbitrary 180
+                }
 
                 tokenInfoEl.innerHTML = `
                     <p><strong>Price:</strong> ${price !== "N/A" ? "$" + price : price}</p>
                     <p><strong>Liquidity:</strong> ${liquidity !== "N/A" ? "$" + liquidity : liquidity}</p>
                     <p><strong>Market Cap:</strong> ${marketCap !== "N/A" ? "$" + marketCap : marketCap}</p>
-                    <p><strong>Holders:</strong> ${holderCount}</p>
+                    <p><strong>Holders:</strong> ${holderCount !== "N/A" ? holderCount : "Unable to fetch holder count"}</p>
                     <p><strong>Mission:</strong> Fund conservation through community participation.</p>
-                    <p><strong>Distribution:</strong> Support conservation efforts with 500k $DIRA in the fund.</p>
+                    <p><strong>Distribution:</strong> NFT stake to earn complete 100k Cryptodira in the conservation fund initial.</p>
                     <p><strong>Track:</strong> <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" target="_blank">Birdeye</a></p>
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
             } catch (error) {
-                console.error("Error fetching token data:", error.message);
                 tokenInfoEl.innerHTML = `
-                    <p>Error fetching token data: ${error.message}. Check API key or token address.</p>
+                    <p>Error fetching token data: ${error.message}. Check network or retry later.</p>
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
             }
@@ -394,7 +391,6 @@
 
         updateTokenInfo();
 
-        // Rest of the JavaScript (connection, game logic, etc.) remains unchanged
         function getConnection() {
             try {
                 return new solanaWeb3.Connection(RPC_ENDPOINT, "confirmed");
@@ -482,7 +478,7 @@
             }
         }
 
-        // Game logic remains unchanged
+        // Game Logic for Ocean Cleanup
         const canvasWidth = 800;
         const canvasHeight = 600;
         let turtlesSaved = 0;
@@ -495,36 +491,41 @@
         let timeLeft = 30;
         let timerInterval;
 
+        // Item (turtle or trash) object
         class Item {
             constructor(type, x = null, y = null) {
-                this.width = type === 'turtle' ? 150 : 50;
+                this.width = type === 'turtle' ? 150 : 50; // Turtles 150x150, trash 50x50
                 this.height = this.width;
                 if (type === 'turtle') {
-                    const centerX = 400;
+                    // Fixed circular pattern for 5 turtles
+                    const centerX = 400; // Center of 450x450 area
                     const centerY = 350;
-                    const radius = 100;
+                    const radius = 100; // Distance from center for even spacing
                     const angle = (2 * Math.PI * turtles.length) / totalTurtles;
                     this.initialX = centerX + radius * Math.cos(angle) - this.width / 2;
                     this.initialY = centerY + radius * Math.sin(angle) - this.height / 2;
                     this.x = this.initialX;
                     this.y = this.initialY;
-                    this.dx = Math.random() * 0.5 - 0.25;
+                    this.dx = Math.random() * 0.5 - 0.25; // Small random movement
                     this.dy = Math.random() * 0.5 - 0.25;
                 } else if (x === null || y === null) {
+                    // Random positions for trash within 450x450 area
                     this.x = Math.random() * (450 - this.width) + 175;
                     this.y = Math.random() * (450 - this.height) + 125;
                 } else {
+                    // Use provided coordinates with ±10px offset for trash
                     this.x = x + (Math.random() * 20 - 10);
                     this.y = y + (Math.random() * 20 - 10);
                 }
                 this.type = type;
                 this.centerX = this.x + this.width / 2;
                 this.centerY = this.y + this.height / 2;
-                this.isSaved = type === 'turtle' ? false : undefined;
-                this.image = type === 'turtle' ? turtleImage : [trashImage, trash2Image, trash3Image][Math.floor(Math.random() * 3)];
+                this.isSaved = type === 'turtle' ? false : undefined; // Track if turtle is saved
+                this.image = type === 'turtle' ? turtleImage : [trashImage, trash2Image, trash3Image][Math.floor(Math.random() * 3)]; // Random trash image
             }
             update() {
                 if (this.type === 'turtle' && gameActive) {
+                    // Add slight movement animation, bouncing within bounds
                     this.x += this.dx;
                     this.y += this.dy;
                     if (this.x < 175 || this.x + this.width > 625) this.dx = -this.dx;
@@ -536,7 +537,7 @@
             draw() {
                 if (this.type === 'turtle') {
                     ctx.save();
-                    ctx.globalAlpha = this.isSaved ? 1 : 0.7;
+                    ctx.globalAlpha = this.isSaved ? 1 : 0.7; // Slightly transparent when unsaved
                     ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
                     ctx.restore();
                 } else {
@@ -547,6 +548,7 @@
             }
         }
 
+        // Animation for tapped items
         class TapAnimation {
             constructor(x, y, type) {
                 this.x = x;
@@ -571,11 +573,13 @@
             }
         }
 
+        // Sound effects
         function playSound(type) {
-            const audio = new Audio(type === 'turtle' ? 'https://www.arweave.net/path/to/turtle.wav' : 'https://www.arweave.net/path/to/trash.wav');
+            const audio = new Audio(type === 'turtle' ? 'https://www.arweave.net/path/to/turtle.wav' : 'https://www.arweave.net/path/to/trash.wav'); // Replace with your URLs
             audio.play().catch(e => console.log("Audio error:", e));
         }
 
+        // Check if two items overlap
         function isOverlapping(newItem, existingItems) {
             for (const item of existingItems) {
                 const dx = (newItem.x + newItem.width / 2) - (item.x + item.width / 2);
@@ -588,10 +592,11 @@
             return false;
         }
 
+        // Check if a turtle is overlapped by any trash
         function isTurtleOverlapped(turtle) {
             for (const trash of trashItems) {
                 const dx = (turtle.x + turtle.width / 2) - (trash.x + trash.width / 2);
-                const dy = (turtle.y + turtle.height / 2) - (trash.y + trash.width / 2);
+                const dy = (turtle.y + turtle.height / 2) - (trash.y + trash.height / 2);
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance < (turtle.width / 2 + trash.width / 2)) {
                     return true;
@@ -600,6 +605,7 @@
             return false;
         }
 
+        // Update saved turtles count
         function updateSavedTurtles() {
             turtlesSaved = 0;
             turtles.forEach(turtle => {
@@ -612,32 +618,37 @@
             });
             turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
             if (turtlesSaved === turtles.length) {
-                endGame(true);
+                endGame(true); // Victory when all turtles are saved
             }
         }
 
+        // Spawn turtles and trash
         function spawnCluster() {
             trashItems = [];
             turtles = [];
 
+            // Spawn 5 turtles in a circular, evenly spaced pattern
             for (let i = 0; i < totalTurtles; i++) {
                 const turtle = new Item('turtle');
                 turtles.push(turtle);
             }
             console.log(`Spawned ${turtles.length} turtles`);
 
+            // Spawn trash: 5 for turtle overlaps + remaining for total of 50, no trash-trash overlap
             const gridCols = 10;
             const gridRows = Math.ceil((totalTrash - totalTurtles) / gridCols);
-            const gridWidth = (450 - 50) / gridCols;
+            const gridWidth = (450 - 50) / gridCols; // Adjusted for 50x50 trash
             const gridHeight = (450 - 50) / gridRows;
             let trashCount = 0;
 
+            // Ensure one trash overlaps each turtle
             for (const turtle of turtles) {
                 let trash;
                 let attempts = 0;
                 const maxAttempts = 50;
                 do {
-                    const offsetX = (Math.random() * 50 - 25);
+                    // Place trash near turtle center to guarantee overlap (within 100px: 75px + 25px)
+                    const offsetX = (Math.random() * 50 - 25); // ±25px from turtle center
                     const offsetY = (Math.random() * 50 - 25);
                     trash = new Item('trash', turtle.centerX + offsetX, turtle.centerY + offsetY);
                     attempts++;
@@ -648,6 +659,7 @@
                 }
             }
 
+            // Spawn remaining trash items in a centered grid
             for (let row = 0; row < gridRows && trashCount < totalTrash; row++) {
                 for (let col = 0; col < gridCols && trashCount < totalTrash; col++) {
                     let trash;
@@ -668,6 +680,7 @@
             console.log(`Spawned ${trashItems.length} trash items`);
         }
 
+        // Handle clicks/taps for trash only
         function handleTap(e, isTouch = false) {
             if (!gameActive) return;
             const rect = gameCanvas.getBoundingClientRect();
@@ -676,15 +689,17 @@
             const clickX = clientX - rect.left;
             const clickY = clientY - rect.top;
 
+            // Log tap coordinates for debugging
             console.log(`Tap at (${clickX.toFixed(2)}, ${clickY.toFixed(2)})`);
 
+            // Find the closest trash item within tap radius
             let closestItem = null;
             let minDistance = Infinity;
             trashItems.forEach((item, index) => {
                 const dx = clickX - item.centerX;
                 const dy = clickY - item.centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 50 && distance < minDistance) {
+                if (distance < 50 && distance < minDistance) { // 50px for 50x50 trash
                     closestItem = { item, index };
                     minDistance = distance;
                 }
@@ -708,10 +723,12 @@
             handleTap(e, true);
         }, { passive: false });
 
+        // Game loop
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+            // Draw status text
             ctx.fillStyle = '#fff';
             ctx.font = '24px Roboto';
             ctx.textAlign = 'left';
@@ -719,20 +736,25 @@
             ctx.fillText(`Time: ${Math.ceil(timeLeft)}s`, 10, 60);
             ctx.fillText(`Trash Remaining: ${trashItems.length}/${totalTrash}`, 10, 90);
 
+            // Update and draw turtles with movement
             turtles.forEach(turtle => {
                 turtle.update();
                 turtle.draw();
             });
 
+            // Draw trash on top
             trashItems.forEach(item => item.draw());
 
+            // Draw animations
             animations = animations.filter(anim => anim.update());
             animations.forEach(anim => anim.draw());
 
             requestAnimationFrame(gameLoop);
         }
 
+        // Start or reset game
         function startGame() {
+            // Ensure images are loaded before starting
             if (!turtleImage.complete || !trashImage.complete || !trash2Image.complete || !trash3Image.complete) {
                 console.log('Waiting for images to load...');
                 setTimeout(startGame, 100);
@@ -761,7 +783,7 @@
                     clearInterval(timerInterval);
                     endGame(false);
                 }
-            }, 1000);
+            }, 1000); // Update every second
 
             gameLoop();
         }
@@ -780,7 +802,7 @@
             ctx.textAlign = 'center';
             ctx.font = '40px Roboto';
             ctx.fillText(isVictory ? 'Victory!' : 'Game Over!', canvasWidth / 2, canvasHeight / 2 - 60);
-            ctx.font = '36px Roboto';
+            ctx.font = '36px Roboto'; // Emphasize turtles saved
             ctx.fillText(`Turtles Saved: ${turtlesSaved}/${totalTurtles}`, canvasWidth / 2, canvasHeight / 2);
             if (isVictory) {
                 gameStatus.textContent = `Victory! Turtles Saved: ${turtlesSaved}/${totalTurtles}`;
@@ -798,6 +820,7 @@
             resetBtn.style.display = 'block';
         }
 
+        // Button events
         startBtn.addEventListener('click', startGame);
         resetBtn.addEventListener('click', resetGame);
     </script>
