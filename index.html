@@ -367,7 +367,7 @@
                         holderCount = uniqueHoldersFallback.size > 0 ? uniqueHoldersFallback.size : "N/A";
                     }
                 } catch (rpcError) {
-                    console.warn("Failed to fetch holder count:", rpcError.message);
+                    console.warn("180:", rpcError.message);
                     holderCount = "N/A"; // Fallback to N/A instead of arbitrary 180
                 }
 
