@@ -470,6 +470,78 @@
         const darkModeToggle = document.getElementById('darkModeToggle');
         const sparkleCanvas = document.getElementById('sparkle-canvas');
 
+// Dark mode toggle logic
+darkModeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    if (document.body.classList.contains('dark-mode')) {
+        darkModeToggle.textContent = '☀️ Light Mode';
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        darkModeToggle.textContent = '🌙 Dark Mode';
+        localStorage.setItem('darkMode', 'disabled');
+    }
+});
+
+// Load dark mode preference on page load
+if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+    darkModeToggle.textContent = '☀️ Light Mode';
+}
+
+// Sparkle canvas animation for dark mode
+const sparkleCtx = sparkleCanvas.getContext('2d');
+let sparkles = [];
+
+class Sparkle {
+    constructor() {
+        this.x = Math.random() * sparkleCanvas.width;
+        this.y = Math.random() * sparkleCanvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 2 - 1;
+        this.speedY = Math.random() * 2 - 1;
+        this.opacity = Math.random() * 0.5 + 0.5;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.opacity -= 0.01;
+        if (this.opacity <= 0) {
+            this.x = Math.random() * sparkleCanvas.width;
+            this.y = Math.random() * sparkleCanvas.height;
+            this.opacity = Math.random() * 0.5 + 0.5;
+        }
+    }
+    draw() {
+        sparkleCtx.beginPath();
+        sparkleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        sparkleCtx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+        sparkleCtx.fill();
+    }
+}
+
+function resizeSparkleCanvas() {
+    sparkleCanvas.width = window.innerWidth;
+    sparkleCanvas.height = window.innerHeight;
+}
+
+function animateSparkles() {
+    if (!document.body.classList.contains('dark-mode')) {
+        sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
+        return;
+    }
+    sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
+    if (sparkles.length < 50) sparkles.push(new Sparkle());
+    sparkles.forEach(sparkle => {
+        sparkle.update();
+        sparkle.draw();
+    });
+    requestAnimationFrame(animateSparkles);
+}
+
+window.addEventListener('resize', resizeSparkleCanvas);
+resizeSparkleCanvas();
+animateSparkles();
+
         // Solana config
         const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
         const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/FhRe8GPzziOkp5qiOF5OO4erPzDYvoF_";
