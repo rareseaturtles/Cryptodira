@@ -42,19 +42,19 @@
             position: relative;
         }
         body.dark-mode {
-            background: #181c1f !important;
+            background: #000000 !important; /* Solid black background */
             color: #00FFFF !important; /* Bright neon cyan for all text */
             transition: all 0.3s ease; /* Smooth transition for mode switch */
         }
         body.dark-mode header {
-            background: linear-gradient(135deg, #2c3e50 80%, #34495e 100%); /* Darker gradient for better contrast */
+            background: rgba(0, 0, 0, 0.8); /* Transparent black overlay */
             color: #00FFFF;
             padding: 1rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
         }
         body.dark-mode .content {
-            background: rgba(30, 36, 40, 0.95); /* Darker background for contrast */
+            background: rgba(0, 0, 0, 0.7); /* Dark transparent overlay */
             color: #00FFFF;
             border: 1px solid #26a69a;
             border-radius: 8px;
@@ -62,7 +62,7 @@
             transition: background 0.3s ease;
         }
         body.dark-mode .roadmap, body.dark-mode .featured-nft {
-            background: rgba(38, 166, 154, 0.5); /* Increased opacity for better contrast */
+            background: rgba(0, 0, 0, 0.6); /* Transparent black for roadmap */
             color: #00FFFF;
             padding: 1rem;
             border-radius: 5px;
@@ -71,17 +71,17 @@
         }
         body.dark-mode .roadmap:hover, body.dark-mode .featured-nft:hover {
             transform: translateY(-5px); /* Subtle lift on hover */
-            background: rgba(38, 166, 154, 0.7); /* Brighter on hover */
+            background: rgba(0, 0, 0, 0.8); /* Slightly darker on hover */
         }
         body.dark-mode footer {
-            background: linear-gradient(135deg, #2c3e50, #34495e); /* Darker gradient */
+            background: rgba(0, 0, 0, 0.8); /* Transparent black overlay */
             color: #00FFFF;
             padding: 1rem;
             margin-top: 2rem;
             transition: all 0.3s ease;
         }
         body.dark-mode .button, body.dark-mode #startBtn, body.dark-mode #resetBtn {
-            background: linear-gradient(135deg, #26a69a, #2c3e50);
+            background: linear-gradient(135deg, #26a69a, #000000);
             color: #00FFFF;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -90,12 +90,12 @@
             transition: all 0.3s ease;
         }
         body.dark-mode .button:hover, body.dark-mode #startBtn:hover, body.dark-mode #resetBtn:hover {
-            background: linear-gradient(135deg, #00695c, #34495e);
+            background: linear-gradient(135deg, #00695c, #000000);
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         body.dark-mode #gameCanvas {
-            background: linear-gradient(180deg, #1e2529, #2c3e50); /* Darker gradient */
+            background: #000000; /* Solid black for game canvas */
             border: 2px solid #26a69a;
             border-radius: 5px;
             transition: all 0.3s ease;
