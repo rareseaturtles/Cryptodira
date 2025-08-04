@@ -46,24 +46,24 @@
             color: #00FFFF !important; /* Bright neon cyan for all text */
             transition: all 0.3s ease; /* Smooth transition for mode switch */
         }
+        body.dark-mode * {
+            color: #00FFFF !important; /* Ensure all text inherits bright color */
+        }
         body.dark-mode header {
-            background: rgba(0, 0, 0, 0.8); /* Transparent black overlay */
-            color: #00FFFF;
+            background: rgba(0, 0, 0, 0.85); /* Darker transparent overlay for better contrast */
             padding: 1rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
         }
         body.dark-mode .content {
-            background: rgba(0, 0, 0, 0.7); /* Dark transparent overlay */
-            color: #00FFFF;
+            background: rgba(0, 0, 0, 0.75); /* Darker transparent overlay */
             border: 1px solid #26a69a;
             border-radius: 8px;
             padding: 1.5rem;
             transition: background 0.3s ease;
         }
         body.dark-mode .roadmap, body.dark-mode .featured-nft {
-            background: rgba(0, 0, 0, 0.6); /* Transparent black for roadmap */
-            color: #00FFFF;
+            background: rgba(0, 0, 0, 0.7); /* Darker transparent overlay */
             padding: 1rem;
             border-radius: 5px;
             margin: 1rem 0;
@@ -71,11 +71,10 @@
         }
         body.dark-mode .roadmap:hover, body.dark-mode .featured-nft:hover {
             transform: translateY(-5px); /* Subtle lift on hover */
-            background: rgba(0, 0, 0, 0.8); /* Slightly darker on hover */
+            background: rgba(0, 0, 0, 0.9); /* Even darker on hover */
         }
         body.dark-mode footer {
-            background: rgba(0, 0, 0, 0.8); /* Transparent black overlay */
-            color: #00FFFF;
+            background: rgba(0, 0, 0, 0.85); /* Consistent with header */
             padding: 1rem;
             margin-top: 2rem;
             transition: all 0.3s ease;
@@ -101,12 +100,10 @@
             transition: all 0.3s ease;
         }
         body.dark-mode #status, body.dark-mode #gameStatus {
-            color: #00FFFF;
             margin-top: 1rem;
             transition: color 0.3s ease;
         }
         body.dark-mode #token-info {
-            color: #00FFFF;
             transition: color 0.3s ease;
         }
         body.dark-mode #darkModeToggle {
@@ -951,7 +948,7 @@
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            ctx.fillStyle = '#fff';
+            ctx.fillStyle = '#00FFFF'; /* Match game text brightness */
             ctx.font = '1.5rem Open Sans';
             ctx.textAlign = 'left';
             ctx.fillText(`Turtles Saved: ${turtlesSaved}/${totalTurtles}`, 10, 30);
@@ -1006,7 +1003,7 @@
             clearInterval(timerInterval);
             ctx.fillStyle = isVictory ? 'rgba(38, 166, 154, 0.7)' : 'rgba(239, 83, 80, 0.7)';
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-            ctx.fillStyle = '#fff';
+            ctx.fillStyle = '#00FFFF'; /* Match end game text brightness */
             ctx.textAlign = 'center';
             ctx.font = '3rem Roboto';
             ctx.fillText(isVictory ? 'Victory!' : 'Game Over!', canvasWidth / 2, canvasHeight / 2 - 40);
