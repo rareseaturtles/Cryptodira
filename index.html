@@ -43,18 +43,18 @@
         }
         body.dark-mode {
             background: #181c1f !important;
-            color: #00FFFF !important; /* Bright neon cyan without outline */
+            color: #00FFFF !important; /* Bright neon cyan for all text */
             transition: all 0.3s ease; /* Smooth transition for mode switch */
         }
         body.dark-mode header {
-            background: linear-gradient(135deg, #263238 80%, #37474f 100%);
+            background: linear-gradient(135deg, #2c3e50 80%, #34495e 100%); /* Darker gradient for better contrast */
             color: #00FFFF;
             padding: 1rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow */
             transition: all 0.3s ease;
         }
         body.dark-mode .content {
-            background: rgba(34, 40, 44, 0.97);
+            background: rgba(30, 36, 40, 0.95); /* Darker background for contrast */
             color: #00FFFF;
             border: 1px solid #26a69a;
             border-radius: 8px;
@@ -62,7 +62,7 @@
             transition: background 0.3s ease;
         }
         body.dark-mode .roadmap, body.dark-mode .featured-nft {
-            background: rgba(38, 166, 154, 0.3); /* Slightly darker teal */
+            background: rgba(38, 166, 154, 0.5); /* Increased opacity for better contrast */
             color: #00FFFF;
             padding: 1rem;
             border-radius: 5px;
@@ -71,17 +71,17 @@
         }
         body.dark-mode .roadmap:hover, body.dark-mode .featured-nft:hover {
             transform: translateY(-5px); /* Subtle lift on hover */
-            background: rgba(38, 166, 154, 0.5); /* Slightly brighter on hover */
+            background: rgba(38, 166, 154, 0.7); /* Brighter on hover */
         }
         body.dark-mode footer {
-            background: linear-gradient(135deg, #263238, #37474f);
+            background: linear-gradient(135deg, #2c3e50, #34495e); /* Darker gradient */
             color: #00FFFF;
             padding: 1rem;
             margin-top: 2rem;
             transition: all 0.3s ease;
         }
         body.dark-mode .button, body.dark-mode #startBtn, body.dark-mode #resetBtn {
-            background: linear-gradient(135deg, #26a69a, #263238);
+            background: linear-gradient(135deg, #26a69a, #2c3e50);
             color: #00FFFF;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -90,12 +90,12 @@
             transition: all 0.3s ease;
         }
         body.dark-mode .button:hover, body.dark-mode #startBtn:hover, body.dark-mode #resetBtn:hover {
-            background: linear-gradient(135deg, #00695c, #263238);
+            background: linear-gradient(135deg, #00695c, #34495e);
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         body.dark-mode #gameCanvas {
-            background: linear-gradient(180deg, #181c1f, #263238);
+            background: linear-gradient(180deg, #1e2529, #2c3e50); /* Darker gradient */
             border: 2px solid #26a69a;
             border-radius: 5px;
             transition: all 0.3s ease;
