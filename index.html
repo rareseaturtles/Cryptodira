@@ -42,58 +42,67 @@
             position: relative;
         }
         body.dark-mode {
-    background: #181c1f !important;
-    color: #00FFCC !important; /* Neon turquoise for better readability */
-}
-
-body.dark-mode header {
-    background: linear-gradient(135deg, #263238 80%, #37474f 100%);
-    color: #00FFCC; /* Neon turquoise for header text */
-}
-
-body.dark-mode .content {
-    background: rgba(34, 40, 44, 0.97);
-    color: #00FFCC; /* Neon turquoise for content text */
-    border-color: #26a69a;
-}
-
-body.dark-mode .roadmap, body.dark-mode .featured-nft {
-    background: rgba(38, 166, 154, 0.1);
-    color: #00FFCC; /* Neon turquoise for roadmap and NFT text */
-}
-
-body.dark-mode footer {
-    background: linear-gradient(135deg, #263238, #37474f);
-    color: #00FFCC; /* Neon turquoise for footer text */
-}
-
-body.dark-mode .button, body.dark-mode #startBtn, body.dark-mode #resetBtn {
-    background: linear-gradient(135deg, #26a69a, #263238);
-    color: #00FFCC; /* Neon turquoise for button text */
-}
-
-body.dark-mode #gameCanvas {
-    background: linear-gradient(180deg, #181c1f, #263238);
-    border-color: #26a69a;
-}
-
-body.dark-mode #status, body.dark-mode #gameStatus {
-    color: #00FFCC; /* Neon turquoise for status and game status text */
-}
-
-body.dark-mode #token-info {
-    color: #00FFCC; /* Neon turquoise for token info text */
-}
-
-body.dark-mode #darkModeToggle {
-    background: #fff;
-    color: #00FFCC; /* Neon turquoise for toggle button text */
-    border-color: #26a69a;
-}
-
-body.dark-mode #sparkle-canvas {
-    display: block;
-}
+            background: #181c1f !important;
+            color: #00FFCC !important; /* Neon turquoise with text shadow for readability */
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode header {
+            background: linear-gradient(135deg, #263238 80%, #37474f 100%);
+            color: #00FFCC;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode .content {
+            background: rgba(34, 40, 44, 0.97);
+            color: #00FFCC;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+            border-color: #26a69a;
+        }
+        body.dark-mode .roadmap, body.dark-mode .featured-nft {
+            background: rgba(38, 166, 154, 0.1);
+            color: #00FFCC;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode footer {
+            background: linear-gradient(135deg, #263238, #37474f);
+            color: #00FFCC;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode .button, body.dark-mode #startBtn, body.dark-mode #resetBtn {
+            background: linear-gradient(135deg, #26a69a, #263238);
+            color: #00FFCC;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode #gameCanvas {
+            background: linear-gradient(180deg, #181c1f, #263238);
+            border-color: #26a69a;
+        }
+        body.dark-mode #status, body.dark-mode #gameStatus {
+            color: #00FFCC;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode #token-info {
+            color: #00FFCC;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode #darkModeToggle {
+            background: #fff;
+            color: #00FFCC;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+            border-color: #26a69a;
+        }
+        body.dark-mode #sparkle-canvas {
+            display: block;
+        }
+        #sparkle-canvas {
+            position: fixed;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999;
+            display: none;
+        }
         header {
             text-align: center;
             padding: 60px 0;
@@ -399,7 +408,7 @@ body.dark-mode #sparkle-canvas {
     </style>
 </head>
 <body>
-    <button id="darkModeToggle" style="position: absolute; top: 20px; right: 20px; z-index: 2; padding: 10px 18px; border-radius: 8px; background: #fff; color: #0d4536; border: 2px solid #26a69a; font-size: 18px; cursor: pointer;">🌙 Dark Mode</button>
+    <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
     <canvas id="sparkle-canvas"></canvas>
     <header>
         <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
@@ -482,77 +491,77 @@ body.dark-mode #sparkle-canvas {
         const darkModeToggle = document.getElementById('darkModeToggle');
         const sparkleCanvas = document.getElementById('sparkle-canvas');
 
-// Dark mode toggle logic
-darkModeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    if (document.body.classList.contains('dark-mode')) {
-        darkModeToggle.textContent = '☀️ Light Mode';
-        localStorage.setItem('darkMode', 'enabled');
-    } else {
-        darkModeToggle.textContent = '🌙 Dark Mode';
-        localStorage.setItem('darkMode', 'disabled');
-    }
-});
+        // Dark mode toggle logic
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                darkModeToggle.textContent = '☀️ Light Mode';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                darkModeToggle.textContent = '🌙 Dark Mode';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
 
-// Load dark mode preference on page load
-if (localStorage.getItem('darkMode') === 'enabled') {
-    document.body.classList.add('dark-mode');
-    darkModeToggle.textContent = '☀️ Light Mode';
-}
-
-// Sparkle canvas animation for dark mode
-const sparkleCtx = sparkleCanvas.getContext('2d');
-let sparkles = [];
-
-class Sparkle {
-    constructor() {
-        this.x = Math.random() * sparkleCanvas.width;
-        this.y = Math.random() * sparkleCanvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 2 - 1;
-        this.speedY = Math.random() * 2 - 1;
-        this.opacity = Math.random() * 0.5 + 0.5;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.opacity -= 0.01;
-        if (this.opacity <= 0) {
-            this.x = Math.random() * sparkleCanvas.width;
-            this.y = Math.random() * sparkleCanvas.height;
-            this.opacity = Math.random() * 0.5 + 0.5;
+        // Load dark mode preference on page load
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.textContent = '☀️ Light Mode';
         }
-    }
-    draw() {
-        sparkleCtx.beginPath();
-        sparkleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        sparkleCtx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-        sparkleCtx.fill();
-    }
-}
 
-function resizeSparkleCanvas() {
-    sparkleCanvas.width = window.innerWidth;
-    sparkleCanvas.height = window.innerHeight;
-}
+        // Sparkle canvas animation for dark mode
+        const sparkleCtx = sparkleCanvas.getContext('2d');
+        let sparkles = [];
 
-function animateSparkles() {
-    if (!document.body.classList.contains('dark-mode')) {
-        sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
-        return;
-    }
-    sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
-    if (sparkles.length < 50) sparkles.push(new Sparkle());
-    sparkles.forEach(sparkle => {
-        sparkle.update();
-        sparkle.draw();
-    });
-    requestAnimationFrame(animateSparkles);
-}
+        class Sparkle {
+            constructor() {
+                this.x = Math.random() * sparkleCanvas.width;
+                this.y = Math.random() * sparkleCanvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.opacity = Math.random() * 0.5 + 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.01;
+                if (this.opacity <= 0) {
+                    this.x = Math.random() * sparkleCanvas.width;
+                    this.y = Math.random() * sparkleCanvas.height;
+                    this.opacity = Math.random() * 0.5 + 0.5;
+                }
+            }
+            draw() {
+                sparkleCtx.beginPath();
+                sparkleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                sparkleCtx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                sparkleCtx.fill();
+            }
+        }
 
-window.addEventListener('resize', resizeSparkleCanvas);
-resizeSparkleCanvas();
-animateSparkles();
+        function resizeSparkleCanvas() {
+            sparkleCanvas.width = window.innerWidth;
+            sparkleCanvas.height = window.innerHeight;
+        }
+
+        function animateSparkles() {
+            if (!document.body.classList.contains('dark-mode')) {
+                sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
+                return;
+            }
+            sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
+            if (sparkles.length < 50) sparkles.push(new Sparkle());
+            sparkles.forEach(sparkle => {
+                sparkle.update();
+                sparkle.draw();
+            });
+            requestAnimationFrame(animateSparkles);
+        }
+
+        window.addEventListener('resize', resizeSparkleCanvas);
+        resizeSparkleCanvas();
+        animateSparkles();
 
         // Solana config
         const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
