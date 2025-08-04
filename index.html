@@ -7,21 +7,21 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cryptodira - Save Sea Turtles">
     <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation efforts!">
-    <meta name="twitter:image" content="/assets/Turtle.jpg">
+    <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta name="twitter:site" content="@rareseaturtles">
     <meta name="twitter:creator" content="@rareseaturtles">
     <!-- Open Graph Metadata -->
     <meta property="og:title" content="Cryptodira - Save Sea Turtles">
     <meta property="og:description" content="Cryptodira: A Solana token dedicated to sea turtle conservation. Get involved today!">
     <meta property="og:url" content="https://cryptodira.netlify.app/">
-    <meta property="og:image" content="/assets/Turtle.jpg">
+    <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
     <meta property="og:type" content="website">
     <!-- SEO Meta Tags -->
     <meta name="description" content="Cryptodira is a Solana-based token supporting sea turtle conservation with community-driven initiatives.">
     <meta name="keywords" content="Cryptodira, sea turtle conservation, Solana token, environmental protection, crypto for good">
     <meta name="author" content="Cryptodira Team">
     <!-- Favicon -->
-    <link rel="icon" href="/assets/Turtle.jpg" type="image/jpeg">
+    <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
     <!-- External Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.91.1/lib/index.iife.min.js"></script>
     <!-- Google Fonts -->
@@ -163,6 +163,20 @@
             content: "○";
             color: #b0bec5;
         }
+        .featured-nft {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(178, 223, 219, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .featured-nft img {
+            max-width: 200px;
+            height: auto;
+            border: 3px solid #26a69a;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
         footer {
             background: #0d4536;
             color: #fff;
@@ -208,12 +222,13 @@
             .buttons { gap: 15px; }
             .logo { width: 120px; }
             #gameCanvas { width: 100%; height: 400px; }
+            .featured-nft img { max-width: 150px; }
         }
     </style>
 </head>
 <body>
     <header>
-        <img class="logo" src="/assets/Turtle.jpg" alt="Cryptodira Turtle NFT Logo">
+        <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
         <h1>Cryptodira</h1>
         <p>Supporting Sea Turtle Conservation on Solana</p>
     </header>
@@ -234,11 +249,17 @@
             <button class="button" onclick="updateTokenInfo()">Refresh</button>
         </div>
 
+        <h3>Featured NFT</h3>
+        <div class="featured-nft">
+            <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 5px 10px; font-size: 14px;">Explore Collection</a></p>
+            <img src="/assets/Turtle.jpg" alt="Featured Turtle NFT">
+        </div>
+
         <h3>Roadmap to Grow MC and Conservation Funding</h3>
         <div class="roadmap">
             <ul>
-                <li class="in-progress"><strong>Stage 1 (Complete):</strong> Achieved 15k MC, established 120k $DIRA conservation fund. <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 5px 10px; font-size: 14px;">Check Our NFTs!</a> <img src="/assets/Turtle.jpg" alt="Turtle NFT" style="width: 50px; height: auto; vertical-align: middle;"></li>
-                <li class="in-progress"><strong>Stage 2 (Complete):</strong> Reached 30k MC, grew conservation fund to 300k $DIRA. <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 5px 10px; font-size: 14px;">Explore the Collection!</a> <img src="/assets/Turtle.jpg" alt="Turtle NFT" style="width: 50px; height: auto; vertical-align: middle;"></li>
+                <li class="in-progress"><strong>Stage 1 (Complete):</strong> Achieved 15k MC, established 120k $DIRA conservation fund. <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 5px 10px; font-size: 14px;">Check Our NFTs!</a></li>
+                <li class="in-progress"><strong>Stage 2 (Complete):</strong> Reached 30k MC, grew conservation fund to 300k $DIRA. <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 5px 10px; font-size: 14px;">Explore the Collection!</a></li>
                 <li class="in-progress"><strong>Stage 3 (In Progress):</strong> Target 35k MC, increase conservation fund to 325k $DIRA by September 2025.</li>
                 <li class="future"><strong>Stage 4:</strong> Aim for 40k MC, grow conservation fund to 350k $DIRA by October 2025.</li>
                 <li class="future"><strong>Stage 5:</strong> Reach 50k MC, boost conservation fund to 400k $DIRA by December 2025.</li>
@@ -300,7 +321,7 @@
 
         // Load images
         const turtleImage = new Image();
-        turtleImage.src = '/assets/Turtle.jpg';
+        turtleImage.src = '/assets/turtle.png'; // Reverted to original game turtle
         const trashImage = new Image();
         trashImage.src = '/assets/trash.png';
         const trash2Image = new Image();
@@ -616,7 +637,7 @@
                 animations.push(new TapAnimation(item.x, item.y, item.type));
                 playSound(item.type);
                 trashItems.splice(index, 1);
-                score += 10; // 10 points per trash cleared
+                score += 10;
                 scoreEl.textContent = score;
                 if (score > highScore) {
                     highScore = score;
