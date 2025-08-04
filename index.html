@@ -42,46 +42,58 @@
             position: relative;
         }
         body.dark-mode {
-            background: #181c1f !important;
-            color: #e0f7fa !important;
-        }
-        body.dark-mode header {
-            background: linear-gradient(135deg, #263238 80%, #37474f 100%);
-        }
-        body.dark-mode .content {
-            background: rgba(34, 40, 44, 0.97);
-            color: #e0f7fa;
-            border-color: #26a69a;
-        }
-        body.dark-mode .roadmap, body.dark-mode .featured-nft {
-            background: rgba(38, 166, 154, 0.1);
-            color: #e0f7fa;
-        }
-        body.dark-mode footer {
-            background: linear-gradient(135deg, #263238, #37474f);
-            color: #e0f7fa;
-        }
-        body.dark-mode .button, body.dark-mode #startBtn, body.dark-mode #resetBtn {
-            background: linear-gradient(135deg, #26a69a, #263238);
-            color: #fff;
-        }
-        body.dark-mode #gameCanvas {
-            background: linear-gradient(180deg, #181c1f, #263238);
-            border-color: #26a69a;
-        }
-        #sparkle-canvas {
-            position: fixed;
-            pointer-events: none;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 999;
-            display: none;
-        }
-        body.dark-mode #sparkle-canvas {
-            display: block;
-        }
+    background: #181c1f !important;
+    color: #00FFCC !important; /* Neon turquoise for better readability */
+}
+
+body.dark-mode header {
+    background: linear-gradient(135deg, #263238 80%, #37474f 100%);
+    color: #00FFCC; /* Neon turquoise for header text */
+}
+
+body.dark-mode .content {
+    background: rgba(34, 40, 44, 0.97);
+    color: #00FFCC; /* Neon turquoise for content text */
+    border-color: #26a69a;
+}
+
+body.dark-mode .roadmap, body.dark-mode .featured-nft {
+    background: rgba(38, 166, 154, 0.1);
+    color: #00FFCC; /* Neon turquoise for roadmap and NFT text */
+}
+
+body.dark-mode footer {
+    background: linear-gradient(135deg, #263238, #37474f);
+    color: #00FFCC; /* Neon turquoise for footer text */
+}
+
+body.dark-mode .button, body.dark-mode #startBtn, body.dark-mode #resetBtn {
+    background: linear-gradient(135deg, #26a69a, #263238);
+    color: #00FFCC; /* Neon turquoise for button text */
+}
+
+body.dark-mode #gameCanvas {
+    background: linear-gradient(180deg, #181c1f, #263238);
+    border-color: #26a69a;
+}
+
+body.dark-mode #status, body.dark-mode #gameStatus {
+    color: #00FFCC; /* Neon turquoise for status and game status text */
+}
+
+body.dark-mode #token-info {
+    color: #00FFCC; /* Neon turquoise for token info text */
+}
+
+body.dark-mode #darkModeToggle {
+    background: #fff;
+    color: #00FFCC; /* Neon turquoise for toggle button text */
+    border-color: #26a69a;
+}
+
+body.dark-mode #sparkle-canvas {
+    display: block;
+}
         header {
             text-align: center;
             padding: 60px 0;
