@@ -42,39 +42,39 @@
             position: relative;
         }
         body.dark-mode {
-            background: #000000 !important; /* Solid black background */
-            color: #00FFFF !important; /* Bright neon cyan for all text */
-            transition: all 0.3s ease; /* Smooth transition for mode switch */
+            background: #000000 !important;
+            color: #00FFFF !important;
+            transition: all 0.3s ease;
         }
         body.dark-mode * {
-            color: #00FFFF !important; /* Ensure all text inherits bright color */
+            color: #00FFFF !important;
         }
         body.dark-mode header {
-            background: rgba(0, 0, 0, 0.85); /* Darker transparent overlay for better contrast */
+            background: rgba(0, 0, 0, 0.85);
             padding: 1rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
         }
         body.dark-mode .content {
-            background: rgba(0, 0, 0, 0.75); /* Darker transparent overlay */
+            background: rgba(0, 0, 0, 0.75);
             border: 1px solid #26a69a;
             border-radius: 8px;
             padding: 1.5rem;
             transition: background 0.3s ease;
         }
         body.dark-mode .roadmap, body.dark-mode .featured-nft {
-            background: rgba(0, 0, 0, 0.7); /* Darker transparent overlay */
+            background: rgba(0, 0, 0, 0.7);
             padding: 1rem;
             border-radius: 5px;
             margin: 1rem 0;
             transition: transform 0.2s ease, background 0.3s ease;
         }
         body.dark-mode .roadmap:hover, body.dark-mode .featured-nft:hover {
-            transform: translateY(-5px); /* Subtle lift on hover */
-            background: rgba(0, 0, 0, 0.9); /* Even darker on hover */
+            transform: translateY(-5px);
+            background: rgba(0, 0, 0, 0.9);
         }
         body.dark-mode footer {
-            background: rgba(0, 0, 0, 0.85); /* Consistent with header */
+            background: rgba(0, 0, 0, 0.85);
             padding: 1rem;
             margin-top: 2rem;
             transition: all 0.3s ease;
@@ -94,7 +94,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         body.dark-mode #gameCanvas {
-            background: #000000; /* Solid black for game canvas */
+            background: #000000;
             border: 2px solid #26a69a;
             border-radius: 5px;
             transition: all 0.3s ease;
@@ -135,7 +135,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 998; /* Below content but above body background */
+            z-index: 998;
             display: none;
         }
         header {
@@ -599,13 +599,19 @@
             }
         }
 
-        function resizeSparkleCanvas() {
+        function resizeCanvases() {
             sparkleCanvas.width = window.innerWidth;
             sparkleCanvas.height = window.innerHeight;
+            backgroundCanvas.width = window.innerWidth;
+            backgroundCanvas.height = window.innerHeight;
+            if (document.body.classList.contains('dark-mode')) {
+                initializeBackgroundItems();
+            }
         }
 
+        let animationFrameId = null;
         function animateSparkles() {
-            if (!document.body.classList.contains('dark-mode') || !sparkleCanvas.style.display === 'block') {
+            if (!document.body.classList.contains('dark-mode') || sparkleCanvas.style.display !== 'block') {
                 sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
                 return;
             }
@@ -615,7 +621,7 @@
                 sparkle.update();
                 sparkle.draw();
             });
-            requestAnimationFrame(animateSparkles);
+            animationFrameId = requestAnimationFrame(animateSparkles);
         }
 
         // Background canvas animation with floating characters
@@ -625,14 +631,16 @@
         class BackgroundItem {
             constructor(type) {
                 this.type = type;
-                this.width = 100; // Adjust size as needed based on your images
+                this.width = 100; // Adjust based on your image sizes
                 this.height = 100;
                 this.x = Math.random() * backgroundCanvas.width;
                 this.y = Math.random() * backgroundCanvas.height;
-                this.speedX = (Math.random() - 0.5) * 2; // Random horizontal speed
-                this.speedY = (Math.random() - 0.5) * 2; // Random vertical speed
+                this.speedX = (Math.random() - 0.5) * 2;
+                this.speedY = (Math.random() - 0.5) * 2;
                 this.image = new Image();
-                this.image.src = `/assets/${type}.png`; // Assuming images are in /assets folder
+                this.image.src = `/assets/${type}.png`;
+                this.image.onload = () => this.isLoaded = true;
+                this.isLoaded = false;
             }
             update() {
                 this.x += this.speedX;
@@ -643,29 +651,24 @@
                 if (this.y > backgroundCanvas.height) this.y = -this.height;
             }
             draw() {
-                backgroundCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
-            }
-        }
-
-        function resizeBackgroundCanvas() {
-            backgroundCanvas.width = window.innerWidth;
-            backgroundCanvas.height = window.innerHeight;
-            if (document.body.classList.contains('dark-mode')) {
-                initializeBackgroundItems();
+                if (this.isLoaded) {
+                    backgroundCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                }
             }
         }
 
         function initializeBackgroundItems() {
             backgroundItems = [];
             const types = ['Seahorse', 'Octopus', 'Fish', 'Whaleshark', 'Seaturtle'];
-            for (let i = 0; i < 10; i++) { // Adjust number of items as needed
+            for (let i = 0; i < 10; i++) {
                 const type = types[Math.floor(Math.random() * types.length)];
                 backgroundItems.push(new BackgroundItem(type));
             }
         }
 
+        let backgroundFrameId = null;
         function animateBackground() {
-            if (!document.body.classList.contains('dark-mode') || !backgroundCanvas.style.display === 'block') {
+            if (!document.body.classList.contains('dark-mode') || backgroundCanvas.style.display !== 'block') {
                 backgroundCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
                 return;
             }
@@ -674,16 +677,8 @@
                 item.update();
                 item.draw();
             });
-            requestAnimationFrame(animateBackground);
+            backgroundFrameId = requestAnimationFrame(animateBackground);
         }
-
-        window.addEventListener('resize', () => {
-            resizeSparkleCanvas();
-            resizeBackgroundCanvas();
-        });
-        resizeSparkleCanvas();
-        resizeBackgroundCanvas();
-        if (document.body.classList.contains('dark-mode')) initializeBackgroundItems();
 
         // Solana config
         const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
@@ -697,7 +692,7 @@
 
         // Birdeye API key
         const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db";
-        const TOTAL_TOKEN_SUPPLY = 4880000; // 4.88M tokens
+        const TOTAL_TOKEN_SUPPLY = 4880000;
 
         // Load images
         const turtleImage = new Image();
@@ -712,6 +707,7 @@
         // Fetch token price, liquidity, market cap, and holder count
         async function updateTokenInfo() {
             try {
+                console.log('Fetching token data...');
                 const birdeyeResponse = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
                     headers: {
                         "X-API-KEY": BIRDEYE_API_KEY,
@@ -721,6 +717,7 @@
                 });
                 if (!birdeyeResponse.ok) throw new Error(`Birdeye HTTP ${birdeyeResponse.status}`);
                 const birdeyeData = await birdeyeResponse.json();
+                console.log('Birdeye data:', birdeyeData);
                 const price = birdeyeData.data?.value?.toFixed(6) || "N/A";
                 const liquidity = birdeyeData.data?.liquidity?.toFixed(2) || "N/A";
                 const marketCap = price !== "N/A" ? (birdeyeData.data.value * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
@@ -758,6 +755,7 @@
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
             } catch (error) {
+                console.error('Token data error:', error);
                 tokenInfoEl.innerHTML = `
                     <p>Error fetching token data: ${error.message}. Check network or retry later.</p>
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
@@ -1034,7 +1032,7 @@
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            ctx.fillStyle = '#00FFFF'; /* Match game text brightness */
+            ctx.fillStyle = '#00FFFF';
             ctx.font = '1.5rem Open Sans';
             ctx.textAlign = 'left';
             ctx.fillText(`Turtles Saved: ${turtlesSaved}/${totalTurtles}`, 10, 30);
@@ -1089,7 +1087,7 @@
             clearInterval(timerInterval);
             ctx.fillStyle = isVictory ? 'rgba(38, 166, 154, 0.7)' : 'rgba(239, 83, 80, 0.7)';
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-            ctx.fillStyle = '#00FFFF'; /* Match end game text brightness */
+            ctx.fillStyle = '#00FFFF';
             ctx.textAlign = 'center';
             ctx.font = '3rem Roboto';
             ctx.fillText(isVictory ? 'Victory!' : 'Game Over!', canvasWidth / 2, canvasHeight / 2 - 40);
@@ -1114,6 +1112,15 @@
 
         startBtn.addEventListener('click', startGame);
         resetBtn.addEventListener('click', resetGame);
+
+        // Initialize canvases and start animations if in dark mode
+        window.addEventListener('resize', resizeCanvases);
+        resizeCanvases();
+        if (document.body.classList.contains('dark-mode')) {
+            initializeBackgroundItems();
+            animateSparkles();
+            animateBackground();
+        }
     </script>
 </body>
 </html>
