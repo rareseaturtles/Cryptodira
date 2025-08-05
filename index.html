@@ -23,11 +23,7 @@
     <!-- Favicon -->
     <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
     <!-- Preload Critical Images -->
-    <link rel="preload" href="/assets/Seahorse.png" as="image">
-    <link rel="preload" href="/assets/Octopus.png" as="image">
-    <link rel="preload" href="/assets/Fish.png" as="image">
-    <link rel="preload" href="/assets/Whaleshark.png" as="image">
-    <link rel="preload" href="/assets/Seaturtle.png" as="image">
+    <link rel="preload" href="/assets/Turtle.jpg" as="image">
     <!-- External Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.91.1/lib/index.iife.min.js"></script>
     <!-- Google Fonts -->
@@ -38,7 +34,6 @@
 </head>
 <body>
     <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
-    <canvas id="sparkle-canvas"></canvas>
     <canvas id="background-canvas"></canvas>
     <canvas id="swipe-canvas"></canvas>
     <header>
@@ -52,20 +47,20 @@
         <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and promoting environmental conservation through community efforts.</p>
         
         <div class="buttons">
-            <button class="button" id="connect-btn" onclick="connectWallet()">Connect Wallet</button>
-            <button class="button" id="disconnect-btn" onclick="disconnectWallet()">Disconnect</button>
+            <button class="button" id="connect-btn">Connect Wallet</button>
+            <button class="button" id="disconnect-btn">Disconnect</button>
         </div>
         <div id="status"></div>
 
         <h3>Tokenomics</h3>
         <div id="token-info">
-            <p>Loading token data...</p>
-            <button class="button" onclick="updateTokenInfo()">Refresh</button>
+            <p>Loading token data... <span class="loader"></span></p>
+            <button class="button" id="refresh-token">Refresh</button>
         </div>
 
         <h3>Featured NFT</h3>
         <div class="featured-nft">
-            <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem; z-index: 100; pointer-events: auto;">Explore Collection</a></p>
+            <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem;">Explore Collection</a></p>
             <img src="/assets/Turtle.jpg" alt="Featured Turtle NFT">
         </div>
 
