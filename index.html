@@ -70,9 +70,9 @@
             border: 1px solid #26a69a;
             border-radius: 8px;
             padding: 1.5rem;
-            margin-top: 6rem; /* Space for characters */
+            margin-top: 6rem;
             margin-bottom: 6rem;
-            z-index: 5; /* Below canvas */
+            z-index: 5;
         }
         body.dark-mode .roadmap, body.dark-mode .featured-nft {
             background: rgba(0, 0, 0, 0.7);
@@ -96,8 +96,9 @@
             padding: 0.75rem 1.5rem;
             border-radius: 5px;
             cursor: pointer;
-            z-index: 30; /* Increased to be above canvas */
-            position: relative; /* Ensure z-index applies */
+            z-index: 100; /* Match darkModeToggle */
+            position: relative;
+            pointer-events: auto; /* Ensure tappable */
         }
         body.dark-mode .button:hover, body.dark-mode #startBtn:hover, body.dark-mode #resetBtn:hover {
             background: linear-gradient(135deg, #00695c, #000000);
@@ -108,17 +109,19 @@
             background: #000000;
             border: 2px solid #26a69a;
             border-radius: 5px;
-            z-index: 15; /* Above background canvas */
+            z-index: 15;
         }
         body.dark-mode #status, body.dark-mode #gameStatus {
             margin-top: 1rem;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
             position: relative;
+            pointer-events: none; /* Text, not interactive */
         }
         body.dark-mode #token-info {
             transition: color 0.3s ease;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
             position: relative;
+            pointer-events: auto; /* Contains button */
         }
         body.dark-mode #darkModeToggle {
             background: #fff;
@@ -130,7 +133,8 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            z-index: 100; /* Above all */
+            z-index: 100;
+            pointer-events: auto;
         }
         body.dark-mode #darkModeToggle:hover {
             background: #e0f7fa;
@@ -152,7 +156,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 10; /* Below buttons */
+            z-index: 10;
             display: none;
             touch-action: pan-y;
             pointer-events: auto;
@@ -189,16 +193,16 @@
             text-shadow: 2px 2px 6px rgba(13, 69, 54, 0.4);
             font-family: 'Roboto', sans-serif;
             position: relative;
-            z-index: 1;
-            animation: fadeInDown 0.5s ease-out;
+            z-index: 100; /* Match darkModeToggle */
+            pointer-events: none;
         }
         header p {
             font-size: 1.375rem;
             color: #0d4536;
             margin: 0;
             position: relative;
-            z-index: 1;
-            animation: fadeInUp 0.5s ease-out 0.2s backwards;
+            z-index: 100; /* Match darkModeToggle */
+            pointer-events: none;
         }
         .logo {
             width: 10rem;
@@ -209,7 +213,7 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            z-index: 1;
+            z-index: 100; /* Match darkModeToggle */
             animation: float 2s infinite ease-in-out;
         }
         .logo:hover {
@@ -253,7 +257,8 @@
             font-family: 'Roboto', sans-serif;
             position: relative;
             padding-bottom: 0.5rem;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
+            pointer-events: none;
         }
         .content h2::after, .content h3::after {
             content: '';
@@ -273,7 +278,8 @@
             font-size: 1.125rem;
             color: #37474f;
             margin-bottom: 1.5rem;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
+            pointer-events: none;
         }
         .buttons {
             display: flex;
@@ -281,7 +287,9 @@
             justify-content: center;
             gap: 1.5rem;
             margin: 2rem 0;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
+            position: relative;
+            pointer-events: none; /* Container, buttons handle own events */
         }
         .button {
             padding: 0.75rem 1.5rem;
@@ -297,7 +305,8 @@
             min-width: 12.5rem;
             position: relative;
             overflow: hidden;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
+            pointer-events: auto; /* Ensure tappable */
         }
         .button::before {
             content: '';
@@ -333,8 +342,9 @@
             color: #0d4536;
             font-weight: bold;
             animation: fadeIn 0.5s ease-out 0.2s backwards;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
             position: relative;
+            pointer-events: none;
         }
         .roadmap {
             margin: 1.5rem 0;
@@ -349,7 +359,8 @@
             list-style: none;
             padding: 0;
             text-align: left;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
+            pointer-events: none;
         }
         .roadmap li {
             margin: 1.25rem 0;
@@ -360,6 +371,7 @@
             opacity: 0;
             animation: slideIn 0.5s ease-out forwards;
             animation-delay: calc(var(--order) * 0.2s);
+            pointer-events: none;
         }
         .roadmap li::before {
             content: "✔";
@@ -397,7 +409,8 @@
             border-radius: 0.5rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
+            pointer-events: auto;
         }
         .featured-nft img:hover {
             transform: scale(1.05);
@@ -416,8 +429,9 @@
         #token-info {
             font-size: 1.125rem;
             color: #0d4536;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
             position: relative;
+            pointer-events: auto; /* Contains button */
         }
         #gameCanvas {
             border: 2px solid #26a69a;
@@ -428,6 +442,7 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease;
             z-index: 15;
+            pointer-events: auto;
         }
         #gameCanvas:hover {
             transform: scale(1.01);
@@ -443,8 +458,9 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
             margin: 1.5rem auto;
-            z-index: 30; /* Increased */
+            z-index: 100; /* Match darkModeToggle */
             position: relative;
+            pointer-events: auto;
         }
         #startBtn:hover, #resetBtn:hover {
             transform: translateY(-2px);
@@ -464,6 +480,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            pointer-events: auto;
         }
         #darkModeToggle:hover {
             background: #e0f7fa;
@@ -510,7 +527,7 @@
 
         <h3>Featured NFT</h3>
         <div class="featured-nft">
-            <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem;">Explore Collection</a></p>
+            <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://opensea.io/collection/rare-sea-turtles" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem; z-index: 100; pointer-events: auto;">Explore Collection</a></p>
             <img src="/assets/Turtle.jpg" alt="Featured Turtle NFT">
         </div>
 
@@ -568,8 +585,20 @@
         const sparkleCanvas = document.getElementById('sparkle-canvas');
         const backgroundCanvas = document.getElementById('background-canvas');
 
+        // Add click logging for buttons
+        function logButtonClick(buttonId) {
+            console.log(`Button clicked: ${buttonId}`);
+        }
+
+        connectBtn.addEventListener('click', () => { logButtonClick('connect-btn'); connectWallet(); });
+        disconnectBtn.addEventListener('click', () => { logButtonClick('disconnect-btn'); disconnectWallet(); });
+        startBtn.addEventListener('click', () => { logButtonClick('startBtn'); startGame(); });
+        resetBtn.addEventListener('click', () => { logButtonClick('resetBtn'); resetGame(); });
+        tokenInfoEl.querySelector('button').addEventListener('click', () => { logButtonClick('refresh-token-info'); updateTokenInfo(); });
+
         // Dark mode toggle logic
         darkModeToggle.addEventListener('click', () => {
+            logButtonClick('darkModeToggle');
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
                 darkModeToggle.textContent = '☀️ Light Mode';
@@ -998,7 +1027,7 @@
                 walletProvider = window.solflare;
                 walletName = "Solflare";
             } else {
-                statusEl.textContent = 'No supported wallet detected. Install <a href="https://phantom.app/" target="_blank" style="color: #0d4536;">Phantom</a>.';
+                statusEl.textContent = 'No supported wallet detected. Install <a href="https://phantom.app/" target="_blank" style="color: #0d4536; z-index: 100; pointer-events: auto;">Phantom</a>.';
                 return;
             }
             try {
@@ -1213,7 +1242,7 @@
         function isTurtleOverlapped(turtle) {
             for (const trash of trashItems) {
                 const dx = (turtle.x + turtle.width / 2) - (trash.x + trash.width / 2);
-                const dy = (turtle.y + turtle.height / 2) - (trash.y + trash.height / 2);
+                const dy = (turtle.y + turtle.height / 2) - (trash.y + trash.width / 2);
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance < (turtle.width / 2 + trash.width / 2)) return true;
             }
