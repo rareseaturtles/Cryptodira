@@ -125,14 +125,17 @@
         body.dark-mode #sparkle-canvas {
             display: block;
         }
-        #sparkle-canvas {
+        body.dark-mode #background-canvas {
+            display: block;
+        }
+        #sparkle-canvas, #background-canvas {
             position: fixed;
             pointer-events: none;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 999;
+            z-index: 998; /* Below content but above body background */
             display: none;
         }
         header {
@@ -446,6 +449,7 @@
 <body>
     <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
     <canvas id="sparkle-canvas"></canvas>
+    <canvas id="background-canvas"></canvas>
     <header>
         <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
         <h1>Cryptodira</h1>
@@ -526,6 +530,7 @@
         const timeLeftEl = document.getElementById('timeLeft');
         const darkModeToggle = document.getElementById('darkModeToggle');
         const sparkleCanvas = document.getElementById('sparkle-canvas');
+        const backgroundCanvas = document.getElementById('background-canvas');
 
         // Dark mode toggle logic
         darkModeToggle.addEventListener('click', () => {
@@ -533,9 +538,11 @@
             if (document.body.classList.contains('dark-mode')) {
                 darkModeToggle.textContent = '☀️ Light Mode';
                 localStorage.setItem('darkMode', 'enabled');
+                startAnimations();
             } else {
                 darkModeToggle.textContent = '🌙 Dark Mode';
                 localStorage.setItem('darkMode', 'disabled');
+                stopAnimations();
             }
         });
 
@@ -543,9 +550,25 @@
         if (localStorage.getItem('darkMode') === 'enabled') {
             document.body.classList.add('dark-mode');
             darkModeToggle.textContent = '☀️ Light Mode';
+            startAnimations();
         }
 
-        // Sparkle canvas animation for dark mode
+        // Animation control functions
+        function startAnimations() {
+            sparkleCanvas.style.display = 'block';
+            backgroundCanvas.style.display = 'block';
+            animateSparkles();
+            animateBackground();
+        }
+
+        function stopAnimations() {
+            sparkleCanvas.style.display = 'none';
+            backgroundCanvas.style.display = 'none';
+            sparkles = [];
+            backgroundItems = [];
+        }
+
+        // Sparkle canvas animation
         const sparkleCtx = sparkleCanvas.getContext('2d');
         let sparkles = [];
 
@@ -582,7 +605,7 @@
         }
 
         function animateSparkles() {
-            if (!document.body.classList.contains('dark-mode')) {
+            if (!document.body.classList.contains('dark-mode') || !sparkleCanvas.style.display === 'block') {
                 sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
                 return;
             }
@@ -595,9 +618,72 @@
             requestAnimationFrame(animateSparkles);
         }
 
-        window.addEventListener('resize', resizeSparkleCanvas);
+        // Background canvas animation with floating characters
+        const backgroundCtx = backgroundCanvas.getContext('2d');
+        let backgroundItems = [];
+
+        class BackgroundItem {
+            constructor(type) {
+                this.type = type;
+                this.width = 100; // Adjust size as needed based on your images
+                this.height = 100;
+                this.x = Math.random() * backgroundCanvas.width;
+                this.y = Math.random() * backgroundCanvas.height;
+                this.speedX = (Math.random() - 0.5) * 2; // Random horizontal speed
+                this.speedY = (Math.random() - 0.5) * 2; // Random vertical speed
+                this.image = new Image();
+                this.image.src = `/assets/${type}.png`; // Assuming images are in /assets folder
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < -this.width) this.x = backgroundCanvas.width;
+                if (this.x > backgroundCanvas.width) this.x = -this.width;
+                if (this.y < -this.height) this.y = backgroundCanvas.height;
+                if (this.y > backgroundCanvas.height) this.y = -this.height;
+            }
+            draw() {
+                backgroundCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            }
+        }
+
+        function resizeBackgroundCanvas() {
+            backgroundCanvas.width = window.innerWidth;
+            backgroundCanvas.height = window.innerHeight;
+            if (document.body.classList.contains('dark-mode')) {
+                initializeBackgroundItems();
+            }
+        }
+
+        function initializeBackgroundItems() {
+            backgroundItems = [];
+            const types = ['Seahorse', 'Octopus', 'Fish', 'Whaleshark', 'Seaturtle'];
+            for (let i = 0; i < 10; i++) { // Adjust number of items as needed
+                const type = types[Math.floor(Math.random() * types.length)];
+                backgroundItems.push(new BackgroundItem(type));
+            }
+        }
+
+        function animateBackground() {
+            if (!document.body.classList.contains('dark-mode') || !backgroundCanvas.style.display === 'block') {
+                backgroundCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+                return;
+            }
+            backgroundCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+            backgroundItems.forEach(item => {
+                item.update();
+                item.draw();
+            });
+            requestAnimationFrame(animateBackground);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeSparkleCanvas();
+            resizeBackgroundCanvas();
+        });
         resizeSparkleCanvas();
-        animateSparkles();
+        resizeBackgroundCanvas();
+        if (document.body.classList.contains('dark-mode')) initializeBackgroundItems();
 
         // Solana config
         const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
