@@ -546,7 +546,7 @@
             if (document.body.classList.contains('dark-mode')) {
                 darkModeToggle.textContent = '☀️ Light Mode';
                 localStorage.setItem('darkMode', 'enabled');
-                if (window.innerWidth > 600) startAnimations(); // Disable animations on mobile
+                startAnimations();
             } else {
                 darkModeToggle.textContent = '🌙 Dark Mode';
                 localStorage.setItem('darkMode', 'disabled');
@@ -558,13 +558,14 @@
         if (localStorage.getItem('darkMode') === 'enabled') {
             document.body.classList.add('dark-mode');
             darkModeToggle.textContent = '☀️ Light Mode';
-            if (window.innerWidth > 600) startAnimations();
+            startAnimations();
         }
 
         // Animation control functions
         function startAnimations() {
             sparkleCanvas.style.display = 'block';
             backgroundCanvas.style.display = 'block';
+            initializeBackgroundItems(); // Ensure items are initialized
             animateSparkles();
             animateBackground();
         }
@@ -615,7 +616,9 @@
             sparkleCanvas.height = window.innerHeight;
             backgroundCanvas.width = window.innerWidth;
             backgroundCanvas.height = window.innerHeight;
-            if (document.body.classList.contains('dark-mode') && window.innerWidth > 600) {
+            gameCanvas.width = window.innerWidth > 600 ? 800 : window.innerWidth * 0.9; // Scale game canvas for mobile
+            gameCanvas.height = window.innerWidth > 600 ? 600 : window.innerWidth * 0.9 * 0.75;
+            if (document.body.classList.contains('dark-mode')) {
                 initializeBackgroundItems();
             }
         }
@@ -658,16 +661,23 @@
                 this.speedY = (Math.random() - 0.5) * 2;
                 this.velocityX = 0;
                 this.velocityY = 0;
-                this.friction = 0.95; // Slightly higher friction for smoother deceleration
+                this.friction = 0.95;
                 this.image = new Image();
-                this.image.src = `/assets/${type}.png`;
-                this.image.onload = () => this.isLoaded = true;
+                this.image.src = `/assets/${type}.png`; // Replace with CDN URLs if needed
+                this.image.onload = () => {
+                    console.log(`Loaded image: /assets/${type}.png`);
+                    this.isLoaded = true;
+                };
                 this.image.onerror = () => {
                     console.error(`Failed to load image: /assets/${type}.png`);
                     this.isLoaded = false;
                     this.draw = () => {
-                        backgroundCtx.fillStyle = 'gray';
+                        backgroundCtx.fillStyle = '#26a69a';
                         backgroundCtx.fillRect(this.x, this.y, this.width, this.height);
+                        backgroundCtx.fillStyle = '#fff';
+                        backgroundCtx.font = '16px Roboto';
+                        backgroundCtx.textAlign = 'center';
+                        backgroundCtx.fillText(this.type, this.x + this.width / 2, this.y + this.height / 2);
                     };
                 };
                 this.isLoaded = false;
@@ -702,7 +712,6 @@
                             other.x += moveX;
                             other.y += moveY;
 
-                            // Bounce effect
                             const bounceFactor = 0.3;
                             this.velocityX -= dx * bounceFactor;
                             this.velocityY -= dy * bounceFactor;
@@ -716,13 +725,18 @@
                 if (this.isLoaded) {
                     backgroundCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
                 } else {
-                    backgroundCtx.fillStyle = 'gray';
+                    backgroundCtx.fillStyle = '#26a69a';
                     backgroundCtx.fillRect(this.x, this.y, this.width, this.height);
+                    backgroundCtx.fillStyle = '#fff';
+                    backgroundCtx.font = '16px Roboto';
+                    backgroundCtx.textAlign = 'center';
+                    backgroundCtx.fillText(this.type, this.x + this.width / 2, this.y + this.height / 2);
                 }
             }
         }
 
         function initializeBackgroundItems() {
+            console.log('Initializing background items...');
             backgroundItems = [];
             const types = ['Seahorse', 'Octopus', 'Fish', 'Whaleshark', 'Seaturtle'];
             for (let i = 0; i < 5; i++) {
@@ -775,7 +789,7 @@
             const touchMove = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             const dx = touchMove.x - touchStart.x;
             const dy = touchMove.y - touchStart.y;
-            if (Math.abs(dx) > Math.abs(dy) * 2 && Math.abs(dx) > 20) { // Horizontal swipe with threshold
+            if (Math.abs(dx) > Math.abs(dy) * 2 && Math.abs(dx) > 20) {
                 e.preventDefault();
                 let closestItem = null;
                 let minDistance = Infinity;
@@ -789,7 +803,7 @@
                     }
                 });
                 if (closestItem) {
-                    const velocityFactor = 0.1; // Increased for more responsive swipes
+                    const velocityFactor = 0.1;
                     closestItem.velocityX = dx * velocityFactor;
                 }
             }
@@ -837,25 +851,52 @@
         turtleImage.onerror = () => {
             console.error('Failed to load turtle.png');
             turtleImage.src = 'https://via.placeholder.com/150';
+            turtleImage.isLoaded = true;
         };
+        turtleImage.onload = () => {
+            console.log('Loaded turtle.png');
+            turtleImage.isLoaded = true;
+        };
+        turtleImage.isLoaded = false;
+
         const trashImage = new Image();
         trashImage.src = '/assets/trash.png';
         trashImage.onerror = () => {
             console.error('Failed to load trash.png');
             trashImage.src = 'https://via.placeholder.com/50';
+            trashImage.isLoaded = true;
         };
+        trashImage.onload = () => {
+            console.log('Loaded trash.png');
+            trashImage.isLoaded = true;
+        };
+        trashImage.isLoaded = false;
+
         const trash2Image = new Image();
         trash2Image.src = '/assets/trash2.png';
         trash2Image.onerror = () => {
             console.error('Failed to load trash2.png');
             trash2Image.src = 'https://via.placeholder.com/50';
+            trash2Image.isLoaded = true;
         };
+        trash2Image.onload = () => {
+            console.log('Loaded trash2.png');
+            trash2Image.isLoaded = true;
+        };
+        trash2Image.isLoaded = false;
+
         const trash3Image = new Image();
         trash3Image.src = '/assets/trash3.png';
         trash3Image.onerror = () => {
             console.error('Failed to load trash3.png');
             trash3Image.src = 'https://via.placeholder.com/50';
+            trash3Image.isLoaded = true;
         };
+        trash3Image.onload = () => {
+            console.log('Loaded trash3.png');
+            trash3Image.isLoaded = true;
+        };
+        trash3Image.isLoaded = false;
 
         // Fetch token price, liquidity, market cap, and holder count
         async function updateTokenInfo() {
@@ -1003,8 +1044,8 @@
         }
 
         // Game Logic for Ocean Cleanup
-        const canvasWidth = 800;
-        const canvasHeight = 600;
+        const canvasWidth = window.innerWidth > 600 ? 800 : window.innerWidth * 0.9;
+        const canvasHeight = window.innerWidth > 600 ? 600 : canvasWidth * 0.75;
         let turtlesSaved = 0;
         let score = 0;
         let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
@@ -1022,8 +1063,8 @@
                 this.width = type === 'turtle' ? 150 : 50;
                 this.height = this.width;
                 if (type === 'turtle') {
-                    const centerX = 400;
-                    const centerY = 350;
+                    const centerX = canvasWidth / 2;
+                    const centerY = canvasHeight / 2;
                     const radius = 100;
                     const angle = (2 * Math.PI * turtles.length) / totalTurtles;
                     this.initialX = centerX + radius * Math.cos(angle) - this.width / 2;
@@ -1033,8 +1074,8 @@
                     this.dx = Math.random() * 0.5 - 0.25;
                     this.dy = Math.random() * 0.5 - 0.25;
                 } else if (x === null || y === null) {
-                    this.x = Math.random() * (450 - this.width) + 175;
-                    this.y = Math.random() * (450 - this.height) + 125;
+                    this.x = Math.random() * (canvasWidth - 350 - this.width) + 175;
+                    this.y = Math.random() * (canvasHeight - 150 - this.height) + 125;
                 } else {
                     this.x = x + (Math.random() * 20 - 10);
                     this.y = y + (Math.random() * 20 - 10);
@@ -1049,8 +1090,8 @@
                 if (this.type === 'turtle' && gameActive) {
                     this.x += this.dx;
                     this.y += this.dy;
-                    if (this.x < 175 || this.x + this.width > 625) this.dx = -this.dx;
-                    if (this.y < 125 || this.y + this.height > 575) this.dy = -this.dy;
+                    if (this.x < 175 || this.x + this.width > canvasWidth - 175) this.dx = -this.dx;
+                    if (this.y < 125 || this.y + this.height > canvasHeight - 25) this.dy = -this.dy;
                     this.centerX = this.x + this.width / 2;
                     this.centerY = this.y + this.height / 2;
                 }
@@ -1058,7 +1099,16 @@
             draw() {
                 ctx.save();
                 if (this.type === 'turtle') ctx.globalAlpha = this.isSaved ? 1 : 0.7;
-                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                if (this.image.isLoaded) {
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                } else {
+                    ctx.fillStyle = this.type === 'turtle' ? '#26a69a' : '#666';
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '16px Roboto';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(this.type, this.x + this.width / 2, this.y + this.height / 2);
+                }
                 ctx.restore();
             }
         }
@@ -1126,8 +1176,8 @@
             for (let i = 0; i < totalTurtles; i++) turtles.push(new Item('turtle'));
             const gridCols = 10;
             const gridRows = Math.ceil((totalTrash - totalTurtles) / gridCols);
-            const gridWidth = (450 - 50) / gridCols;
-            const gridHeight = (450 - 50) / gridRows;
+            const gridWidth = (canvasWidth - 350 - 50) / gridCols;
+            const gridHeight = (canvasHeight - 150 - 50) / gridRows;
             let trashCount = 0;
             for (const turtle of turtles) {
                 let trash, attempts = 0;
@@ -1155,8 +1205,8 @@
             const rect = gameCanvas.getBoundingClientRect();
             const clientX = isTouch ? e.touches[0].clientX : e.clientX;
             const clientY = isTouch ? e.touches[0].clientY : e.clientY;
-            const clickX = clientX - rect.left;
-            const clickY = clientY - rect.top;
+            const clickX = (clientX - rect.left) * (canvasWidth / rect.width);
+            const clickY = (clientY - rect.top) * (canvasHeight / rect.height);
             let closestItem = null;
             let minDistance = Infinity;
             trashItems.forEach((item, index) => {
@@ -1202,35 +1252,50 @@
         }
 
         function startGame() {
-            if (!turtleImage.complete || !trashImage.complete || !trash2Image.complete || !trash3Image.complete) {
-                console.log('Waiting for images to load...');
-                gameStatus.textContent = 'Loading images, please wait...';
-                setTimeout(startGame, 100);
-                return;
+            console.log('Attempting to start game...');
+            const maxWaitTime = 5000; // 5 seconds timeout
+            const startTime = Date.now();
+            function checkImages() {
+                if (turtleImage.isLoaded && trashImage.isLoaded && trash2Image.isLoaded && trash3Image.isLoaded) {
+                    console.log('All game images loaded, starting game.');
+                    gameStatus.textContent = 'Images loaded, starting game!';
+                    turtlesSaved = 0;
+                    score = 0;
+                    trashItems = [];
+                    turtles = [];
+                    animations = [];
+                    timeLeft = 30;
+                    spawnCluster();
+                    turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
+                    scoreEl.textContent = score;
+                    highScoreEl.textContent = highScore;
+                    timeLeftEl.textContent = Math.ceil(timeLeft);
+                    gameActive = true;
+                    startBtn.style.display = 'none';
+                    resetBtn.style.display = 'none';
+                    clearInterval(timerInterval);
+                    timerInterval = setInterval(() => {
+                        timeLeft -= 1;
+                        timeLeftEl.textContent = Math.max(0, Math.ceil(timeLeft));
+                        gameStatus.textContent = `Turtles Saved: ${turtlesSaved}/${totalTurtles} | Score: ${score} | High Score: ${highScore} | Time: ${Math.ceil(timeLeft)}s`;
+                        if (timeLeft <= 0) { clearInterval(timerInterval); endGame(false); }
+                    }, 1000);
+                    gameLoop();
+                } else if (Date.now() - startTime < maxWaitTime) {
+                    console.log('Waiting for game images to load...');
+                    gameStatus.textContent = 'Loading game images, please wait...';
+                    setTimeout(checkImages, 100);
+                } else {
+                    console.error('Game image loading timed out.');
+                    gameStatus.textContent = 'Failed to load game images. Using placeholders.';
+                    turtleImage.isLoaded = true;
+                    trashImage.isLoaded = true;
+                    trash2Image.isLoaded = true;
+                    trash3Image.isLoaded = true;
+                    checkImages(); // Retry with placeholders
+                }
             }
-            gameStatus.textContent = 'Images loaded, starting game!';
-            turtlesSaved = 0;
-            score = 0;
-            trashItems = [];
-            turtles = [];
-            animations = [];
-            timeLeft = 30;
-            spawnCluster();
-            turtlesSavedEl.textContent = `${turtlesSaved}/${totalTurtles}`;
-            scoreEl.textContent = score;
-            highScoreEl.textContent = highScore;
-            timeLeftEl.textContent = Math.ceil(timeLeft);
-            gameActive = true;
-            startBtn.style.display = 'none';
-            resetBtn.style.display = 'none';
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft -= 1;
-                timeLeftEl.textContent = Math.max(0, Math.ceil(timeLeft));
-                gameStatus.textContent = `Turtles Saved: ${turtlesSaved}/${totalTurtles} | Score: ${score} | High Score: ${highScore} | Time: ${Math.ceil(timeLeft)}s`;
-                if (timeLeft <= 0) { clearInterval(timerInterval); endGame(false); }
-            }, 1000);
-            gameLoop();
+            checkImages();
         }
 
         function resetGame() {
@@ -1276,7 +1341,7 @@
             resizeTimeout = setTimeout(resizeCanvases, 100);
         });
         resizeCanvases();
-        if (document.body.classList.contains('dark-mode') && window.innerWidth > 600) {
+        if (document.body.classList.contains('dark-mode')) {
             initializeBackgroundItems();
             animateSparkles();
             animateBackground();
