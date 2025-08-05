@@ -128,15 +128,24 @@
         body.dark-mode #background-canvas {
             display: block;
         }
-        #sparkle-canvas, #background-canvas {
+        #sparkle-canvas {
             position: fixed;
-            pointer-events: none;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             z-index: 998;
             display: none;
+        }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999; /* Above sparkle canvas */
+            display: none;
+            touch-action: none; /* Enable touch interaction */
         }
         header {
             text-align: center;
@@ -420,7 +429,7 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            z-index: 2;
+            z-index: 1000; /* Above all canvases */
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
             background: #fff;
@@ -639,7 +648,7 @@
                 this.height = (type === 'Whaleshark') ? 200 : 100;
                 this.x = Math.random() * (backgroundCanvas.width - this.width);
                 this.y = Math.random() * (backgroundCanvas.height - this.height);
-                this.speedX = (Math.random() - 0.5) * 2;
+                this.speedX = (Math.random() - 0.5) * 2; // Restore original movement
                 this.speedY = (Math.random() - 0.5) * 2;
                 this.velocityX = 0; // For swipe movement
                 this.velocityY = 0;
@@ -650,6 +659,10 @@
                 this.isLoaded = false;
             }
             update() {
+                // Apply original random movement
+                this.x += this.speedX;
+                this.y += this.speedY;
+
                 // Apply swipe velocity with friction
                 this.x += this.velocityX;
                 this.y += this.velocityY;
@@ -662,7 +675,7 @@
                 if (this.y < -this.height) this.y = backgroundCanvas.height;
                 if (this.y > backgroundCanvas.height) this.y = -this.height;
 
-                // Collision detection and response
+                // Collision detection and gentle bounce
                 backgroundItems.forEach(other => {
                     if (other !== this && this.isLoaded && other.isLoaded) {
                         const dx = (this.x + this.width / 2) - (other.x + other.width / 2);
@@ -673,24 +686,17 @@
                         if (distance < minDistance) {
                             const angle = Math.atan2(dy, dx);
                             const overlap = minDistance - distance;
-                            this.x -= overlap * Math.cos(angle) / 2;
-                            this.y -= overlap * Math.sin(angle) / 2;
-                            other.x += overlap * Math.cos(angle) / 2;
-                            other.y += overlap * Math.sin(angle) / 2;
+                            this.x -= overlap * Math.cos(angle) * 0.5; // Gentle push
+                            this.y -= overlap * Math.sin(angle) * 0.5;
+                            other.x += overlap * Math.cos(angle) * 0.5;
+                            other.y += overlap * Math.sin(angle) * 0.5;
 
-                            // Simple bounce effect
-                            const totalMass = this.width + other.width;
-                            const thisMass = this.width;
-                            const otherMass = other.width;
-                            const thisVelocityX = this.velocityX * (thisMass - otherMass) / totalMass + 2 * otherMass * other.velocityX / totalMass;
-                            const thisVelocityY = this.velocityY * (thisMass - otherMass) / totalMass + 2 * otherMass * other.velocityY / totalMass;
-                            const otherVelocityX = other.velocityX * (otherMass - thisMass) / totalMass + 2 * thisMass * this.velocityX / totalMass;
-                            const otherVelocityY = other.velocityY * (otherMass - thisMass) / totalMass + 2 * thisMass * this.velocityY / totalMass;
-
-                            this.velocityX = thisVelocityX;
-                            this.velocityY = thisVelocityY;
-                            other.velocityX = otherVelocityX;
-                            other.velocityY = otherVelocityY;
+                            // Minimal velocity adjustment to avoid "ball of fury"
+                            const bounceFactor = 0.1;
+                            this.velocityX -= dx * bounceFactor;
+                            this.velocityY -= dy * bounceFactor;
+                            other.velocityX += dx * bounceFactor;
+                            other.velocityY += dy * bounceFactor;
                         }
                     }
                 });
@@ -724,9 +730,11 @@
             backgroundFrameId = requestAnimationFrame(animateBackground);
         }
 
-        // Swipe detection
+        // Swipe detection optimized for mobile
+        let touchStartTime = null;
         backgroundCanvas.addEventListener('touchstart', (e) => {
             touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            touchStartTime = Date.now();
         });
 
         backgroundCanvas.addEventListener('touchmove', (e) => {
@@ -742,7 +750,7 @@
                 const itemCenterX = item.x + item.width / 2;
                 const itemCenterY = item.y + item.height / 2;
                 const distance = Math.sqrt((touchStart.x - itemCenterX) ** 2 + (touchStart.y - itemCenterY) ** 2);
-                if (distance < minDistance && distance < (item.width / 2)) {
+                if (distance < minDistance && distance < (item.width / 1.5)) { // Looser distance check
                     minDistance = distance;
                     closestItem = item;
                 }
@@ -750,13 +758,35 @@
 
             if (closestItem) {
                 // Apply swipe velocity based on movement
-                closestItem.velocityX = dx * 0.1; // Adjust multiplier for speed
-                closestItem.velocityY = dy * 0.1;
+                const velocityFactor = 0.05; // Reduced for smoother mobile swipe
+                closestItem.velocityX = dx * velocityFactor;
+                closestItem.velocityY = dy * velocityFactor;
             }
         });
 
-        backgroundCanvas.addEventListener('touchend', () => {
+        backgroundCanvas.addEventListener('touchend', (e) => {
+            if (touchStart && Date.now() - touchStartTime < 200) { // Short tap to reset velocity
+                const touchEnd = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+                const dx = touchEnd.x - touchStart.x;
+                const dy = touchEnd.y - touchStart.y;
+                let closestItem = null;
+                let minDistance = Infinity;
+                backgroundItems.forEach(item => {
+                    const itemCenterX = item.x + item.width / 2;
+                    const itemCenterY = item.y + item.height / 2;
+                    const distance = Math.sqrt((touchStart.x - itemCenterX) ** 2 + (touchStart.y - itemCenterY) ** 2);
+                    if (distance < minDistance && distance < (item.width / 1.5)) {
+                        minDistance = distance;
+                        closestItem = item;
+                    }
+                });
+                if (closestItem) {
+                    closestItem.velocityX = 0;
+                    closestItem.velocityY = 0;
+                }
+            }
             touchStart = null;
+            touchStartTime = null;
         });
 
         // Solana config
