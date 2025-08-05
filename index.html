@@ -22,6 +22,16 @@
     <meta name="author" content="Cryptodira Team">
     <!-- Favicon -->
     <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
+    <!-- Preload Critical Images -->
+    <link rel="preload" href="/assets/turtle.png" as="image">
+    <link rel="preload" href="/assets/trash.png" as="image">
+    <link rel="preload" href="/assets/trash2.png" as="image">
+    <link rel="preload" href="/assets/trash3.png" as="image">
+    <link rel="preload" href="/assets/Seahorse.png" as="image">
+    <link rel="preload" href="/assets/Octopus.png" as="image">
+    <link rel="preload" href="/assets/Fish.png" as="image">
+    <link rel="preload" href="/assets/Whaleshark.png" as="image">
+    <link rel="preload" href="/assets/Seaturtle.png" as="image">
     <!-- External Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.91.1/lib/index.iife.min.js"></script>
     <!-- Google Fonts -->
@@ -40,7 +50,7 @@
             overflow-y: auto;
             line-height: 1.6;
             position: relative;
-            touch-action: pan-y; /* Allow vertical scrolling */
+            touch-action: pan-y;
         }
         body.dark-mode {
             background: #000000 !important;
@@ -54,21 +64,18 @@
             background: rgba(0, 0, 0, 0.85);
             padding: 1rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
         }
         body.dark-mode .content {
             background: rgba(0, 0, 0, 0.75);
             border: 1px solid #26a69a;
             border-radius: 8px;
             padding: 1.5rem;
-            transition: background 0.3s ease;
         }
         body.dark-mode .roadmap, body.dark-mode .featured-nft {
             background: rgba(0, 0, 0, 0.7);
             padding: 1rem;
             border-radius: 5px;
             margin: 1rem 0;
-            transition: transform 0.2s ease, background 0.3s ease;
         }
         body.dark-mode .roadmap:hover, body.dark-mode .featured-nft:hover {
             transform: translateY(-5px);
@@ -78,7 +85,6 @@
             background: rgba(0, 0, 0, 0.85);
             padding: 1rem;
             margin-top: 2rem;
-            transition: all 0.3s ease;
         }
         body.dark-mode .button, body.dark-mode #startBtn, body.dark-mode #resetBtn {
             background: linear-gradient(135deg, #26a69a, #000000);
@@ -87,7 +93,6 @@
             padding: 0.75rem 1.5rem;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
         body.dark-mode .button:hover, body.dark-mode #startBtn:hover, body.dark-mode #resetBtn:hover {
             background: linear-gradient(135deg, #00695c, #000000);
@@ -98,11 +103,9 @@
             background: #000000;
             border: 2px solid #26a69a;
             border-radius: 5px;
-            transition: all 0.3s ease;
         }
         body.dark-mode #status, body.dark-mode #gameStatus {
             margin-top: 1rem;
-            transition: color 0.3s ease;
         }
         body.dark-mode #token-info {
             transition: color 0.3s ease;
@@ -117,17 +120,10 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            transition: all 0.3s ease;
         }
         body.dark-mode #darkModeToggle:hover {
             background: #e0f7fa;
             transform: scale(1.05);
-        }
-        body.dark-mode #sparkle-canvas {
-            display: block;
-        }
-        body.dark-mode #background-canvas {
-            display: block;
         }
         #sparkle-canvas {
             position: fixed;
@@ -135,8 +131,9 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 998;
+            z-index: -1;
             display: none;
+            pointer-events: none;
         }
         #background-canvas {
             position: fixed;
@@ -144,9 +141,9 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 999; /* Above sparkle canvas */
+            z-index: 0;
             display: none;
-            touch-action: pan-y; /* Allow vertical scrolling on canvas */
+            touch-action: pan-y;
         }
         header {
             text-align: center;
@@ -430,7 +427,7 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            z-index: 1000; /* Above all canvases */
+            z-index: 1000;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
             background: #fff;
@@ -453,6 +450,7 @@
             #gameCanvas { width: 100%; height: 25rem; }
             .featured-nft img { max-width: 9.375rem; }
             #darkModeToggle { top: 0.5rem; right: 0.5rem; padding: 0.25rem 0.75rem; font-size: 0.875rem; }
+            header::before, .logo, header h1, header p, .content { animation: none; }
         }
     </style>
 </head>
@@ -548,7 +546,7 @@
             if (document.body.classList.contains('dark-mode')) {
                 darkModeToggle.textContent = '☀️ Light Mode';
                 localStorage.setItem('darkMode', 'enabled');
-                startAnimations();
+                if (window.innerWidth > 600) startAnimations(); // Disable animations on mobile
             } else {
                 darkModeToggle.textContent = '🌙 Dark Mode';
                 localStorage.setItem('darkMode', 'disabled');
@@ -556,11 +554,11 @@
             }
         });
 
-        // Load dark mode preference on page load
+        // Load dark mode preference
         if (localStorage.getItem('darkMode') === 'enabled') {
             document.body.classList.add('dark-mode');
             darkModeToggle.textContent = '☀️ Light Mode';
-            startAnimations();
+            if (window.innerWidth > 600) startAnimations();
         }
 
         // Animation control functions
@@ -617,18 +615,24 @@
             sparkleCanvas.height = window.innerHeight;
             backgroundCanvas.width = window.innerWidth;
             backgroundCanvas.height = window.innerHeight;
-            if (document.body.classList.contains('dark-mode')) {
+            if (document.body.classList.contains('dark-mode') && window.innerWidth > 600) {
                 initializeBackgroundItems();
             }
         }
 
-        function animateSparkles() {
+        let lastSparkleFrame = 0;
+        function animateSparkles(timestamp) {
+            if (timestamp - lastSparkleFrame < 16.67) {
+                animationFrameId = requestAnimationFrame(animateSparkles);
+                return;
+            }
+            lastSparkleFrame = timestamp;
             if (!document.body.classList.contains('dark-mode') || sparkleCanvas.style.display !== 'block') {
                 sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
                 return;
             }
             sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
-            if (sparkles.length < 50) sparkles.push(new Sparkle());
+            if (sparkles.length < 20) sparkles.push(new Sparkle());
             sparkles.forEach(sparkle => {
                 sparkle.update();
                 sparkle.draw();
@@ -641,32 +645,38 @@
         let backgroundItems = [];
         let backgroundFrameId = null;
         let touchStart = null;
+        let touchStartTime = null;
 
         class BackgroundItem {
             constructor(type) {
                 this.type = type;
-                this.width = (type === 'Whaleshark') ? 200 : 100; // Whaleshark bigger
+                this.width = (type === 'Whaleshark') ? 200 : 100;
                 this.height = (type === 'Whaleshark') ? 200 : 100;
                 this.x = Math.random() * (backgroundCanvas.width - this.width);
                 this.y = Math.random() * (backgroundCanvas.height - this.height);
-                this.speedX = (Math.random() - 0.5) * 2; // Restore original movement
+                this.speedX = (Math.random() - 0.5) * 2;
                 this.speedY = (Math.random() - 0.5) * 2;
-                this.velocityX = 0; // For swipe movement
+                this.velocityX = 0;
                 this.velocityY = 0;
-                this.friction = 0.98; // Deceleration factor
+                this.friction = 0.95; // Slightly higher friction for smoother deceleration
                 this.image = new Image();
                 this.image.src = `/assets/${type}.png`;
                 this.image.onload = () => this.isLoaded = true;
+                this.image.onerror = () => {
+                    console.error(`Failed to load image: /assets/${type}.png`);
+                    this.isLoaded = false;
+                    this.draw = () => {
+                        backgroundCtx.fillStyle = 'gray';
+                        backgroundCtx.fillRect(this.x, this.y, this.width, this.height);
+                    };
+                };
                 this.isLoaded = false;
             }
             update() {
-                // Apply original random movement
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                // Apply swipe velocity with friction (horizontal only)
-                this.x += this.velocityX;
+                this.x += this.speedX + this.velocityX;
+                this.y += this.speedY + this.velocityY;
                 this.velocityX *= this.friction;
+                this.velocityY *= this.friction;
 
                 // Wrap around screen
                 if (this.x < -this.width) this.x = backgroundCanvas.width;
@@ -674,7 +684,7 @@
                 if (this.y < -this.height) this.y = backgroundCanvas.height;
                 if (this.y > backgroundCanvas.height) this.y = -this.height;
 
-                // Collision detection and gentle bounce
+                // Collision detection
                 backgroundItems.forEach(other => {
                     if (other !== this && this.isLoaded && other.isLoaded) {
                         const dx = (this.x + this.width / 2) - (other.x + other.width / 2);
@@ -685,15 +695,19 @@
                         if (distance < minDistance) {
                             const angle = Math.atan2(dy, dx);
                             const overlap = minDistance - distance;
-                            this.x -= overlap * Math.cos(angle) * 0.5; // Gentle push
-                            this.y -= overlap * Math.sin(angle) * 0.5;
-                            other.x += overlap * Math.cos(angle) * 0.5;
-                            other.y += overlap * Math.sin(angle) * 0.5;
+                            const moveX = overlap * Math.cos(angle) * 0.5;
+                            const moveY = overlap * Math.sin(angle) * 0.5;
+                            this.x -= moveX;
+                            this.y -= moveY;
+                            other.x += moveX;
+                            other.y += moveY;
 
-                            // Minimal velocity adjustment (horizontal only)
-                            const bounceFactor = 0.1;
+                            // Bounce effect
+                            const bounceFactor = 0.3;
                             this.velocityX -= dx * bounceFactor;
+                            this.velocityY -= dy * bounceFactor;
                             other.velocityX += dx * bounceFactor;
+                            other.velocityY += dy * bounceFactor;
                         }
                     }
                 });
@@ -701,6 +715,9 @@
             draw() {
                 if (this.isLoaded) {
                     backgroundCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                } else {
+                    backgroundCtx.fillStyle = 'gray';
+                    backgroundCtx.fillRect(this.x, this.y, this.width, this.height);
                 }
             }
         }
@@ -708,13 +725,19 @@
         function initializeBackgroundItems() {
             backgroundItems = [];
             const types = ['Seahorse', 'Octopus', 'Fish', 'Whaleshark', 'Seaturtle'];
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 5; i++) {
                 const type = types[Math.floor(Math.random() * types.length)];
                 backgroundItems.push(new BackgroundItem(type));
             }
         }
 
-        function animateBackground() {
+        let lastBackgroundFrame = 0;
+        function animateBackground(timestamp) {
+            if (timestamp - lastBackgroundFrame < 16.67) {
+                backgroundFrameId = requestAnimationFrame(animateBackground);
+                return;
+            }
+            lastBackgroundFrame = timestamp;
             if (!document.body.classList.contains('dark-mode') || backgroundCanvas.style.display !== 'block') {
                 backgroundCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
                 return;
@@ -727,22 +750,33 @@
             backgroundFrameId = requestAnimationFrame(animateBackground);
         }
 
-        // Swipe detection restricted to horizontal
-        let touchStartTime = null;
+        // Swipe detection
         backgroundCanvas.addEventListener('touchstart', (e) => {
             touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             touchStartTime = Date.now();
-            e.preventDefault(); // Prevent default only for start
-        });
+            let closestItem = null;
+            let minDistance = Infinity;
+            backgroundItems.forEach(item => {
+                const itemCenterX = item.x + item.width / 2;
+                const itemCenterY = item.y + item.height / 2;
+                const distance = Math.sqrt((touchStart.x - itemCenterX) ** 2 + (touchStart.y - itemCenterY) ** 2);
+                if (distance < minDistance && distance < (item.width / 1.5)) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
+            if (closestItem) {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
         backgroundCanvas.addEventListener('touchmove', (e) => {
             if (!touchStart) return;
             const touchMove = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             const dx = touchMove.x - touchStart.x;
             const dy = touchMove.y - touchStart.y;
-
-            // Only apply horizontal swipe if movement is mostly lateral
-            if (Math.abs(dx) > Math.abs(dy) * 2) { // Threshold to prioritize horizontal
+            if (Math.abs(dx) > Math.abs(dy) * 2 && Math.abs(dx) > 20) { // Horizontal swipe with threshold
+                e.preventDefault();
                 let closestItem = null;
                 let minDistance = Infinity;
                 backgroundItems.forEach(item => {
@@ -754,16 +788,15 @@
                         closestItem = item;
                     }
                 });
-
                 if (closestItem) {
-                    const velocityFactor = 0.05;
-                    closestItem.velocityX = dx * velocityFactor; // Horizontal only
+                    const velocityFactor = 0.1; // Increased for more responsive swipes
+                    closestItem.velocityX = dx * velocityFactor;
                 }
             }
-        });
+        }, { passive: false });
 
         backgroundCanvas.addEventListener('touchend', (e) => {
-            if (touchStart && Date.now() - touchStartTime < 200) { // Short tap to reset
+            if (touchStart && Date.now() - touchStartTime < 200) {
                 let closestItem = null;
                 let minDistance = Infinity;
                 backgroundItems.forEach(item => {
@@ -777,6 +810,7 @@
                 });
                 if (closestItem) {
                     closestItem.velocityX = 0;
+                    closestItem.velocityY = 0;
                 }
             }
             touchStart = null;
@@ -800,27 +834,45 @@
         // Load images
         const turtleImage = new Image();
         turtleImage.src = '/assets/turtle.png';
+        turtleImage.onerror = () => {
+            console.error('Failed to load turtle.png');
+            turtleImage.src = 'https://via.placeholder.com/150';
+        };
         const trashImage = new Image();
         trashImage.src = '/assets/trash.png';
+        trashImage.onerror = () => {
+            console.error('Failed to load trash.png');
+            trashImage.src = 'https://via.placeholder.com/50';
+        };
         const trash2Image = new Image();
         trash2Image.src = '/assets/trash2.png';
+        trash2Image.onerror = () => {
+            console.error('Failed to load trash2.png');
+            trash2Image.src = 'https://via.placeholder.com/50';
+        };
         const trash3Image = new Image();
         trash3Image.src = '/assets/trash3.png';
+        trash3Image.onerror = () => {
+            console.error('Failed to load trash3.png');
+            trash3Image.src = 'https://via.placeholder.com/50';
+        };
 
         // Fetch token price, liquidity, market cap, and holder count
         async function updateTokenInfo() {
             try {
-                console.log('Fetching token data...');
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
                 const birdeyeResponse = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
                     headers: {
                         "X-API-KEY": BIRDEYE_API_KEY,
                         "x-chain": "solana",
                         "accept": "application/json"
-                    }
+                    },
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 if (!birdeyeResponse.ok) throw new Error(`Birdeye HTTP ${birdeyeResponse.status}`);
                 const birdeyeData = await birdeyeResponse.json();
-                console.log('Birdeye data:', birdeyeData);
                 const price = birdeyeData.data?.value?.toFixed(6) || "N/A";
                 const liquidity = birdeyeData.data?.liquidity?.toFixed(2) || "N/A";
                 const marketCap = price !== "N/A" ? (birdeyeData.data.value * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
@@ -845,7 +897,6 @@
                     holderCount = uniqueHolders > 0 ? uniqueHolders : 180;
                 } catch (rpcError) {
                     console.warn("RPC call failed, defaulting to 180 holders:", rpcError.message);
-                    holderCount = 180;
                 }
 
                 tokenInfoEl.innerHTML = `
@@ -860,13 +911,14 @@
             } catch (error) {
                 console.error('Token data error:', error);
                 tokenInfoEl.innerHTML = `
-                    <p>Error fetching token data: ${error.message}. Check network or retry later.</p>
+                    <p>Error fetching token data: ${error.message}. Retrying in 5 seconds...</p>
                     <button class="button" onclick="updateTokenInfo()">Refresh</button>
                 `;
+                setTimeout(updateTokenInfo, 5000);
             }
         }
 
-        updateTokenInfo();
+        window.addEventListener('load', updateTokenInfo);
 
         function getConnection() {
             try {
@@ -1152,9 +1204,11 @@
         function startGame() {
             if (!turtleImage.complete || !trashImage.complete || !trash2Image.complete || !trash3Image.complete) {
                 console.log('Waiting for images to load...');
+                gameStatus.textContent = 'Loading images, please wait...';
                 setTimeout(startGame, 100);
                 return;
             }
+            gameStatus.textContent = 'Images loaded, starting game!';
             turtlesSaved = 0;
             score = 0;
             trashItems = [];
@@ -1166,7 +1220,6 @@
             scoreEl.textContent = score;
             highScoreEl.textContent = highScore;
             timeLeftEl.textContent = Math.ceil(timeLeft);
-            gameStatus.textContent = `Turtles Saved: ${turtlesSaved}/${totalTurtles} | Score: ${score} | High Score: ${highScore} | Time: ${Math.ceil(timeLeft)}s`;
             gameActive = true;
             startBtn.style.display = 'none';
             resetBtn.style.display = 'none';
@@ -1216,10 +1269,14 @@
         startBtn.addEventListener('click', startGame);
         resetBtn.addEventListener('click', resetGame);
 
-        // Initialize canvases and start animations if in dark mode
-        window.addEventListener('resize', resizeCanvases);
+        // Initialize canvases
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(resizeCanvases, 100);
+        });
         resizeCanvases();
-        if (document.body.classList.contains('dark-mode')) {
+        if (document.body.classList.contains('dark-mode') && window.innerWidth > 600) {
             initializeBackgroundItems();
             animateSparkles();
             animateBackground();
