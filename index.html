@@ -40,6 +40,7 @@
             overflow-y: auto;
             line-height: 1.6;
             position: relative;
+            touch-action: pan-y; /* Allow vertical scrolling */
         }
         body.dark-mode {
             background: #000000 !important;
@@ -145,7 +146,7 @@
             height: 100vh;
             z-index: 999; /* Above sparkle canvas */
             display: none;
-            touch-action: none; /* Enable touch interaction */
+            touch-action: pan-y; /* Allow vertical scrolling on canvas */
         }
         header {
             text-align: center;
@@ -663,11 +664,9 @@
                 this.x += this.speedX;
                 this.y += this.speedY;
 
-                // Apply swipe velocity with friction
+                // Apply swipe velocity with friction (horizontal only)
                 this.x += this.velocityX;
-                this.y += this.velocityY;
                 this.velocityX *= this.friction;
-                this.velocityY *= this.friction;
 
                 // Wrap around screen
                 if (this.x < -this.width) this.x = backgroundCanvas.width;
@@ -691,12 +690,10 @@
                             other.x += overlap * Math.cos(angle) * 0.5;
                             other.y += overlap * Math.sin(angle) * 0.5;
 
-                            // Minimal velocity adjustment to avoid "ball of fury"
+                            // Minimal velocity adjustment (horizontal only)
                             const bounceFactor = 0.1;
                             this.velocityX -= dx * bounceFactor;
-                            this.velocityY -= dy * bounceFactor;
                             other.velocityX += dx * bounceFactor;
-                            other.velocityY += dy * bounceFactor;
                         }
                     }
                 });
@@ -730,11 +727,12 @@
             backgroundFrameId = requestAnimationFrame(animateBackground);
         }
 
-        // Swipe detection optimized for mobile
+        // Swipe detection restricted to horizontal
         let touchStartTime = null;
         backgroundCanvas.addEventListener('touchstart', (e) => {
             touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             touchStartTime = Date.now();
+            e.preventDefault(); // Prevent default only for start
         });
 
         backgroundCanvas.addEventListener('touchmove', (e) => {
@@ -743,32 +741,29 @@
             const dx = touchMove.x - touchStart.x;
             const dy = touchMove.y - touchStart.y;
 
-            // Find the closest item to the touch start
-            let closestItem = null;
-            let minDistance = Infinity;
-            backgroundItems.forEach(item => {
-                const itemCenterX = item.x + item.width / 2;
-                const itemCenterY = item.y + item.height / 2;
-                const distance = Math.sqrt((touchStart.x - itemCenterX) ** 2 + (touchStart.y - itemCenterY) ** 2);
-                if (distance < minDistance && distance < (item.width / 1.5)) { // Looser distance check
-                    minDistance = distance;
-                    closestItem = item;
-                }
-            });
+            // Only apply horizontal swipe if movement is mostly lateral
+            if (Math.abs(dx) > Math.abs(dy) * 2) { // Threshold to prioritize horizontal
+                let closestItem = null;
+                let minDistance = Infinity;
+                backgroundItems.forEach(item => {
+                    const itemCenterX = item.x + item.width / 2;
+                    const itemCenterY = item.y + item.height / 2;
+                    const distance = Math.sqrt((touchStart.x - itemCenterX) ** 2 + (touchStart.y - itemCenterY) ** 2);
+                    if (distance < minDistance && distance < (item.width / 1.5)) {
+                        minDistance = distance;
+                        closestItem = item;
+                    }
+                });
 
-            if (closestItem) {
-                // Apply swipe velocity based on movement
-                const velocityFactor = 0.05; // Reduced for smoother mobile swipe
-                closestItem.velocityX = dx * velocityFactor;
-                closestItem.velocityY = dy * velocityFactor;
+                if (closestItem) {
+                    const velocityFactor = 0.05;
+                    closestItem.velocityX = dx * velocityFactor; // Horizontal only
+                }
             }
         });
 
         backgroundCanvas.addEventListener('touchend', (e) => {
-            if (touchStart && Date.now() - touchStartTime < 200) { // Short tap to reset velocity
-                const touchEnd = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-                const dx = touchEnd.x - touchStart.x;
-                const dy = touchEnd.y - touchStart.y;
+            if (touchStart && Date.now() - touchStartTime < 200) { // Short tap to reset
                 let closestItem = null;
                 let minDistance = Infinity;
                 backgroundItems.forEach(item => {
@@ -782,7 +777,6 @@
                 });
                 if (closestItem) {
                     closestItem.velocityX = 0;
-                    closestItem.velocityY = 0;
                 }
             }
             touchStart = null;
