@@ -566,11 +566,14 @@
             backgroundCanvas.style.display = 'none';
             sparkles = [];
             backgroundItems = [];
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            if (backgroundFrameId) cancelAnimationFrame(backgroundFrameId);
         }
 
         // Sparkle canvas animation
         const sparkleCtx = sparkleCanvas.getContext('2d');
         let sparkles = [];
+        let animationFrameId = null;
 
         class Sparkle {
             constructor() {
@@ -609,7 +612,6 @@
             }
         }
 
-        let animationFrameId = null;
         function animateSparkles() {
             if (!document.body.classList.contains('dark-mode') || sparkleCanvas.style.display !== 'block') {
                 sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
@@ -624,31 +626,74 @@
             animationFrameId = requestAnimationFrame(animateSparkles);
         }
 
-        // Background canvas animation with floating characters
+        // Background canvas animation with swipe and collision
         const backgroundCtx = backgroundCanvas.getContext('2d');
         let backgroundItems = [];
+        let backgroundFrameId = null;
+        let touchStart = null;
 
         class BackgroundItem {
             constructor(type) {
                 this.type = type;
-                this.width = 100; // Adjust based on your image sizes
-                this.height = 100;
-                this.x = Math.random() * backgroundCanvas.width;
-                this.y = Math.random() * backgroundCanvas.height;
+                this.width = (type === 'Whaleshark') ? 200 : 100; // Whaleshark bigger
+                this.height = (type === 'Whaleshark') ? 200 : 100;
+                this.x = Math.random() * (backgroundCanvas.width - this.width);
+                this.y = Math.random() * (backgroundCanvas.height - this.height);
                 this.speedX = (Math.random() - 0.5) * 2;
                 this.speedY = (Math.random() - 0.5) * 2;
+                this.velocityX = 0; // For swipe movement
+                this.velocityY = 0;
+                this.friction = 0.98; // Deceleration factor
                 this.image = new Image();
                 this.image.src = `/assets/${type}.png`;
                 this.image.onload = () => this.isLoaded = true;
                 this.isLoaded = false;
             }
             update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
+                // Apply swipe velocity with friction
+                this.x += this.velocityX;
+                this.y += this.velocityY;
+                this.velocityX *= this.friction;
+                this.velocityY *= this.friction;
+
+                // Wrap around screen
                 if (this.x < -this.width) this.x = backgroundCanvas.width;
                 if (this.x > backgroundCanvas.width) this.x = -this.width;
                 if (this.y < -this.height) this.y = backgroundCanvas.height;
                 if (this.y > backgroundCanvas.height) this.y = -this.height;
+
+                // Collision detection and response
+                backgroundItems.forEach(other => {
+                    if (other !== this && this.isLoaded && other.isLoaded) {
+                        const dx = (this.x + this.width / 2) - (other.x + other.width / 2);
+                        const dy = (this.y + this.height / 2) - (other.y + other.height / 2);
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        const minDistance = (this.width + other.width) / 2;
+
+                        if (distance < minDistance) {
+                            const angle = Math.atan2(dy, dx);
+                            const overlap = minDistance - distance;
+                            this.x -= overlap * Math.cos(angle) / 2;
+                            this.y -= overlap * Math.sin(angle) / 2;
+                            other.x += overlap * Math.cos(angle) / 2;
+                            other.y += overlap * Math.sin(angle) / 2;
+
+                            // Simple bounce effect
+                            const totalMass = this.width + other.width;
+                            const thisMass = this.width;
+                            const otherMass = other.width;
+                            const thisVelocityX = this.velocityX * (thisMass - otherMass) / totalMass + 2 * otherMass * other.velocityX / totalMass;
+                            const thisVelocityY = this.velocityY * (thisMass - otherMass) / totalMass + 2 * otherMass * other.velocityY / totalMass;
+                            const otherVelocityX = other.velocityX * (otherMass - thisMass) / totalMass + 2 * thisMass * this.velocityX / totalMass;
+                            const otherVelocityY = other.velocityY * (otherMass - thisMass) / totalMass + 2 * thisMass * this.velocityY / totalMass;
+
+                            this.velocityX = thisVelocityX;
+                            this.velocityY = thisVelocityY;
+                            other.velocityX = otherVelocityX;
+                            other.velocityY = otherVelocityY;
+                        }
+                    }
+                });
             }
             draw() {
                 if (this.isLoaded) {
@@ -666,7 +711,6 @@
             }
         }
 
-        let backgroundFrameId = null;
         function animateBackground() {
             if (!document.body.classList.contains('dark-mode') || backgroundCanvas.style.display !== 'block') {
                 backgroundCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
@@ -679,6 +723,41 @@
             });
             backgroundFrameId = requestAnimationFrame(animateBackground);
         }
+
+        // Swipe detection
+        backgroundCanvas.addEventListener('touchstart', (e) => {
+            touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        backgroundCanvas.addEventListener('touchmove', (e) => {
+            if (!touchStart) return;
+            const touchMove = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            const dx = touchMove.x - touchStart.x;
+            const dy = touchMove.y - touchStart.y;
+
+            // Find the closest item to the touch start
+            let closestItem = null;
+            let minDistance = Infinity;
+            backgroundItems.forEach(item => {
+                const itemCenterX = item.x + item.width / 2;
+                const itemCenterY = item.y + item.height / 2;
+                const distance = Math.sqrt((touchStart.x - itemCenterX) ** 2 + (touchStart.y - itemCenterY) ** 2);
+                if (distance < minDistance && distance < (item.width / 2)) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
+
+            if (closestItem) {
+                // Apply swipe velocity based on movement
+                closestItem.velocityX = dx * 0.1; // Adjust multiplier for speed
+                closestItem.velocityY = dy * 0.1;
+            }
+        });
+
+        backgroundCanvas.addEventListener('touchend', () => {
+            touchStart = null;
+        });
 
         // Solana config
         const TOKEN_MINT_ADDRESS = new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8");
