@@ -106,31 +106,6 @@ body.dark-mode #darkModeToggle:hover {
     transform: scale(1.05);
 }
 
-#background-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 10;
-    display: none;
-    touch-action: pan-y;
-    pointer-events: none;
-}
-
-#swipe-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9;
-    display: none;
-    touch-action: pan-y;
-    pointer-events: auto;
-    opacity: 0;
-}
-
 header {
     text-align: center;
     padding: 2rem 0;
@@ -324,24 +299,75 @@ header p {
     background: linear-gradient(135deg, #00695c, #003d33);
 }
 
-#disconnect-btn {
-    background: linear-gradient(135deg, #ef5350, #b71c1c);
-    display: none;
-}
-
-#disconnect-btn:hover {
-    background: linear-gradient(135deg, #b71c1c, #7f0000);
-}
-
-#status {
-    margin-top: 1rem;
+#token-info {
     font-size: 1.125rem;
     color: #0d4536;
-    font-weight: bold;
-    animation: fadeIn 0.5s ease-out 0.2s backwards;
     z-index: 100;
     position: relative;
-    pointer-events: none;
+    pointer-events: auto;
+}
+
+#darkModeToggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 100;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #0d4536;
+    border: 1px solid #26a69a;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+#darkModeToggle:hover {
+    background: #e0f7fa;
+    transform: scale(1.05);
+}
+
+.loader {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #26a69a;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.featured-nft {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: rgba(178, 223, 219, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.featured-nft img {
+    max-width: 15rem;
+    height: auto;
+    border: 2px solid #26a69a;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.featured-nft img:hover {
+    transform: scale(1.05);
 }
 
 .roadmap {
@@ -397,33 +423,6 @@ header p {
     100% { opacity: 1; transform: translateX(0); }
 }
 
-.featured-nft {
-    margin: 1.5rem 0;
-    padding: 1.5rem;
-    background: rgba(178, 223, 219, 0.3);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border-radius: 1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.5s ease-out;
-}
-
-.featured-nft img {
-    max-width: 15rem;
-    height: auto;
-    border: 2px solid #26a69a;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease;
-    z-index: 100;
-    pointer-events: auto;
-    touch-action: none;
-}
-
-.featured-nft img:hover {
-    transform: scale(1.05);
-}
-
 footer {
     background: linear-gradient(135deg, #0d4536, #003d33);
     color: #fff;
@@ -434,50 +433,6 @@ footer {
     box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.5s ease-out 0.4s backwards;
     z-index: 5;
-}
-
-#token-info {
-    font-size: 1.125rem;
-    color: #0d4536;
-    z-index: 100;
-    position: relative;
-    pointer-events: auto;
-}
-
-#darkModeToggle {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 100;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    background: #fff;
-    color: #0d4536;
-    border: 1px solid #26a69a;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    pointer-events: auto;
-    touch-action: none;
-}
-
-#darkModeToggle:hover {
-    background: #e0f7fa;
-    transform: scale(1.05);
-}
-
-.loader {
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid #26a69a;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
 }
 
 @media (max-width: 600px) {
