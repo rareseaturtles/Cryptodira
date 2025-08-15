@@ -24,8 +24,6 @@
     <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
     <!-- Preload Critical Images -->
     <link rel="preload" href="/assets/Turtle.jpg" as="image">
-    <!-- External Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.91.1/lib/index.iife.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
     <!-- Styles -->
@@ -34,8 +32,6 @@
 </head>
 <body>
     <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
-    <canvas id="background-canvas"></canvas>
-    <canvas id="swipe-canvas"></canvas>
     <header>
         <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
         <h1>Cryptodira</h1>
@@ -46,12 +42,6 @@
         <h2>Welcome to Cryptodira ($DIRA)</h2>
         <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and promoting environmental conservation through community efforts.</p>
         
-        <div class="buttons">
-            <button class="button" id="connect-btn">Connect Wallet</button>
-            <button class="button" id="disconnect-btn">Disconnect</button>
-        </div>
-        <div id="status"></div>
-
         <h3>Tokenomics</h3>
         <div id="token-info">
             <p>Loading token data... <span class="loader"></span></p>
