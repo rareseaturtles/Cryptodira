@@ -1,5 +1,6 @@
 // DOM elements
 const tokenInfoEl = document.getElementById("token-info");
+const impactTrackerEl = document.getElementById("impact-tracker");
 const darkModeToggle = document.getElementById('darkModeToggle');
 
 // Event delegation for buttons
@@ -9,6 +10,7 @@ document.body.addEventListener('click', (e) => {
         const id = button.id || button.textContent;
         console.log(`Button clicked: ${id}`);
         if (button.id === 'refresh-token') debounceUpdateTokenInfo();
+        else if (button.id === 'refresh-impact') debounceUpdateImpactTracker();
         else if (button.href) window.open(button.href, '_blank');
     }
 });
@@ -33,9 +35,11 @@ if (localStorage.getItem('darkMode') === 'enabled') {
     darkModeToggle.textContent = '☀️ Light Mode';
 }
 
-// Birdeye API key
+// Birdeye API key and constants
 const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db";
 const TOTAL_TOKEN_SUPPLY = 4880000;
+const CDCF_WALLET = "293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy";
+const TURTLES_PER_DIRA = 10000; // 10,000 $DIRA = 1 turtle protected
 
 // Debounce token refresh
 let isFetchingTokenData = false;
@@ -47,6 +51,45 @@ function debounceUpdateTokenInfo() {
     isFetchingTokenData = true;
     setTimeout(() => { isFetchingTokenData = false; }, 2000); // 2s debounce
     updateTokenInfo();
+}
+
+// Debounce impact tracker refresh
+let isFetchingImpactData = false;
+function debounceUpdateImpactTracker() {
+    if (isFetchingImpactData) {
+        console.log('Impact refresh debounced');
+        return;
+    }
+    isFetchingImpactData = true;
+    setTimeout(() => { isFetchingImpactData = false; }, 2000); // 2s debounce
+    updateImpactTracker();
+}
+
+// Cache impact data
+function displayCachedImpactData() {
+    const cachedData = localStorage.getItem('impactData');
+    if (cachedData) {
+        const { diraBalance, turtlesProtected, timestamp } = JSON.parse(cachedData);
+        const now = Date.now();
+        const cacheAge = now - timestamp;
+        const maxCacheAge = 5 * 60 * 1000; // 5 minutes
+        if (cacheAge < maxCacheAge) {
+            console.log('Displaying cached impact data:', { diraBalance, turtlesProtected });
+            impactTrackerEl.innerHTML = `
+                <p><strong>Conservation Fund:</strong> ${diraBalance.toLocaleString()} $DIRA</p>
+                <p><strong>Turtles Protected:</strong> ${turtlesProtected}</p>
+                <p><strong>Goal:</strong> 1 million $DIRA by December 2025</p>
+                <p><small>Data cached ${Math.round(cacheAge / 1000 / 60)} minutes ago</small></p>
+                <button class="button" id="refresh-impact">Refresh Impact</button>
+            `;
+            return true;
+        }
+    }
+    impactTrackerEl.innerHTML = `
+        <p>Loading impact data... <span class="loader"></span></p>
+        <button class="button" id="refresh-impact">Refresh Impact</button>
+    `;
+    return false;
 }
 
 async function updateTokenInfo() {
@@ -91,7 +134,48 @@ async function updateTokenInfo() {
     }
 }
 
+async function updateImpactTracker() {
+    console.log('Fetching new impact data...');
+    const startTime = performance.now();
+    impactTrackerEl.innerHTML = `<p>Loading impact data... <span class="loader"></span></p><button class="button" id="refresh-impact">Refresh Impact</button>`;
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+        const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana");
+        const wallet = new solanaWeb3.PublicKey(CDCF_WALLET);
+        const tokenAccounts = await connection.getTokenAccountsByOwner(wallet, {
+            mint: new solanaWeb3.PublicKey("53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8")
+        });
+        let diraBalance = 0;
+        if (tokenAccounts.value.length > 0) {
+            const balanceResponse = await connection.getTokenAccountBalance(tokenAccounts.value[0].pubkey);
+            diraBalance = balanceResponse.value.uiAmount || 0;
+        }
+        const turtlesProtected = Math.floor(diraBalance / TURTLES_PER_DIRA);
+        const impactData = { diraBalance, turtlesProtected, timestamp: Date.now() };
+        localStorage.setItem('impactData', JSON.stringify(impactData));
+        const fetchTime = performance.now() - startTime;
+        console.log(`Fetched impact data in ${fetchTime.toFixed(2)}ms:`, impactData);
+
+        impactTrackerEl.innerHTML = `
+            <p><strong>Conservation Fund:</strong> ${diraBalance.toLocaleString()} $DIRA</p>
+            <p><strong>Turtles Protected:</strong> ${turtlesProtected}</p>
+            <p><strong>Goal:</strong> 1 million $DIRA by December 2025</p>
+            <button class="button" id="refresh-impact">Refresh Impact</button>
+        `;
+    } catch (error) {
+        console.error(`Impact data error after ${(performance.now() - startTime).toFixed(2)}ms:`, error);
+        impactTrackerEl.innerHTML = `
+            <p>Error fetching impact data: ${error.message}. Please try again.</p>
+            <button class="button" id="refresh-impact">Refresh Impact</button>
+        `;
+        displayCachedImpactData();
+    }
+}
+
 // Initialize
 window.addEventListener('load', () => {
-    updateTokenInfo(); // Fetch instantly on load
+    updateTokenInfo(); // Fetch token data instantly
+    displayCachedImpactData(); // Show cached impact data
+    setTimeout(() => updateImpactTracker(), 5000); // Fetch impact data after 5s
 });
