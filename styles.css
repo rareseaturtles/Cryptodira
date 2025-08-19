@@ -42,7 +42,8 @@ body.dark-mode .content {
 
 body.dark-mode .roadmap,
 body.dark-mode .featured-nft,
-body.dark-mode .donation {
+body.dark-mode .donation,
+body.dark-mode .impact-tracker {
     background: rgba(0, 0, 0, 0.7);
     padding: 1rem;
     border-radius: 5px;
@@ -51,7 +52,8 @@ body.dark-mode .donation {
 
 body.dark-mode .roadmap:hover,
 body.dark-mode .featured-nft:hover,
-body.dark-mode .donation:hover {
+body.dark-mode .donation:hover,
+body.dark-mode .impact-tracker:hover {
     transform: translateY(-5px);
     background: rgba(0, 0, 0, 0.9);
 }
@@ -81,7 +83,8 @@ body.dark-mode .button:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-body.dark-mode #token-info {
+body.dark-mode #token-info,
+body.dark-mode #impact-tracker {
     transition: color 0.3s ease;
     z-index: 100;
     position: relative;
@@ -301,7 +304,8 @@ header p {
     background: linear-gradient(135deg, #00695c, #003d33);
 }
 
-#token-info {
+#token-info,
+#impact-tracker {
     font-size: 1.125rem;
     color: #0d4536;
     z-index: 100;
@@ -372,17 +376,9 @@ header p {
     transform: scale(1.05);
 }
 
-.roadmap {
-    margin: 1.5rem 0;
-    padding: 1.5rem;
-    background: rgba(178, 223, 219, 0.4);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border-radius: 1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.donation {
+.roadmap,
+.donation,
+.impact-tracker {
     margin: 1.5rem 0;
     padding: 1.5rem;
     background: rgba(178, 223, 219, 0.4);
