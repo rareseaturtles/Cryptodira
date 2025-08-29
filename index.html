@@ -1,96 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Twitter Card Metadata -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Cryptodira - Save Sea Turtles">
-    <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation efforts!">
-    <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
-    <meta name="twitter:site" content="@rareseaturtles">
-    <meta name="twitter:creator" content="@rareseaturtles">
-    <!-- Open Graph Metadata -->
-    <meta property="og:title" content="Cryptodira - Save Sea Turtles">
-    <meta property="og:description" content="Cryptodira: A Solana token dedicated to sea turtle conservation. Get involved today!">
-    <meta property="og:url" content="https://cryptodira.netlify.app/">
-    <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
-    <meta property="og:type" content="website">
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Cryptodira is a Solana-based token supporting sea turtle conservation with community-driven initiatives.">
-    <meta name="keywords" content="Cryptodira, sea turtle conservation, Solana token, environmental protection, crypto for good">
-    <meta name="author" content="Cryptodira Team">
-    <!-- Favicon -->
-    <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
-    <!-- Preload Critical Images -->
-    <link rel="preload" href="/assets/Turtle.jpg" as="image">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
-    <!-- Solana Web3.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
-    <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
-    <title>Cryptodira - Save Sea Turtles</title>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <!-- Twitter Card Metadata -->
+ <meta name="twitter:card" content="summary_large_image">
+ <meta name="twitter:title" content="Cryptodira - Save Sea Turtles">
+ <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation efforts!">
+ <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
+ <meta name="twitter:site" content="@rareseaturtles">
+ <meta name="twitter:creator" content="@rareseaturtles">
+ <!-- Open Graph Metadata -->
+ <meta property="og:title" content="Cryptodira - Save Sea Turtles">
+ <meta property="og:description" content="Cryptodira: A Solana token dedicated to sea turtle conservation. Get involved today!">
+ <meta property="og:url" content="https://cryptodira.netlify.app/">
+ <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
+ <meta property="og:type" content="website">
+ <!-- SEO Meta Tags -->
+ <meta name="description" content="Cryptodira is a Solana-based token supporting sea turtle conservation with community-driven initiatives.">
+ <meta name="keywords" content="Cryptodira, sea turtle conservation, Solana token, environmental protection, crypto for good, charity crypto token Solana">
+ <meta name="author" content="Cryptodira Team">
+ <!-- Favicon -->
+ <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6 k?ext=jpg" type="image/jpeg">
+ <!-- Preload Critical Images -->
+ <link rel="preload" href="/assets/Turtle.jpg" as="image">
+ <!-- Google Fonts -->
+ <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+ <!-- Solana Web3.js -->
+ <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
+ <!-- Styles -->
+ <link rel="stylesheet" href="styles.css">
+ <title>Cryptodira - Save Sea Turtles</title>
 </head>
 <body>
-    <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
-    <header>
-        <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
-        <h1>Cryptodira</h1>
-        <p>Supporting Sea Turtle Conservation on Solana</p>
-    </header>
+ <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+ <header>
+ <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
+ <h1>Cryptodira</h1>
+ <p>Supporting Sea Turtle Conservation on Solana</p>
+ </header>
 
-    <div class="content">
-        <h2>Welcome to Cryptodira ($DIRA)</h2>
-        <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and promoting environmental conservation through community efforts.</p>
-        
-        <h3>Tokenomics</h3>
-        <div id="token-info">
-            <p>Loading token data... <span class="loader"></span></p>
-            <button class="button" id="refresh-token">Refresh</button>
-        </div>
+ <div class="content">
+ <h2>Welcome to Cryptodira ($DIRA)</h2>
+ <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and promoting environmental conservation through community efforts.</p>
+ 
+ <h3>Tokenomics</h3>
+ <div id="token-info">
+ <p>Loading token data... <span class="loader"></span></p>
+ <button class="button" id="refresh-token">Refresh</button>
+ </div>
 
-        <h3>Featured NFT</h3>
-        <div class="featured-nft">
-            <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://magiceden.us/marketplace/rsts" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem;">Explore Collection</a></p>
-            <img src="/assets/Turtle.jpg" alt="Featured Turtle NFT">
-        </div>
+ <h3>Featured NFT</h3>
+ <div class="featured-nft">
+ <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://magiceden.us/marketplace/rsts" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem;">Explore Collection</a></p>
+ <img src="/assets/Turtle.jpg" alt="Featured Turtle NFT">
+ </div>
 
-        <h3>Roadmap to Grow MC and Conservation Funding</h3>
-        <div class="roadmap">
-            <ul>
-                <li class="in-progress" style="--order: 1"><strong>Stage 1 (Complete):</strong> Achieved 15k MC, established 120k $DIRA conservation fund.</li>
-                <li class="in-progress" style="--order: 2"><strong>Stage 2 (Complete):</strong> Reached 30k MC, grew conservation fund to 300k $DIRA.</li>
-                <li class="in-progress" style="--order: 3"><strong>Stage 3 (In Progress):</strong> Reached 42k MC, targeting 100k MC and 1 million $DIRA conservation fund by December 2025.</li>
-            </ul>
-        </div>
+ <h3>Roadmap to Grow MC and Conservation Funding</h3>
+ <div class="roadmap">
+ <ul>
+ <li class="in-progress" style="--order: 1"><strong>Stage 1 (Complete):</strong> Achieved 15k MC, established 120k $DIRA conservation fund.</li>
+ <li class="in-progress" style="--order: 2"><strong>Stage 2 (Complete):</strong> Reached 30k MC, grew conservation fund to 300k $DIRA.</li>
+ <li class="in-progress" style="--order: 3"><strong>Stage 3 (In Progress):</strong> Reached ~42k MC, fund at 827k $DIRA, targeting 100k MC and 1 million $DIRA by December 2025.</li>
+ </ul>
+ </div>
 
-        <h3>Donation</h3>
-        <div class="donation">
-            <p>$50 donated to sea turtle conservation on October 16, 2025, for Cryptodira’s birthday!</p>
-        </div>
+ <h3>Donation</h3>
+ <div class="donation">
+ <p>Total raised: Over $1,000 in value for sea turtle conservation!</p>
+ <p>$50 in SOL scheduled for donation (from fund wallet sell) – stay tuned for confirmation.</p>
+ <p>Previous: $50 donated on August 29, 2025, for Cryptodira’s milestone!</p>
+ </div>
 
-        <h3>Conservation Impact</h3>
-        <div class="impact-tracker">
-            <p>Loading impact data... <span class="loader"></span></p>
-            <button class="button" id="refresh-impact">Refresh Impact</button>
-        </div>
+ <h3>Conservation Impact</h3>
+ <div class="impact-tracker">
+ <p><strong>Conservation Fund:</strong> 827,000 $DIRA</p>
+ <p><strong>Turtles Protected:</strong> 82</p>
+ <p><strong>Goal:</strong> 1 million $DIRA by December 2025</p>
+ <p><strong>Upcoming:</strong> Fund scheduled to sell off and lend $50 USDC on October 16th.</p>
+ </div>
 
-        <h3>Join the Community</h3>
-        <div class="buttons">
-            <a href="https://jup.ag/tokens/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank" class="button">Buy Now</a>
-            <a href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" class="button" target="_blank">Swap on Meteora</a>
-            <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" class="button" target="_blank">Birdeye Chart</a>
-            <a href="https://x.com/rareseaturtles" class="button" target="_blank">Follow on X</a>
-            <a href="https://t.me/+FsJKNuEXxRRmZGRh" class="button" target="_blank">Join Telegram</a>
-            <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy" class="button" target="_blank">CDCF Wallet</a>
-        </div>
-    </div>
+ <h3>Join the Community</h3>
+ <div class="buttons">
+ <a href="https://jup.ag/tokens/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank" class="button">Buy Now</a>
+ <a href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" class="button" target="_blank">Swap on Meteora</a>
+ <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" class="button" target="_blank">Birdeye Chart</a>
+ <a href="https://x.com/rareseaturtles" class="button" target="_blank">Follow on X</a>
+ <a href="https://t.me/+FsJKNuEXxRRmZGRh" class="button" target="_blank">Join Telegram</a>
+ <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy" class="button" target="_blank">CDCF Wallet</a>
+ </div>
+ </div>
 
-    <footer>
-        <p>© 2025 Cryptodira. Committed to Sea Turtle Conservation.</p>
-    </footer>
+ <footer>
+ <p>© 2025 Cryptodira. Committed to Sea Turtle Conservation.</p>
+ </footer>
 
-    <script src="main.js"></script>
+ <script src="main.js"></script>
 </body>
 </html>
