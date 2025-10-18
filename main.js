@@ -10,9 +10,9 @@ const donateAmountInput = document.getElementById('donate-amount');
 const walletModal = document.getElementById('wallet-modal');
 const modalTitle = document.getElementById('modal-title');
 const modalPublicKey = document.getElementById('modal-public-key');
-const modalSeedPhrase = document.getElementById('modal-seed-phrase');
+const modalSecretKey = document.getElementById('modal-secret-key');
 const copyPublicBtn = document.getElementById('copy-public-btn');
-const copySeedBtn = document.getElementById('copy-seed-btn');
+const copySecretBtn = document.getElementById('copy-secret-btn');
 const modalClose = document.getElementById('modal-close');
 const vanityWarningEl = document.getElementById('vanity-warning');
 const retryWalletBtn = document.getElementById('retry-wallet-btn');
@@ -29,47 +29,21 @@ const RPC_ENDPOINTS = [
 ];
 const connection = new solanaWeb3.Connection(RPC_ENDPOINTS[0], 'confirmed');
 
-// Wait for bip39 to load
-function waitForBip39(maxAttempts = 10, interval = 500) {
-  return new Promise((resolve, reject) => {
-    let attempts = 0;
-    const checkBip39 = () => {
-      if (typeof bip39 !== 'undefined') {
-        resolve(bip39);
-      } else if (attempts >= maxAttempts) {
-        reject(new Error('bip39 library failed to load after maximum attempts'));
-      } else {
-        attempts++;
-        setTimeout(checkBip39, interval);
-      }
-    };
-    checkBip39();
-  });
-}
-
 // Event delegation for buttons
-document.body.addEventListener('click', async (e) => {
-  const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-seed-btn, #modal-close, #retry-wallet-btn');
+document.body.addEventListener('click', (e) => {
+  const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-secret-btn, #modal-close, #retry-wallet-btn');
   if (button) {
     const id = button.id || button.textContent;
     console.log(`Button clicked: ${id}`);
     if (button.id === 'refresh-token') debounceUpdateTokenInfo();
     else if (button.id === 'claim-wallet-btn' || button.id === 'retry-wallet-btn') {
-      try {
-        await waitForBip39();
-        generateVanityWallet();
-      } catch (error) {
-        console.error('bip39 load error:', error);
-        alert('Failed to generate wallet: bip39 library not loaded. Please check your network and refresh the page.');
-        claimWalletBtn.textContent = 'Claim New Wallet';
-        claimWalletBtn.disabled = false;
-      }
+      generateVanityWallet();
     }
     else if (button.id === 'connect-wallet-btn') connectWallet();
     else if (button.id === 'donate-btn') donateDIRA();
     else if (button.id === 'refresh-balance') debounceUpdateBalanceInfo();
     else if (button.id === 'copy-public-btn') copyText(modalPublicKey.innerText);
-    else if (button.id === 'copy-seed-btn') copyText(modalSeedPhrase.innerText);
+    else if (button.id === 'copy-secret-btn') copyText(modalSecretKey.innerText);
     else if (button.id === 'modal-close') walletModal.style.display = 'none';
     else if (button.href) window.open(button.href, '_blank');
   }
@@ -186,8 +160,8 @@ async function updateTokenInfo() {
   }
 }
 
-// Vanity wallet generation with seed phrase
-async function generateVanityWallet() {
+// Vanity wallet generation with raw secret key
+function generateVanityWallet() {
   claimWalletBtn.disabled = true;
   claimWalletBtn.textContent = 'Generating DIRA wallet...';
   vanityWarningEl.style.display = 'none';
@@ -197,15 +171,14 @@ async function generateVanityWallet() {
   const timeout = 10000; // 10 seconds for DIRA prefix match
   let keypair;
   let publicKeyStr;
-  let seedPhrase;
+  let secretKeyStr;
 
   // Try for DIRA prefix (case-insensitive)
   while (true) {
     try {
-      seedPhrase = bip39.generateMnemonic(); // Generate 12-word seed phrase
-      const seed = await bip39.mnemonicToSeed(seedPhrase);
-      keypair = solanaWeb3.Keypair.fromSeed(seed.slice(0, 32)); // Use first 32 bytes for Solana
+      keypair = solanaWeb3.Keypair.generate();
       publicKeyStr = keypair.publicKey.toString();
+      secretKeyStr = Buffer.from(keypair.secretKey).toString('base64'); // Use base64 for better readability
 
       if (publicKeyStr.toLowerCase().startsWith('dira')) {
         break; // Found vanity address
@@ -224,17 +197,17 @@ async function generateVanityWallet() {
   }
 
   const isVanity = publicKeyStr.toLowerCase().startsWith('dira');
-  modalTitle.textContent = isVanity ? 'Your New Vanity Wallet' : 'Your New Wallet';
+  modalTitle.textContent = isVanity ? 'Your New Vanity Solana Wallet' : 'Your New Solana Wallet';
   modalPublicKey.innerText = publicKeyStr;
-  modalSeedPhrase.innerText = seedPhrase;
+  modalSecretKey.innerText = secretKeyStr;
   vanityWarningEl.style.display = isVanity ? 'none' : 'block';
   retryWalletBtn.style.display = isVanity ? 'none' : 'block';
   walletModal.style.display = 'flex';
   claimWalletBtn.textContent = 'Claim New Wallet';
   claimWalletBtn.disabled = false;
 
-  alert('New wallet created! Copy the seed phrase and public key from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
-  console.log('Wallet generated:', { publicKey: publicKeyStr, seedPhrase, isVanity });
+  alert('New Solana wallet created! Copy the secret key and public key from the pop-up, import to Solflare or Phantom (desktop/extension), fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
+  console.log('Wallet generated:', { publicKey: publicKeyStr, secretKey: secretKeyStr, isVanity });
 }
 
 // Copy text
