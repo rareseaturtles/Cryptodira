@@ -56,13 +56,17 @@ CA 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
  <div class="featured-nft" id="wallet-section">
    <button class="button" id="claim-wallet-btn">Claim New Wallet</button>
    <button class="button" id="connect-wallet-btn">Connect Wallet</button>
-   <div id="wallet-details" style="display: none;">
-     <p id="public-key-text">Public Key: <span id="public-key"></span></p>
-     <button class="button" id="copy-public-btn">Copy Public Key</button>
-     <p id="secret-key-text">Secret Key: <span id="secret-key"></span></p>
-     <button class="button" id="copy-secret-btn">Copy Secret Key</button>
-     <p id="vanity-warning" style="display: none; color: #ffca28;">Note: Couldn’t find DIRA prefix in time, using random unique wallet.</p>
-     <p class="warning">WARNING: Save keys OFFLINE on paper. Do NOT share. Import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. We can't recover lost keys.</p>
+   <div id="wallet-modal" class="modal" style="display: none;">
+     <div class="modal-content">
+       <span id="modal-close" class="modal-close">&times;</span>
+       <h3>Your New Wallet</h3>
+       <p id="vanity-warning" style="display: none; color: #ffca28;">Note: Couldn’t find DIRA prefix in time, using random unique wallet.</p>
+       <p><strong>Public Key:</strong> <span id="modal-public-key"></span></p>
+       <button class="button" id="copy-public-btn">Copy Public Key</button>
+       <p><strong>Secret Key:</strong> <span id="modal-secret-key"></span></p>
+       <button class="button" id="copy-secret-btn">Copy Secret Key</button>
+       <p class="warning">WARNING: Save keys OFFLINE on paper. Do NOT share. Import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. We can't recover lost keys.</p>
+     </div>
    </div>
    <div id="balance-section">
      <div id="balance-info">
