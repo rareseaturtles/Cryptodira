@@ -55,13 +55,6 @@ walletModal.addEventListener('click', (e) => {
   }
 });
 
-// Close modal on Escape key
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && walletModal.style.display === 'flex') {
-    walletModal.style.display = 'none';
-  }
-});
-
 // Dark mode toggle
 darkModeToggle.addEventListener('click', (e) => {
   e.stopPropagation();
