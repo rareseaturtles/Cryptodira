@@ -7,6 +7,12 @@ const createWalletBtn = document.getElementById('create-wallet-btn');
 const connectWalletBtn = document.getElementById('connect-wallet-btn');
 const donateBtn = document.getElementById('donate-btn');
 const donateAmountInput = document.getElementById('donate-amount');
+const walletDetailsEl = document.getElementById('wallet-details');
+const publicKeyEl = document.getElementById('public-key');
+const secretKeyEl = document.getElementById('secret-key');
+const copyPublicBtn = document.getElementById('copy-public-btn');
+const copySecretBtn = document.getElementById('copy-secret-btn');
+const submitWalletBtn = document.getElementById('submit-wallet-btn');
 
 // Constants
 const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db"; // Replace if expired
@@ -22,7 +28,7 @@ const connection = new solanaWeb3.Connection(RPC_ENDPOINTS[0], 'confirmed');
 
 // Event delegation for buttons
 document.body.addEventListener('click', (e) => {
-  const button = e.target.closest('.button, #darkModeToggle, #create-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance');
+  const button = e.target.closest('.button, #darkModeToggle, #create-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-secret-btn, #submit-wallet-btn');
   if (button) {
     const id = button.id || button.textContent;
     console.log(`Button clicked: ${id}`);
@@ -31,6 +37,9 @@ document.body.addEventListener('click', (e) => {
     else if (button.id === 'connect-wallet-btn') connectWallet();
     else if (button.id === 'donate-btn') donateDIRA();
     else if (button.id === 'refresh-balance') debounceUpdateBalanceInfo();
+    else if (button.id === 'copy-public-btn') copyText(publicKeyEl.innerText);
+    else if (button.id === 'copy-secret-btn') copyText(secretKeyEl.innerText);
+    else if (button.id === 'submit-wallet-btn') submitWallet();
     else if (button.href) window.open(button.href, '_blank');
   }
 });
@@ -61,6 +70,250 @@ function debounceUpdateTokenInfo() {
   if (isFetchingTokenData) {
     console.log('Token refresh debounced');
     return;
+  }
+  isFetchingTokenData = true;
+  setTimeout(() => { isFetchingTokenData = false; }, 2000);
+  updateTokenInfo();
+}
+
+let isFetchingBalanceData = false;
+function debounceUpdateBalanceInfo() {
+  if (isFetchingBalanceData) {
+    console.log('Balance refresh debounced');
+    return;
+  }
+  isFetchingBalanceData = true;
+  setTimeout(() => { isFetchingBalanceData = false; }, 2000);
+  updateBalanceInfo();
+}
+
+// Token info fetch (restored original)
+async function updateTokenInfo() {
+  console.log('Fetching token data...');
+  const startTime = performance.now();
+  tokenInfoEl.innerHTML = `<p>Loading token data... <span class="loader"></span></p><button class="button" id="refresh-token">Refresh</button>`;
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    let response = await fetch("https://public-api.birdeye.so/defi/price?address=53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8&check_liquidity=100&include_liquidity=true", {
+      headers: {
+        "X-API-KEY": BIRDEYE_API_KEY,
+        "x-chain": "solana",
+        "accept": "application/json"
+      },
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      console.warn('Birdeye API failed, trying Jupiter...');
+      response = await fetch(`https://price.jup.ag/v6/price?ids=${TOKEN_MINT}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const jupData = await response.json();
+      const price = jupData.data[TOKEN_MINT]?.price?.toFixed(6) || "N/A";
+      const marketCap = price !== "N/A" ? (price * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
+      const fetchTime = performance.now() - startTime;
+      console.log(`Fetched Jupiter data in ${fetchTime.toFixed(2)}ms:`, { price, marketCap });
+      tokenInfoEl.innerHTML = `
+        <p><strong>Price:</strong> ${price !== "N/A" ? "$" + price : price}</p>
+        <p><strong>Market Cap:</strong> ${marketCap !== "N/A" ? "$" + marketCap : marketCap}</p>
+        <p><strong>Mission:</strong> Fund conservation through community participation.</p>
+        <p><strong>Track:</strong> <a href="https://birdeye.so/token/${TOKEN_MINT}?chain=solana" target="_blank">Birdeye</a></p>
+        <button class="button" id="refresh-token">Refresh</button>
+      `;
+      return;
+    }
+
+    const birdeyeData = await response.json();
+    const price = birdeyeData.data?.value?.toFixed(6) || "N/A";
+    const liquidity = birdeyeData.data?.liquidity?.toFixed(2) || "N/A";
+    const marketCap = price !== "N/A" ? (birdeyeData.data.value * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
+    const fetchTime = performance.now() - startTime;
+    console.log(`Fetched Birdeye data in ${fetchTime.toFixed(2)}ms:`, { price, liquidity, marketCap });
+
+    tokenInfoEl.innerHTML = `
+      <p><strong>Price:</strong> ${price !== "N/A" ? "$" + price : price}</p>
+      <p><strong>Liquidity:</strong> ${liquidity !== "N/A" ? "$" + liquidity : liquidity}</p>
+      <p><strong>Market Cap:</strong> ${marketCap !== "N/A" ? "$" + marketCap : marketCap}</p>
+      <p><strong>Mission:</strong> Fund conservation through community participation.</p>
+      <p><strong>Track:</strong> <a href="https://birdeye.so/token/${TOKEN_MINT}?chain=solana" target="_blank">Birdeye</a></p>
+      <button class="button" id="refresh-token">Refresh</button>
+    `;
+  } catch (error) {
+    console.error(`Token data error after ${(performance.now() - startTime).toFixed(2)}ms:`, error);
+    tokenInfoEl.innerHTML = `
+      <p>Error fetching token data: ${error.message}. Please try again.</p>
+      <button class="button" id="refresh-token">Refresh</button>
+    `;
+  }
+}
+
+// Wallet creation
+function generateWallet() {
+  const keypair = solanaWeb3.Keypair.generate();
+  publicKeyEl.innerText = keypair.publicKey.toString();
+  secretKeyEl.innerText = Array.from(keypair.secretKey).join(',');
+  walletDetailsEl.style.display = 'block';
+  alert('New wallet created! Copy keys, import to Phantom/Solflare, submit public key for ~100 $DIRA + 0.01 SOL, then donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
+  console.log('New wallet generated:', { publicKey: publicKeyEl.innerText });
+}
+
+// Copy text
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Copied to clipboard!');
+  }).catch(err => {
+    console.error('Copy failed:', err);
+    alert('Copy failed. Manually copy the text.');
+  });
+}
+
+// Submit wallet for $DIRA airdrop
+function submitWallet() {
+  const publicKey = publicKeyEl.innerText;
+  if (!publicKey) {
+    alert('Create a wallet first to submit for $DIRA.');
+    return;
+  }
+  // Replace with your Google Forms URL (create at forms.google.com)
+  const formUrl = 'https://forms.gle/your-form-id';
+  window.open(`${formUrl}?entry.123456789=${encodeURIComponent(publicKey)}`, '_blank');
+  alert('Submitted! Check @rareseaturtles on X/Telegram for airdrop updates (~100 $DIRA + 0.01 SOL).');
+}
+
+// Connect wallet
+async function connectWallet() {
+  if ('solana' in window) {
+    const provider = window.solana;
+    try {
+      await provider.connect();
+      connectWalletBtn.textContent = 'Wallet Connected';
+      connectWalletBtn.disabled = true;
+      updateBalanceInfo();
+    } catch (error) {
+      console.error('Wallet connection error:', error);
+      alert('Wallet connection failed: ' + error.message);
+    }
+  } else {
+    alert('Please install Phantom or Solflare wallet extension.');
+  }
+}
+
+// Balance fetching
+async function updateBalanceInfo() {
+  console.log('Fetching balance data...');
+  const startTime = performance.now();
+  balanceInfoEl.innerHTML = `<p>Loading balance data... <span class="loader"></span></p><button class="button" id="refresh-balance">Refresh Balances</button>`;
+
+  if ('solana' in window && window.solana.isConnected) {
+    const provider = window.solana;
+    const publicKey = new solanaWeb3.PublicKey(provider.publicKey.toString());
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+      // SOL balance
+      const solBalance = await connection.getBalance(publicKey, { signal: controller.signal });
+      const solFormatted = (solBalance / 1e9).toFixed(4);
+
+      // $DIRA balance
+      let diraFormatted = 0;
+      try {
+        const tokenAccount = await splToken.getAssociatedTokenAddress(
+          new solanaWeb3.PublicKey(TOKEN_MINT),
+          publicKey
+        );
+        const tokenInfo = await splToken.getAccount(connection, tokenAccount, 'confirmed', { signal: controller.signal });
+        diraFormatted = (Number(tokenInfo.amount) / 1e9).toFixed(2); // 9 decimals
+      } catch (e) {
+        console.warn('No $DIRA token account:', e.message);
+      }
+
+      clearTimeout(timeoutId);
+      const fetchTime = performance.now() - startTime;
+      console.log(`Fetched balance data in ${fetchTime.toFixed(2)}ms:`, { solFormatted, diraFormatted });
+
+      balanceInfoEl.innerHTML = `
+        <p><strong>SOL Balance:</strong> ${solFormatted} SOL</p>
+        <p><strong>$DIRA Balance:</strong> ${diraFormatted} DIRA</p>
+        <p>Hold $DIRA to support sea turtle conservation!</p>
+        <button class="button" id="refresh-balance">Refresh Balances</button>
+      `;
+    } catch (error) {
+      console.error(`Balance data error after ${(performance.now() - startTime).toFixed(2)}ms:`, error);
+      balanceInfoEl.innerHTML = `
+        <p>Error fetching balance data: ${error.message}. Please try again.</p>
+        <button class="button" id="refresh-balance">Refresh Balances</button>
+      `;
+    }
+  } else {
+    balanceInfoEl.innerHTML = `
+      <p>Connect wallet to view balances or create a new one.</p>
+      <button class="button" id="refresh-balance">Refresh Balances</button>
+    `;
+  }
+}
+
+// Donate $DIRA
+async function donateDIRA() {
+  const amount = parseFloat(donateAmountInput.value);
+  if (!amount || amount <= 0) {
+    alert('Please enter a valid $DIRA amount (e.g., 100).');
+    return;
+  }
+
+  if ('solana' in window && window.solana.isConnected) {
+    const provider = window.solana;
+    const publicKey = new solanaWeb3.PublicKey(provider.publicKey.toString());
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+      const sourceAccount = await splToken.getAssociatedTokenAddress(
+        new solanaWeb3.PublicKey(TOKEN_MINT),
+        publicKey
+      );
+      const recipientAccount = await splToken.getAssociatedTokenAddress(
+        new solanaWeb3.PublicKey(CDCF_WALLET),
+        new solanaWeb3.PublicKey(CDCF_WALLET)
+      );
+
+      const transaction = new solanaWeb3.Transaction().add(
+        splToken.createTransferInstruction(
+          sourceAccount,
+          recipientAccount,
+          publicKey,
+          Math.floor(amount * 1e9), // 9 decimals
+          [],
+          splToken.TOKEN_PROGRAM_ID
+        )
+      );
+
+      const { blockhash } = await connection.getLatestBlockhash({ signal: controller.signal });
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = publicKey;
+
+      const signed = await provider.signTransaction(transaction);
+      const signature = await connection.sendRawTransaction(signed.serialize(), { signal: controller.signal });
+      await connection.confirmTransaction(signature, 'confirmed');
+
+      clearTimeout(timeoutId);
+      alert(`Successfully donated ${amount} $DIRA to CDCF! Transaction ID: ${signature}`);
+      console.log('Donation successful:', { signature, amount });
+      updateBalanceInfo();
+    } catch (error) {
+      console.error('Donation error:', error);
+      alert(`Donation failed: ${error.message}`);
+    }
+  } else {
+    alert('Please connect your wallet first (e.g., Phantom or Solflare).');
+  }
+}
+
+// Initialize
+window.addEventListener('load', () => {
+  updateTokenInfo();
+});    return;
   }
   isFetchingTokenData = true;
   setTimeout(() => { isFetchingTokenData = false; }, 2000);
