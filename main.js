@@ -10,9 +10,9 @@ const donateAmountInput = document.getElementById('donate-amount');
 const walletModal = document.getElementById('wallet-modal');
 const modalTitle = document.getElementById('modal-title');
 const modalPublicKey = document.getElementById('modal-public-key');
-const modalSecretKey = document.getElementById('modal-secret-key');
+const modalSeedPhrase = document.getElementById('modal-seed-phrase');
 const copyPublicBtn = document.getElementById('copy-public-btn');
-const copySecretBtn = document.getElementById('copy-secret-btn');
+const copySeedBtn = document.getElementById('copy-seed-btn');
 const modalClose = document.getElementById('modal-close');
 const vanityWarningEl = document.getElementById('vanity-warning');
 const retryWalletBtn = document.getElementById('retry-wallet-btn');
@@ -31,7 +31,7 @@ const connection = new solanaWeb3.Connection(RPC_ENDPOINTS[0], 'confirmed');
 
 // Event delegation for buttons
 document.body.addEventListener('click', (e) => {
-  const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-secret-btn, #modal-close, #retry-wallet-btn');
+  const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-seed-btn, #modal-close, #retry-wallet-btn');
   if (button) {
     const id = button.id || button.textContent;
     console.log(`Button clicked: ${id}`);
@@ -41,7 +41,7 @@ document.body.addEventListener('click', (e) => {
     else if (button.id === 'donate-btn') donateDIRA();
     else if (button.id === 'refresh-balance') debounceUpdateBalanceInfo();
     else if (button.id === 'copy-public-btn') copyText(modalPublicKey.innerText);
-    else if (button.id === 'copy-secret-btn') copyText(modalSecretKey.innerText);
+    else if (button.id === 'copy-seed-btn') copyText(modalSeedPhrase.innerText);
     else if (button.id === 'modal-close') walletModal.style.display = 'none';
     else if (button.id === 'retry-wallet-btn') generateVanityWallet();
     else if (button.href) window.open(button.href, '_blank');
@@ -98,7 +98,7 @@ function debounceUpdateBalanceInfo() {
   updateBalanceInfo();
 }
 
-// Token info fetch (restored original)
+// Token info fetch
 async function updateTokenInfo() {
   console.log('Fetching token data...');
   const startTime = performance.now();
@@ -159,7 +159,7 @@ async function updateTokenInfo() {
   }
 }
 
-// Vanity wallet generation
+// Vanity wallet generation with seed phrase
 async function generateVanityWallet() {
   claimWalletBtn.disabled = true;
   claimWalletBtn.textContent = 'Generating DIRA wallet...';
@@ -168,31 +168,38 @@ async function generateVanityWallet() {
 
   const startTime = performance.now();
   const timeout = 10000; // 10 seconds for DIRA prefix match
-  let keypair = solanaWeb3.Keypair.generate();
-  let publicKeyStr = keypair.publicKey.toString();
+  let keypair;
+  let publicKeyStr;
+  let seedPhrase;
 
   // Try for DIRA prefix (case-insensitive)
-  while (!publicKeyStr.toLowerCase().startsWith('dira')) {
-    if (performance.now() - startTime > timeout) {
-      console.warn('Vanity timeout, using random wallet');
-      break;
-    }
-    keypair = solanaWeb3.Keypair.generate();
+  while (true) {
+    const mnemonic = solanaWeb3.generateMnemonic(); // Generate 12-word seed phrase
+    keypair = await solanaWeb3.Keypair.fromMnemonic(mnemonic);
     publicKeyStr = keypair.publicKey.toString();
+    seedPhrase = mnemonic;
+
+    if (publicKeyStr.toLowerCase().startsWith('dira')) {
+      break; // Found vanity address
+    }
+    if (performance.now() - startTime > timeout) {
+      console.warn('Vanity timeout, using last generated wallet');
+      break; // Timeout, use last generated wallet
+    }
   }
 
   const isVanity = publicKeyStr.toLowerCase().startsWith('dira');
   modalTitle.textContent = isVanity ? 'Your New Vanity Wallet' : 'Your New Wallet';
   modalPublicKey.innerText = publicKeyStr;
-  modalSecretKey.innerText = Array.from(keypair.secretKey).join(',');
+  modalSeedPhrase.innerText = seedPhrase;
   vanityWarningEl.style.display = isVanity ? 'none' : 'block';
   retryWalletBtn.style.display = isVanity ? 'none' : 'block';
   walletModal.style.display = 'flex';
   claimWalletBtn.textContent = 'Claim New Wallet';
   claimWalletBtn.disabled = false;
 
-  alert('New wallet created! Copy keys from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
-  console.log('Wallet generated:', { publicKey: publicKeyStr, isVanity });
+  alert('New wallet created! Copy the seed phrase and public key from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
+  console.log('Wallet generated:', { publicKey: publicKeyStr, seedPhrase, isVanity });
 }
 
 // Copy text
