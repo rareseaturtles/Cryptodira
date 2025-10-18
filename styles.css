@@ -1,533 +1,148 @@
 body {
-    font-family: 'Open Sans', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, #e0f7fa, #b2dfdb);
-    color: #1a3c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto;
-    line-height: 1.6;
-    position: relative;
-    touch-action: pan-y;
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #e0f7fa, #b2dfdb);
+  color: #1a3c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  line-height: 1.6;
+  position: relative;
 }
-
 body.dark-mode {
-    background: #000000;
-    color: #00FFFF;
-    transition: all 0.3s ease;
+  background: #000000;
+  color: #00FFFF;
 }
+body.dark-mode * { color: #00FFFF; }
+body.dark-mode header { background: rgba(0, 0, 0, 0.85); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
+body.dark-mode .content { background: rgba(0, 0露
 
-body.dark-mode * {
-    color: #00FFFF;
-}
+System: I'm sorry, but I can't respond with complete information because the input was cut off in the middle of the CSS file, and I don't have the full context of the styles needed to ensure all properties are correctly applied. Could you please share the complete `styles.css` file or clarify any specific styling requirements for the modal, buttons, or other elements? This will help me provide a fully functional solution.
 
-body.dark-mode header {
-    background: rgba(0, 0, 0, 0.85);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
+Additionally, I noticed you mentioned liking my earlier response style for being concise and easy to follow. I'll keep this response tight and focused, addressing:
+1. **Easier Copy/Paste**: Using `<textarea readonly>` for public key, seed phrase, and private key to make copying straightforward (single click, Ctrl+C).
+2. **Token Data Not Loading**: Likely an expired Birdeye API key; retained Birdeye `/defi/price` with Jupiter fallback. Get a new key at `birdeye.so/api-key` if needed.
+3. **Buttons Not Working**: Fixed event delegation to cover all buttons (`claim-wallet-btn`, `connect-wallet-btn`, `donate-btn`, `refresh-balance`, `copy-public-btn`, `copy-seed-btn`, `reveal-private-btn`, `copy-private-btn`, `try-again-btn`, `modal-close`). Ensured CDN scripts load reliably.
+4. **Vanity Generation**: Case-sensitive "DIRA" prefix, 4-second timeout (~0.04–0.4% chance, ~4,000–40,000 keys), "Try Again" button to retry without closing modal.
+5. **Modal**: Close button (`×`) and overlay click work (`z-index: 1002`, `pointer-events: auto`), distinct with darker backdrop (`rgba(0, 0, 0, 0.7)`), teal border, `z-index: 1000`.
 
-body.dark-mode .content {
-    background: rgba(0, 0, 0, 0.75);
-    border: 1px solid #26a69a;
-    border-radius: 8px;
-}
+### Updated Code
+Below are the updated `index.html` and `main.js` files with `<textarea>` for easy copy/paste, 4-second timeout for "DIRA" prefix, "Try Again" button, and fixed token data/buttons. Since the `styles.css` file was incomplete, I'll assume the styling from the previous version for the modal, buttons, and textareas, with minor tweaks for `<textarea>` appearance. Please provide the full `styles.css` or confirm if the previous version's styles are sufficient.
 
-body.dark-mode .roadmap,
-body.dark-mode .featured-nft,
-body.dark-mode .impact-tracker,
-body.dark-mode #wallet-section {
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid #26a69a;
-}
-
-body.dark-mode .roadmap:hover,
-body.dark-mode .featured-nft:hover,
-body.dark-mode .impact-tracker:hover,
-body.dark-mode #wallet-section:hover {
-    transform: translateY(-5px);
-    background: rgba(0, 0, 0, 0.9);
-}
-
-body.dark-mode footer {
-    background: rgba(0, 0, 0, 0.85);
-}
-
-body.dark-mode .button,
-body.dark-mode #donate-amount {
-    background: linear-gradient(135deg, #26a69a, #000000);
-    color: #00FFFF;
-    border: none;
-}
-
-body.dark-mode .button:hover,
-body.dark-mode #donate-amount:focus {
-    background: linear-gradient(135deg, #00695c, #000000);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-body.dark-mode #darkModeToggle {
-    background: #fff;
-    color: #00FFFF;
-    border: 1px solid #26a69a;
-}
-
-body.dark-mode #darkModeToggle:hover {
-    background: #e0f7fa;
-    transform: scale(1.05);
-}
-
-body.dark-mode .modal-content {
-    background: linear-gradient(135deg, #1c2526, #13282c);
-    border: 2px solid #26a69a;
-}
-
-body.dark-mode .modal-content h3,
-body.dark-mode .modal-content p {
-    color: #00FFFF;
-}
-
-body.dark-mode .modal-close {
-    color: #00FFFF;
-}
-
-body.dark-mode .modal-close:hover {
-    color: #26a69a;
-}
-
-header {
-    text-align: center;
-    padding: 2rem 0;
-    background: linear-gradient(135deg, rgba(178, 223, 219, 0.7), rgba(178, 223, 219, 0.3));
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    z-index: 5;
-}
-
-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: url('https://www.transparenttextures.com/patterns/wave.png') repeat;
-    opacity: 0.1;
-    animation: waveMove 15s infinite linear;
-    z-index: 0;
-}
-
-@keyframes waveMove {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(-50%, 50%); }
-}
-
-header h1 {
-    font-size: 3rem;
-    color: #0d4536;
-    margin: 1rem 0;
-    text-shadow: 2px 2px 6px rgba(13, 69, 54, 0.4);
-    font-family: 'Roboto', sans-serif;
-    position: relative;
-    z-index: 10;
-    pointer-events: none;
-}
-
-header p {
-    font-size: 1.375rem;
-    color: #0d4536;
-    margin: 0;
-    position: relative;
-    z-index: 10;
-    pointer-events: none;
-}
-
-.logo {
-    width: 10rem;
-    height: auto;
-    border-radius: 1rem;
-    border: 4px solid #0d4536;
-    margin: 1.25rem auto;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
-    z-index: 10;
-    animation: float 2s infinite ease-in-out;
-}
-
-.logo:hover {
-    transform: scale(1.1) rotate(3deg);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
-
-.content {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 2rem;
-    margin: 6rem 1.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    max-width: 60rem;
-    width: 90%;
-    border: 2px solid rgba(38, 166, 154, 0.5);
-    text-align: center;
-    animation: fadeIn 0.5s ease-out;
-    z-index: 5;
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-.content h2,
-.content h3 {
-    color: #0d4536;
-    margin-bottom: 1.5rem;
-    font-family: 'Roboto', sans-serif;
-    position: relative;
-    padding-bottom: 0.5rem;
-    z-index: 10;
-    pointer-events: none;
-}
-
-.content h2::after,
-.content h3::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 3rem;
-    height: 2px;
-    background: #26a69a;
-    transition: width 0.3s ease;
-}
-
-.content h2:hover::after,
-.content h3:hover::after {
-    width: 6rem;
-}
-
-.content p {
-    font-size: 1.125rem;
-    color: #37474f;
-    margin-bottom: 1.5rem;
-    z-index: 10;
-    pointer-events: none;
-}
-
-.buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem;
-    margin: 2rem 0;
-    z-index: 10;
-    position: relative;
-    pointer-events: none;
-}
-
-.button {
-    padding: 0.75rem 1.5rem;
-    font-size: 1.125rem;
-    color: #fff;
-    background: linear-gradient(135deg, #26a69a, #00695c);
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    text-decoration: none;
-    min-width: 12.5rem;
-    position: relative;
-    overflow: hidden;
-    z-index: 10;
-    pointer-events: auto;
-    touch-action: none;
-}
-
-.button::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
-}
-
-.button:hover::before {
-    width: 20rem;
-    height: 20rem;
-}
-
-.button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, #00695c, #003d33);
-}
-
-#token-info,
-#balance-info,
-#impact-tracker {
-    font-size: 1.125rem;
-    color: #0d4536;
-    z-index: 10;
-    position: relative;
-    pointer-events: auto;
-}
-
-#donate-section {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-#donate-amount {
-    padding: 0.75rem;
-    font-size: 1.125rem;
-    color: #37474f;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #26a69a;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-#donate-amount:focus {
-    outline: none;
-    border-color: #00695c;
-    box-shadow: 0 0 8px rgba(0, 105, 92, 0.3);
-}
-
-#darkModeToggle {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 100;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    background: #fff;
-    color: #0d4536;
-    border: 1px solid #26a69a;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    pointer-events: auto;
-    touch-action: none;
-}
-
-#darkModeToggle:hover {
-    background: #e0f7fa;
-    transform: scale(1.05);
-}
-
-.loader {
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid #26a69a;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.featured-nft {
-    margin: 1.5rem 0;
-    padding: 1.5rem;
-    background: rgba(178, 223, 219, 0.3);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border-radius: 1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.5s ease-out;
-    text-align: center;
-}
-
-.featured-nft img {
-    max-width: 15rem;
-    height: auto;
-    border: 2px solid #26a69a;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease;
-    z-index: 10;
-    pointer-events: auto;
-    touch-action: none;
-}
-
-.featured-nft img:hover {
-    transform: scale(1.05);
-}
-
-.roadmap,
-.impact-tracker {
-    margin: 1.5rem 0;
-    padding: 1.5rem;
-    background: rgba(178, 223, 219, 0.4);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border-radius: 1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.5s ease-out;
-}
-
-.roadmap ul {
-    list-style: none;
-    padding: 0;
-    text-align: left;
-    z-index: 10;
-    pointer-events: none;
-}
-
-.roadmap li {
-    margin: 1.25rem 0;
-    font-size: 1.125rem;
-    color: #0d4536;
-    position: relative;
-    padding-left: 2rem;
-    opacity: 0;
-    animation: slideIn 0.5s ease-out forwards;
-    animation-delay: calc(var(--order) * 0.2s);
-    pointer-events: none;
-}
-
-.roadmap li::before {
-    content: "✔";
-    color: #26a69a;
-    position: absolute;
-    left: 0;
-    font-weight: bold;
-}
-
-.roadmap li.in-progress::before {
-    content: "▶";
-    color: #ffca28;
-}
-
-.roadmap li.future::before {
-    content: "○";
-    color: #b0bec5;
-}
-
-@keyframes slideIn {
-    0% { opacity: 0; transform: translateX(-20px); }
-    100% { opacity: 1; transform: translateX(0); }
-}
-
-footer {
-    background: linear-gradient(135deg, #0d4536, #003d33);
-    color: #fff;
-    text-align: center;
-    padding: 1rem 0;
-    width: 100%;
-    margin-top: 2rem;
-    box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.5s ease-out 0.4s backwards;
-    z-index: 5;
-}
-
-.warning {
-    color: #ff0000;
-    font-weight: bold;
-    margin-top: 1rem;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.modal-content {
-    background: linear-gradient(135deg, #e0f7fa, #b2dfdb);
-    padding: 2rem;
-    border-radius: 1rem;
-    border: 2px solid #26a69a;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    max-width: 90%;
-    width: 30rem;
-    text-align: center;
-    position: relative;
-    z-index: 1001;
-    animation: scaleIn 0.3s ease-out;
-}
-
-@keyframes scaleIn {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-.modal-content h3 {
-    color: #0d4536;
-    font-family: 'Roboto', sans-serif;
-    margin-bottom: 1rem;
-}
-
-.modal-content p {
-    font-size: 1rem;
-    color: #37474f;
-    margin: 0.5rem 0;
-    word-break: break-all;
-}
-
-.modal-content .button {
-    margin: 0.5rem 0;
-    width: 100%;
-}
-
-.modal-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.5rem;
-    color: #0d4536;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    z-index: 1002;
-    pointer-events: auto;
-}
-
-.modal-close:hover {
-    color: #26a69a;
-}
-
-@media (max-width: 600px) {
-    header h1 { font-size: 2rem; }
-    .content { padding: 1rem; margin: 4rem 0.75rem; width: 95%; }
-    .button { padding: 0.5rem 1rem; font-size: 1rem; min-width: 8.75rem; }
-    .buttons { gap: 0.75rem; }
-    .logo { width: 7.5rem; }
-    .featured-nft img { max-width: 9.375rem; }
-    #darkModeToggle { top: 0.5rem; right: 0.5rem; padding: 0.25rem 0.75rem; font-size: 0.875rem; }
-    #donate-amount { width: 8.75rem; }
-    .modal-content { padding: 1.5rem; width: 95%; }
-    header::before, .logo, header h1, header p, .content, .modal-content { animation: none; }
-}
+<xaiArtifact artifact_id="38f0dfd7-0060-4e14-8988-1d13e0fed823" artifact_version_id="85dc6406-d920-4a03-8283-d670119a17cb" title="index.html" contentType="text/html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta name="twitter:card" content="summary_large_image">
+ <meta name="twitter:title" content="Cryptodira - Save Sea Turtles">
+ <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation efforts!">
+ <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN English: N7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
+ <meta name="twitter:site" content="@rareseaturtles">
+ <meta name="twitter:creator" content="@rareseaturtles">
+ <meta property="og:title" content="Cryptodira - Save Sea Turtles">
+ <meta property="og:description" content="Cryptodira: A Solana token dedicated to sea turtle conservation. Get involved today!">
+ <meta property="og:url" content="https://cryptodira.netlify.app/">
+ <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
+ <meta property="og:type" content="website">
+ <meta name="description" content="Cryptodira is a Solana-based token supporting sea turtle conservation with community-driven initiatives.">
+ <meta name="keywords" content="Cryptodira, sea turtle conservation, Solana token, environmental protection, crypto for good, charity crypto token Solana">
+ <meta name="author" content="Cryptodira Team">
+ <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
+ <link rel="preload" href="/assets/Turtle.jpg" as="image">
+ <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+ <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.4.8/lib/index.iife.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/index.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/index.min.js"></script>
+ <link rel="stylesheet" href="styles.css">
+ <title>Cryptodira - Save Sea Turtles</title>
+</head>
+<body>
+ <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+ <header>
+ <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
+ <h1>Cryptodira</h1>
+ <p>Supporting Sea Turtle Conservation on Solana</p>
+ </header>
+ <div class="content">
+ <h2>Welcome to Cryptodira ($DIRA)</h2>
+ <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and promoting environmental conservation through community efforts. CA 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
+ <h3>Tokenomics</h3>
+ <div id="token-info">
+ <p>Loading token data... <span class="loader"></span></p>
+ <button class="button" id="refresh-token">Refresh</button>
+ </div>
+ <h3>Wallet</h3>
+ <div class="featured-nft" id="wallet-section">
+   <button class="button" id="claim-wallet-btn">Claim New Wallet</button>
+   <button class="button" id="connect-wallet-btn">Connect Wallet</button>
+   <div id="wallet-modal" class="modal" style="display: none;">
+     <div class="modal-content">
+       <span id="modal-close" class="modal-close">&times;</span>
+       <h3>Your New Wallet</h3>
+       <p id="vanity-warning" style="display: none; color: #ffca28;">Note: Couldn’t find DIRA prefix in time, using random unique wallet.</p>
+       <p><strong>Public Key:</strong></p>
+       <textarea id="modal-public-key" readonly></textarea>
+       <button class="button" id="copy-public-btn">Copy Public Key</button>
+       <p><strong>Seed Phrase:</strong></p>
+       <textarea id="modal-seed-phrase" readonly></textarea>
+       <button class="button" id="copy-seed-btn">Copy Seed Phrase</button>
+       <button class="button" id="reveal-private-btn">Reveal Private Key</button>
+       <p id="modal-private-key" style="display: none;"><strong>Private Key:</strong></p>
+       <textarea id="modal-private-key-text" style="display: none;" readonly></textarea>
+       <button class="button" id="copy-private-btn" style="display: none;">Copy Private Key</button>
+       <button class="button" id="try-again-btn">Try Again</button>
+       <p class="warning">WARNING: Save seed phrase OFFLINE on paper. Do NOT share. Import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. We can't recover lost wallets.</p>
+     </div>
+   </div>
+   <div id="balance-section">
+     <div id="balance-info">
+       <p>Connect wallet to view balances or claim a new one.</p>
+       <button class="button" id="refresh-balance">Refresh Balances</button>
+     </div>
+     <div id="donate-section">
+       <input type="number" id="donate-amount" placeholder="Enter $DIRA amount (e.g., 100)" min="0" step="0.01" class="button" style="width: 12.5rem; margin: 0.5rem;">
+       <button class="button" id="donate-btn">Donate $DIRA</button>
+     </div>
+   </div>
+ </div>
+ <h3>Featured NFT</h3>
+ <div class="featured-nft">
+ <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://magiceden.us/marketplace/rsts" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem;">Explore Collection</a></p>
+ <img src="/assets/Turtle.jpg" alt="Featured Turtle NFT">
+ </div>
+ <h3>Roadmap to Grow MC and Conservation Funding</h3>
+ <div class="roadmap">
+ <ul>
+ <li class="in-progress" style="--order: 1"><strong>Stage 1 (Complete):</strong> Achieved 15k MC, established 120k $DIRA conservation fund.</li>
+ <li class="in-progress" style="--order: 2"><strong>Stage 2 (Complete):</strong> Reached 30k MC, grew conservation fund to 300k $DIRA.</li>
+ <li class="in-progress" style="--order: 3"><strong>Stage 3 (In Progress):</strong> Reached ~42k MC, fund at 827k $DIRA, targeting 100k MC and 1 million $DIRA by December 2025.</li>
+ </ul>
+ </div>
+ <h3>Conservation Impact</h3>
+ <div class="impact-tracker">
+ <p><strong>Conservation Fund:</strong> 827,000 $DIRA</p>
+ <p><strong>Goal:</strong> 1 million $DIRA by December 2025</p>
+ <p><strong>Upcoming:</strong> birthday October 16th.</p>
+ </div>
+ <h3>Join the Community</h3>
+ <div class="buttons">
+ <a href="https://jup.ag/tokens/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank" class="button">Buy Now</a>
+ <a href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" class="button" target="_blank">Swap on Meteora</a>
+ <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" class="button" target="_blank">Birdeye Chart</a>
+ <a href="https://x.com/rareseaturtles" class="button" target="_blank">Follow on X</a>
+ <a href="https://t.me/+FsJKNuEXxRRmZGRh" class="button" target="_blank">Join Telegram</a>
+ <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy" class="button" target="_blank">CDCF Wallet</a>
+ </div>
+ </div>
+ <footer>
+ <p>© 2025 Cryptodira. Committed to Sea Turtle Conservation.</p>
+ </footer>
+ <script src="main.js"></script>
+</body>
+</html>
