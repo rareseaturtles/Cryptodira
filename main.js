@@ -7,11 +7,12 @@ const claimWalletBtn = document.getElementById('claim-wallet-btn');
 const connectWalletBtn = document.getElementById('connect-wallet-btn');
 const donateBtn = document.getElementById('donate-btn');
 const donateAmountInput = document.getElementById('donate-amount');
-const walletDetailsEl = document.getElementById('wallet-details');
-const publicKeyEl = document.getElementById('public-key');
-const secretKeyEl = document.getElementById('secret-key');
+const walletModal = document.getElementById('wallet-modal');
+const modalPublicKey = document.getElementById('modal-public-key');
+const modalSecretKey = document.getElementById('modal-secret-key');
 const copyPublicBtn = document.getElementById('copy-public-btn');
 const copySecretBtn = document.getElementById('copy-secret-btn');
+const modalClose = document.getElementById('modal-close');
 const vanityWarningEl = document.getElementById('vanity-warning');
 
 // Constants
@@ -28,7 +29,7 @@ const connection = new solanaWeb3.Connection(RPC_ENDPOINTS[0], 'confirmed');
 
 // Event delegation for buttons
 document.body.addEventListener('click', (e) => {
-  const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-secret-btn');
+  const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-secret-btn, #modal-close');
   if (button) {
     const id = button.id || button.textContent;
     console.log(`Button clicked: ${id}`);
@@ -37,9 +38,17 @@ document.body.addEventListener('click', (e) => {
     else if (button.id === 'connect-wallet-btn') connectWallet();
     else if (button.id === 'donate-btn') donateDIRA();
     else if (button.id === 'refresh-balance') debounceUpdateBalanceInfo();
-    else if (button.id === 'copy-public-btn') copyText(publicKeyEl.innerText);
-    else if (button.id === 'copy-secret-btn') copyText(secretKeyEl.innerText);
+    else if (button.id === 'copy-public-btn') copyText(modalPublicKey.innerText);
+    else if (button.id === 'copy-secret-btn') copyText(modalSecretKey.innerText);
+    else if (button.id === 'modal-close') walletModal.style.display = 'none';
     else if (button.href) window.open(button.href, '_blank');
+  }
+});
+
+// Close modal on overlay click
+walletModal.addEventListener('click', (e) => {
+  if (e.target === walletModal) {
+    walletModal.style.display = 'none';
   }
 });
 
@@ -154,7 +163,7 @@ async function generateVanityWallet() {
   vanityWarningEl.style.display = 'none';
 
   const startTime = performance.now();
-  const timeout = 1000; // 1 second limit
+  const timeout = 3000; // 3 seconds for better DIRA match
   let keypair = solanaWeb3.Keypair.generate();
   let publicKeyStr = keypair.publicKey.toString();
 
@@ -169,13 +178,13 @@ async function generateVanityWallet() {
     publicKeyStr = keypair.publicKey.toString();
   }
 
-  publicKeyEl.innerText = publicKeyStr;
-  secretKeyEl.innerText = Array.from(keypair.secretKey).join(',');
-  walletDetailsEl.style.display = 'block';
+  modalPublicKey.innerText = publicKeyStr;
+  modalSecretKey.innerText = Array.from(keypair.secretKey).join(',');
+  walletModal.style.display = 'flex';
   claimWalletBtn.textContent = 'Claim New Wallet';
   claimWalletBtn.disabled = false;
 
-  alert('New wallet created! Copy keys, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
+  alert('New wallet created! Copy keys from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
   console.log('Wallet generated:', { publicKey: publicKeyStr, isVanity: publicKeyStr.toLowerCase().startsWith('dira') });
 }
 
