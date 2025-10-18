@@ -95,7 +95,7 @@ function debounceUpdateBalanceInfo() {
   updateBalanceInfo();
 }
 
-// Token info fetch
+// Token info fetch (restored original)
 async function updateTokenInfo() {
   console.log('Fetching token data...');
   const startTime = performance.now();
@@ -159,39 +159,33 @@ async function updateTokenInfo() {
 // Vanity wallet generation
 async function generateVanityWallet() {
   claimWalletBtn.disabled = true;
-  claimWalletBtn.innerHTML = 'Generating DIRA wallet... <span class="loader"></span>';
+  claimWalletBtn.textContent = 'Generating DIRA wallet...';
   vanityWarningEl.style.display = 'none';
 
   const startTime = performance.now();
-  const timeout = 2000; // 2 seconds
+  const timeout = 3000; // 3 seconds for DIRA match
   let keypair = solanaWeb3.Keypair.generate();
   let publicKeyStr = keypair.publicKey.toString();
-  let foundVanity = false;
 
-  // Try for DIRA prefix (case-sensitive)
-  while (performance.now() - startTime < timeout) {
-    if (publicKeyStr.startsWith('DIRA')) {
-      foundVanity = true;
+  // Try for DIRA anywhere (case-insensitive)
+  while (!publicKeyStr.toLowerCase().includes('dira')) {
+    if (performance.now() - startTime > timeout) {
+      console.warn('Vanity timeout, using random wallet');
+      vanityWarningEl.style.display = 'block';
       break;
     }
     keypair = solanaWeb3.Keypair.generate();
     publicKeyStr = keypair.publicKey.toString();
   }
 
-  if (!foundVanity) {
-    console.warn('Vanity timeout, using random wallet');
-    vanityWarningEl.style.display = 'block';
-  }
-
   modalPublicKey.innerText = publicKeyStr;
   modalSecretKey.innerText = Array.from(keypair.secretKey).join(',');
   walletModal.style.display = 'flex';
-  claimWalletBtn.innerHTML = 'Claim New Wallet';
+  claimWalletBtn.textContent = 'Claim New Wallet';
   claimWalletBtn.disabled = false;
 
-  const duration = (performance.now() - startTime) / 1000;
-  console.log(`Wallet generated in ${duration.toFixed(2)}s:`, { publicKey: publicKeyStr, isVanity: foundVanity });
   alert('New wallet created! Copy keys from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
+  console.log('Wallet generated:', { publicKey: publicKeyStr, isVanity: publicKeyStr.toLowerCase().includes('dira') });
 }
 
 // Copy text
