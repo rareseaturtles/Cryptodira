@@ -16,29 +16,61 @@ body.dark-mode {
   background: #000000;
   color: #00FFFF;
 }
-body.dark-mode * { color: #00FFFF; }
-body.dark-mode header { background: rgba(0, 0, 0, 0.85); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
-body.dark-mode .content { background: rgba(0, 0, 0, 0.75); border: 1px solid #26a69a; border-radius: 8px; }
+body.dark-mode * {
+  color: #00FFFF;
+}
+body.dark-mode header {
+  background: rgba(0, 0, 0, 0.85);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+body.dark-mode .content {
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid #26a69a;
+  border-radius: 8px;
+}
 body.dark-mode .roadmap, body.dark-mode .featured-nft, body.dark-mode .impact-tracker, body.dark-mode #wallet-section {
-  background: rgba(0, 0, 0, 0.7); border: 1px solid #26a69a;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid #26a69a;
 }
 body.dark-mode .roadmap:hover, body.dark-mode .featured-nft:hover, body.dark-mode .impact-tracker:hover, body.dark-mode #wallet-section:hover {
-  transform: translateY(-5px); background: rgba(0, 0, 0, 0.9);
+  transform: translateY(-5px);
+  background: rgba(0, 0, 0, 0.9);
 }
-body.dark-mode footer { background: rgba(0, 0, 0, 0.85); }
+body.dark-mode footer {
+  background: rgba(0, 0, 0, 0.85);
+}
 body.dark-mode .button, body.dark-mode #donate-amount {
-  background: linear-gradient(135deg, #26a69a, #000000); color: #00FFFF; border: none;
+  background: linear-gradient(135deg, #26a69a, #000000);
+  color: #00FFFF;
+  border: none;
 }
 body.dark-mode .button:hover, body.dark-mode #donate-amount:focus {
-  background: linear-gradient(135deg, #00695c, #000000); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #00695c, #000000);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
-body.dark-mode #darkModeToggle { background: #fff; color: #00FFFF; border: 1px solid #26a69a; }
-body.dark-mode #darkModeToggle:hover { background: #e0f7fa; transform: scale(1.05); }
-body.dark-mode .modal-content { background: linear-gradient(135deg, #1c2526, #13282c); border: 2px solid #26a69a; }
-body.dark-mode .modal-content h3, body.dark-mode .modal-content p, body.dark-mode .modal-content textarea { color: #00FFFF; }
-body.dark-mode .modal-close { color: #00FFFF; }
-body.dark-mode .modal-close:hover { color: #26a69a; }
-body.dark-mode textarea { background: #1c2526; border: 1px solid #26a69a; color: #00FFFF; }
+body.dark-mode #darkModeToggle {
+  background: #fff;
+  color: #00FFFF;
+  border: 1px solid #26a69a;
+}
+body.dark-mode #darkModeToggle:hover {
+  background: #e0f7fa;
+  transform: scale(1.05);
+}
+body.dark-mode .modal-content {
+  background: linear-gradient(135deg, #1c2526, #13282c);
+  border: 2px solid #26a69a;
+}
+body.dark-mode .modal-content h3, body.dark-mode .modal-content p {
+  color: #e0f7fa; /* Higher contrast for readability in dark mode */
+}
+body.dark-mode .modal-close {
+  color: #e0f7fa;
+}
+body.dark-mode .modal-close:hover {
+  color: #26a69a;
+}
 header {
   text-align: center;
   padding: 2rem 0;
@@ -140,7 +172,9 @@ header p {
   background: #26a69a;
   transition: width 0.3s ease;
 }
-.content h2:hover::after, .content h3:hover::after { width: 6rem; }
+.content h2:hover::after, .content h3:hover::after {
+  width: 6rem;
+}
 .content p {
   font-size: 1.125rem;
   color: #37474f;
@@ -187,7 +221,10 @@ header p {
   transform: translate(-50%, -50%);
   transition: width 0.6s ease, height 0.6s ease;
 }
-.button:hover::before { width: 20rem; height: 20rem; }
+.button:hover::before {
+  width: 20rem;
+  height: 20rem;
+}
 .button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
@@ -249,7 +286,9 @@ header p {
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 .featured-nft {
   margin: 1.5rem 0;
   padding: 1.5rem;
@@ -270,7 +309,9 @@ header p {
   z-index: 10;
   pointer-events: auto;
 }
-.featured-nft img:hover { transform: scale(1.05); }
+.featured-nft img:hover {
+  transform: scale(1.05);
+}
 .roadmap, .impact-tracker {
   margin: 1.5rem 0;
   padding: 1.5rem;
@@ -305,8 +346,14 @@ header p {
   left: 0;
   font-weight: bold;
 }
-.roadmap li.in-progress::before { content: "▶"; color: #ffca28; }
-.roadmap li.future::before { content: "○"; color: #b0bec5; }
+.roadmap li.in-progress::before {
+  content: "▶";
+  color: #ffca28;
+}
+.roadmap li.future::before {
+  content: "○";
+  color: #b0bec5;
+}
 @keyframes slideIn {
   0% { opacity: 0; transform: translateX(-20px); }
   100% { opacity: 1; transform: translateX(0); }
@@ -352,6 +399,7 @@ footer {
   position: relative;
   z-index: 1001;
   animation: scaleIn 0.3s ease-out;
+  overflow-y: auto; /* Added to handle long content */
 }
 @keyframes scaleIn {
   0% { transform: scale(0.8); opacity: 0; }
@@ -367,24 +415,16 @@ footer {
   color: #37474f;
   margin: 0.5rem 0;
 }
-.modal-content textarea {
-  width: 100%;
-  min-height: 3rem;
-  resize: none;
-  padding: 0.5rem;
+.modal-content #modal-seed-phrase {
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
-  color: #37474f;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #26a69a;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 0.5rem;
+  word-break: break-word; /* Wrap long seed phrases */
+  line-height: 1.5;
+  display: inline-block;
+  text-align: left;
 }
-.modal-content textarea:focus {
-  outline: none;
-  border-color: #00695c;
-  box-shadow: 0 0 8px rgba(0, 105, 92, 0.3);
+body.dark-mode .modal-content #modal-seed-phrase {
+  color: #e0f7fa; /* Higher contrast for dark mode */
 }
 .modal-content .button {
   margin: 0.5rem 0;
@@ -401,7 +441,14 @@ footer {
   z-index: 1002;
   pointer-events: auto;
 }
-.modal-close:hover { color: #26a69a; }
+.modal-close:hover {
+  color: #26a69a;
+}
+#vanity-warning {
+  color: #ffca28;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
 @media (max-width: 600px) {
   header h1 { font-size: 2rem; }
   .content { padding: 1rem; margin: 4rem 0.75rem; width: 95%; }
@@ -412,4 +459,5 @@ footer {
   #darkModeToggle { top: 0.5rem; right: 0.5rem; padding: 0.25rem 0.75rem; font-size: 0.875rem; }
   #donate-amount { width: 8.75rem; }
   .modal-content { padding: 1.5rem; width: 95%; }
+  .modal-content #modal-seed-phrase { font-size: 0.8rem; }
 }
