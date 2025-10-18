@@ -339,3 +339,10 @@ window.addEventListener("load", () => {
   }
   updateTokenInfo();
 });
+
+// Log CDN load attempts for debugging
+window.addEventListener("error", (event) => {
+  if (event.target.tagName === "SCRIPT") {
+    console.error(`Failed to load script: ${event.target.src}`);
+  }
+});
