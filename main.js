@@ -8,12 +8,14 @@ const connectWalletBtn = document.getElementById('connect-wallet-btn');
 const donateBtn = document.getElementById('donate-btn');
 const donateAmountInput = document.getElementById('donate-amount');
 const walletModal = document.getElementById('wallet-modal');
+const modalTitle = document.getElementById('modal-title');
 const modalPublicKey = document.getElementById('modal-public-key');
 const modalSecretKey = document.getElementById('modal-secret-key');
 const copyPublicBtn = document.getElementById('copy-public-btn');
 const copySecretBtn = document.getElementById('copy-secret-btn');
 const modalClose = document.getElementById('modal-close');
 const vanityWarningEl = document.getElementById('vanity-warning');
+const retryWalletBtn = document.getElementById('retry-wallet-btn');
 
 // Constants
 const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db"; // Replace if expired
@@ -29,7 +31,7 @@ const connection = new solanaWeb3.Connection(RPC_ENDPOINTS[0], 'confirmed');
 
 // Event delegation for buttons
 document.body.addEventListener('click', (e) => {
-  const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-secret-btn, #modal-close');
+  const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-secret-btn, #modal-close, #retry-wallet-btn');
   if (button) {
     const id = button.id || button.textContent;
     console.log(`Button clicked: ${id}`);
@@ -41,6 +43,7 @@ document.body.addEventListener('click', (e) => {
     else if (button.id === 'copy-public-btn') copyText(modalPublicKey.innerText);
     else if (button.id === 'copy-secret-btn') copyText(modalSecretKey.innerText);
     else if (button.id === 'modal-close') walletModal.style.display = 'none';
+    else if (button.id === 'retry-wallet-btn') generateVanityWallet();
     else if (button.href) window.open(button.href, '_blank');
   }
 });
@@ -161,31 +164,35 @@ async function generateVanityWallet() {
   claimWalletBtn.disabled = true;
   claimWalletBtn.textContent = 'Generating DIRA wallet...';
   vanityWarningEl.style.display = 'none';
+  retryWalletBtn.style.display = 'none';
 
   const startTime = performance.now();
-  const timeout = 3000; // 3 seconds for DIRA match
+  const timeout = 10000; // 10 seconds for DIRA prefix match
   let keypair = solanaWeb3.Keypair.generate();
   let publicKeyStr = keypair.publicKey.toString();
 
-  // Try for DIRA anywhere (case-insensitive)
-  while (!publicKeyStr.toLowerCase().includes('dira')) {
+  // Try for DIRA prefix (case-insensitive)
+  while (!publicKeyStr.toLowerCase().startsWith('dira')) {
     if (performance.now() - startTime > timeout) {
       console.warn('Vanity timeout, using random wallet');
-      vanityWarningEl.style.display = 'block';
       break;
     }
     keypair = solanaWeb3.Keypair.generate();
     publicKeyStr = keypair.publicKey.toString();
   }
 
+  const isVanity = publicKeyStr.toLowerCase().startsWith('dira');
+  modalTitle.textContent = isVanity ? 'Your New Vanity Wallet' : 'Your New Wallet';
   modalPublicKey.innerText = publicKeyStr;
   modalSecretKey.innerText = Array.from(keypair.secretKey).join(',');
+  vanityWarningEl.style.display = isVanity ? 'none' : 'block';
+  retryWalletBtn.style.display = isVanity ? 'none' : 'block';
   walletModal.style.display = 'flex';
   claimWalletBtn.textContent = 'Claim New Wallet';
   claimWalletBtn.disabled = false;
 
   alert('New wallet created! Copy keys from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
-  console.log('Wallet generated:', { publicKey: publicKeyStr, isVanity: publicKeyStr.toLowerCase().includes('dira') });
+  console.log('Wallet generated:', { publicKey: publicKeyStr, isVanity });
 }
 
 // Copy text
@@ -291,7 +298,7 @@ async function donateDIRA() {
         publicKey
       );
       const recipientAccount = await splToken.getAssociatedTokenAddress(
-        new solanaWeb3.PublicKey(CDCF_WALLET),
+        new solanaWeb3.PublicKey(TOKEN_MINT),
         new solanaWeb3.PublicKey(CDCF_WALLET)
       );
 
@@ -327,7 +334,24 @@ async function donateDIRA() {
   }
 }
 
+// Fetch conservation fund balance
+async function updateConservationFund() {
+  try {
+    const cdcfPubkey = new solanaWeb3.PublicKey(CDCF_WALLET);
+    const tokenAccount = await splToken.getAssociatedTokenAddress(
+      new solanaWeb3.PublicKey(TOKEN_MINT),
+      cdcfPubkey
+    );
+    const tokenInfo = await splToken.getAccount(connection, tokenAccount);
+    const fund = (Number(tokenInfo.amount) / 1e9).toFixed(0);
+    document.querySelector('.impact-tracker p:first-child').innerHTML = `<strong>Conservation Fund:</strong> ${fund} $DIRA`;
+  } catch (e) {
+    console.warn('Fund fetch error:', e);
+  }
+}
+
 // Initialize
 window.addEventListener('load', () => {
   updateTokenInfo();
+  updateConservationFund();
 });
