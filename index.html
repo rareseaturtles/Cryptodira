@@ -15,6 +15,7 @@
  <meta property="og:description" content="Cryptodira: A Solana token dedicated to sea turtle conservation. Get involved today!">
  <meta property="og:url" content="https://cryptodira.netlify.app/">
  <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
+ <meta property="og:type" content="website">
  <!-- SEO Meta Tags -->
  <meta name="description" content="Cryptodira is a Solana-based token supporting sea turtle conservation with community-driven initiatives.">
  <meta name="keywords" content="Cryptodira, sea turtle conservation, Solana token, environmental protection, crypto for good, charity crypto token Solana">
@@ -25,42 +26,86 @@
  <link rel="preload" href="/assets/Turtle.jpg" as="image">
  <!-- Google Fonts -->
  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
- <!-- Solana Web3.js and Wallet Adapter -->
+ <!-- Solana Web3.js and SPL Token -->
  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
- <script src="https://میل
+ <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.4.8/lib/index.iife.min.js"></script>
+ <!-- Styles -->
+ <link rel="stylesheet" href="styles.css">
+ <title>Cryptodira - Save Sea Turtles</title>
+</head>
+<body>
+ <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+ <header>
+ <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
+ <h1>Cryptodira</h1>
+ <p>Supporting Sea Turtle Conservation on Solana</p>
+ </header>
 
-System: Apologies for the interruption—it looks like your message got cut off! No worries, I can still work with what you've provided and address your questions about adding a "Donate $DIRA" button and enabling wallet creation on your computer via the CryptoDira site (crypto.netlify.app). Since you shared your `index.html`, `main.js`, and `styles.css`, I’ll build on those to add both features, explain how wallet creation works securely on your machine, and detail how the donate button functions. I’ll keep it concise, secure, and aligned with your sea turtle conservation theme. Let’s dive in.
+ <div class="content">
+ <h2>Welcome to Cryptodira ($DIRA)</h2>
+ <p>Cryptodira is a Solana-based token dedicated to protecting sea turtles and promoting environmental conservation through community efforts.
+CA 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
+ 
+ <h3>Tokenomics</h3>
+ <div id="token-info">
+ <p>Loading token data... <span class="loader"></span></p>
+ <button class="button" id="refresh-token">Refresh</button>
+ </div>
 
-### 1. Wallet Creation on Your Computer
-Users (including you on your own computer) can generate a new Solana wallet directly in the browser via your site. This uses `@solana/web3.js` (already in your `index.html`) to create a keypair (public key + secret key) entirely client-side, meaning no data leaves your machine unless you manually copy it. The process is secure and works the same whether on your computer or someone else’s.
+ <h3>Wallet</h3>
+ <div class="featured-nft" id="wallet-section">
+   <button class="button" id="create-wallet-btn">Create New Wallet</button>
+   <button class="button" id="connect-wallet-btn">Connect Wallet</button>
+   <div id="balance-info">
+     <p>Connect wallet to view balances or create a new one.</p>
+     <button class="button" id="refresh-balance">Refresh Balances</button>
+   </div>
+   <div id="donate-section">
+     <input type="number" id="donate-amount" placeholder="Enter $DIRA amount (e.g., 100)" min="0" step="0.01" class="button" style="width: 12.5rem; margin: 0.5rem;">
+     <button class="button" id="donate-btn">Donate $DIRA</button>
+   </div>
+ </div>
 
-#### How It Works
-- **Button Click**: User clicks “Create New Wallet” on your site.
-- **Keypair Generation**: JavaScript (`Keypair.generate()`) creates a public key (e.g., `4QbV9...`) and secret key (byte array or mnemonic) in the browser.
-- **Display**: An alert shows the public key and secret key with a warning: “Save OFFLINE on paper. Do NOT share. Import to Phantom/Solflare to use.”
-- **On Your Computer**: The keypair is generated locally in your browser (Chrome/Edge). Nothing is sent to Netlify or any server. You can import the keypair into Phantom to hold $DIRA or donate to the CDCF wallet.
-- **Next Steps**: Fund the wallet with SOL (via exchange or faucet), buy $DIRA on Meteora, and use the donate button.
+ <h3>Featured NFT</h3>
+ <div class="featured-nft">
+ <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://magiceden.us/marketplace/rsts" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem;">Explore Collection</a></p>
+ <img src="/assets/Turtle.jpg" alt="Featured Turtle NFT">
+ </div>
 
-#### Security
-- **Client-Side**: Keys never leave your browser, ensuring no external access.
-- **User Responsibility**: You must save the secret key offline (paper, not digital). The site doesn’t store it after the alert closes.
-- **Warning**: A clear “Lose seed, lose funds” message prevents user errors like saving digitally.
+ <h3>Roadmap to Grow MC and Conservation Funding</h3>
+ <div class="roadmap">
+ <ul>
+ <li class="in-progress" style="--order: 1"><strong>Stage 1 (Complete):</strong> Achieved 15k MC, established 120k $DIRA conservation fund.</li>
+ <li class="in-progress" style="--order: 2"><strong>Stage 2 (Complete):</strong> Reached 30k MC, grew conservation fund to 300k $DIRA.</li>
+ <li class="in-progress" style="--order: 3"><strong>Stage 3 (In Progress):</strong> Reached ~42k MC, fund at 827k $DIRA, targeting 100k MC and 1 million $DIRA by December 2025.</li>
+ </ul>
+ </div>
 
-### 2. How the “Donate $DIRA” Button Works
-The “Donate $DIRA” button lets users transfer $DIRA from their connected wallet (e.g., Phantom) to the CDCF wallet (`293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy`). It builds a transaction that users approve in their wallet, with an optional input field for the donation amount.
+ <h3>Conservation Impact</h3>
+ <div class="impact-tracker">
+ <p><strong>Conservation Fund:</strong> 827,000 $DIRA</p>
+ <p><strong>Goal:</strong> 1 million $DIRA by December 2025</p>
+ <p><strong>Upcoming:</strong> birthday October 16th.</p>
+ </div>
 
-#### How It Works
-- **Connect Wallet**: User clicks “Connect Wallet” (via Wallet Adapter) to link Phantom/Solflare.
-- **Input Amount**: User enters a donation amount (e.g., “100” $DIRA) in a text field.
-- **Transaction**: JavaScript creates an SPL Token transfer instruction to send $DIRA to the CDCF wallet.
-- **Approval**: Phantom/Solflare pops up, showing the amount and destination. User confirms with a click.
-- **Execution**: The transaction hits Solana mainnet via your `RPC_ENDPOINTS`, transferring $DIRA in ~2 seconds.
+ <h3>Join the Community</h3>
+ <div class="buttons">
+ <a href="https://jup.ag/tokens/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" target="_blank" class="button">Buy Now</a>
+ <a href="https://app.meteora.ag/pools/9H67psNKre9dMAscpsYkEPGmYFw4MjeqV5Rmott2mDmd?internal=true" class="button" target="_blank">Swap on Meteora</a>
+ <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana" class="button" target="_blank">Birdeye Chart</a>
+ <a href="https://x.com/rareseaturtles" class="button" target="_blank">Follow on X</a>
+ <a href="https://t.me/+FsJKNuEXxRRmZGRh" class="button" target="_blank">Join Telegram</a>
+ <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy" class="button" target="_blank">CDCF Wallet</a>
+ </div>
+ </div>
 
-#### Security
-- **User Control**: Funds only move after user approval in Phantom. Your site can’t access $DIRA without consent.
-- **Read-Only**: The site only reads balances and builds transactions, never touching private keys.
-- **Verified Address**: Hardcode the CDCF wallet address (`293Py67...`) to prevent phishing, shown in Phantom for user verification.
+ <footer>
+ <p>© 2025 Cryptodira. Committed to Sea Turtle Conservation.</p>
+ </footer>
 
+ <script src="main.js"></script>
+</body>
+</html>
 ### 3. Code Changes
 We’ll update your `index.html` and `main.js` to add both the “Create New Wallet” and “Donate $DIRA” buttons, plus balance display. Your `styles.css` already handles button styling, so the UI will match your sea turtle aesthetic. Since you’re using vanilla JS and CDNs, we’ll stick with that approach.
 
