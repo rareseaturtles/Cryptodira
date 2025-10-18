@@ -13,7 +13,6 @@ const modalSecretKey = document.getElementById('modal-secret-key');
 const copyPublicBtn = document.getElementById('copy-public-btn');
 const copySecretBtn = document.getElementById('copy-secret-btn');
 const modalClose = document.getElementById('modal-close');
-const vanityWarningEl = document.getElementById('vanity-warning');
 
 // Constants
 const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db"; // Replace if expired
@@ -159,21 +158,14 @@ async function updateTokenInfo() {
 // Vanity wallet generation
 async function generateVanityWallet() {
   claimWalletBtn.disabled = true;
-  claimWalletBtn.textContent = 'Generating DIRA wallet...';
-  vanityWarningEl.style.display = 'none';
+  claimWalletBtn.innerHTML = 'Generating DIRA wallet... <span class="loader"></span>';
 
   const startTime = performance.now();
-  const timeout = 3000; // 3 seconds for better DIRA match
   let keypair = solanaWeb3.Keypair.generate();
   let publicKeyStr = keypair.publicKey.toString();
 
-  // Try for DIRA prefix (case-insensitive)
-  while (!publicKeyStr.toLowerCase().startsWith('dira')) {
-    if (performance.now() - startTime > timeout) {
-      console.warn('Vanity timeout, using random wallet');
-      vanityWarningEl.style.display = 'block';
-      break;
-    }
+  // Try for DIRA prefix (case-sensitive)
+  while (!publicKeyStr.startsWith('DIRA')) {
     keypair = solanaWeb3.Keypair.generate();
     publicKeyStr = keypair.publicKey.toString();
   }
@@ -181,11 +173,12 @@ async function generateVanityWallet() {
   modalPublicKey.innerText = publicKeyStr;
   modalSecretKey.innerText = Array.from(keypair.secretKey).join(',');
   walletModal.style.display = 'flex';
-  claimWalletBtn.textContent = 'Claim New Wallet';
+  claimWalletBtn.innerHTML = 'Claim New Wallet';
   claimWalletBtn.disabled = false;
 
+  const duration = (performance.now() - startTime) / 1000;
+  console.log(`Wallet generated in ${duration.toFixed(2)}s:`, { publicKey: publicKeyStr });
   alert('New wallet created! Copy keys from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
-  console.log('Wallet generated:', { publicKey: publicKeyStr, isVanity: publicKeyStr.toLowerCase().startsWith('dira') });
 }
 
 // Copy text
