@@ -24,7 +24,7 @@ const tryAgainBtn = document.getElementById('try-again-btn');
 const modalClose = document.getElementById('modal-close');
 const vanityWarningEl = document.getElementById('vanity-warning');
 
-const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db"; // Replace if expired
+const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db"; // Your key, assumed working
 const TOTAL_TOKEN_SUPPLY = 4880000;
 const CDCF_WALLET = "293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy";
 const TOKEN_MINT = "53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8";
@@ -123,24 +123,22 @@ async function updateTokenInfo() {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000);
-    let response = await fetch(`https://price.jup.ag/v6/price?ids=${TOKEN_MINT}`);
+    let response = await fetch(`https://public-api.birdeye.so/defi/price?address=${TOKEN_MINT}`, {
+      headers: { "X-API-KEY": BIRDEYE_API_KEY, "x-chain": "solana" },
+      signal: controller.signal
+    });
     clearTimeout(timeoutId);
     if (!response.ok) {
-      console.warn('Jupiter API failed, trying Birdeye...');
-      response = await fetch(`https://public-api.birdeye.so/defi/price?address=${TOKEN_MINT}&check_liquidity=100&include_liquidity=true`, {
-        headers: { "X-API-KEY": BIRDEYE_API_KEY, "x-chain": "solana", "accept": "application/json" },
-        signal: controller.signal
-      });
+      console.warn('Birdeye API failed, trying Jupiter...');
+      response = await fetch(`https://price.jup.ag/v6/price?ids=${TOKEN_MINT}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const birdeyeData = await response.json();
-      const price = birdeyeData.data?.value?.toFixed(6) || "N/A";
-      const liquidity = birdeyeData.data?.liquidity?.toFixed(2) || "N/A";
+      const jupData = await response.json();
+      const price = jupData.data[TOKEN_MINT]?.price?.toFixed(6) || "N/A";
       const marketCap = price !== "N/A" ? (price * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
       const fetchTime = performance.now() - startTime;
-      console.log(`Fetched Birdeye data in ${fetchTime.toFixed(2)}ms:`, { price, liquidity, marketCap });
+      console.log(`Fetched Jupiter data in ${fetchTime.toFixed(2)}ms:`, { price, marketCap });
       tokenInfoEl.innerHTML = `
         <p><strong>Price:</strong> ${price !== "N/A" ? "$" + price : price}</p>
-        <p><strong>Liquidity:</strong> ${liquidity !== "N/A" ? "$" + liquidity : liquidity}</p>
         <p><strong>Market Cap:</strong> ${marketCap !== "N/A" ? "$" + marketCap : marketCap}</p>
         <p><strong>Mission:</strong> Fund conservation through community participation.</p>
         <p><strong>Track:</strong> <a href="https://birdeye.so/token/${TOKEN_MINT}?chain=solana" target="_blank">Birdeye</a></p>
@@ -148,13 +146,15 @@ async function updateTokenInfo() {
       `;
       return;
     }
-    const jupData = await response.json();
-    const price = jupData.data[TOKEN_MINT]?.price?.toFixed(6) || "N/A";
+    const birdeyeData = await response.json();
+    const price = birdeyeData.data?.value?.toFixed(6) || "N/A";
+    const liquidity = birdeyeData.data?.liquidity?.toFixed(2) || "N/A";
     const marketCap = price !== "N/A" ? (price * TOTAL_TOKEN_SUPPLY).toFixed(2) : "N/A";
     const fetchTime = performance.now() - startTime;
-    console.log(`Fetched Jupiter data in ${fetchTime.toFixed(2)}ms:`, { price, marketCap });
+    console.log(`Fetched Birdeye data in ${fetchTime.toFixed(2)}ms:`, { price, liquidity, marketCap });
     tokenInfoEl.innerHTML = `
       <p><strong>Price:</strong> ${price !== "N/A" ? "$" + price : price}</p>
+      <p><strong>Liquidity:</strong> ${liquidity !== "N/A" ? "$" + liquidity : liquidity}</p>
       <p><strong>Market Cap:</strong> ${marketCap !== "N/A" ? "$" + marketCap : marketCap}</p>
       <p><strong>Mission:</strong> Fund conservation through community participation.</p>
       <p><strong>Track:</strong> <a href="https://birdeye.so/token/${TOKEN_MINT}?chain=solana" target="_blank">Birdeye</a></p>
@@ -163,7 +163,7 @@ async function updateTokenInfo() {
   } catch (error) {
     console.error(`Token data error after ${(performance.now() - startTime).toFixed(2)}ms:`, error);
     tokenInfoEl.innerHTML = `
-      <p>Error fetching token data: ${error.message}. Try again or get a new Birdeye API key at birdeye.so/api-key.</p>
+      <p>Error fetching token data: ${error.message}. Please try again.</p>
       <button class="button" id="refresh-token">Refresh</button>
     `;
   }
@@ -177,38 +177,45 @@ async function generateVanityWallet() {
   modalPrivateKeyText.style.display = 'none';
   copyPrivateBtn.style.display = 'none';
   revealPrivateBtn.style.display = 'block';
-  const startTime = performance.now();
-  const timeout = 4000;
-  let mnemonic = generateMnemonic();
-  let seed = await mnemonicToSeed(mnemonic);
-  let keypair = Keypair.fromSeed(seed.slice(0, 32));
-  let publicKeyStr = keypair.publicKey.toString();
-  let privateKeyBs58 = bs58.encode(keypair.secretKey);
-  let foundVanity = false;
-  while (performance.now() - startTime < timeout) {
-    if (publicKeyStr.startsWith('DIRA')) {
-      foundVanity = true;
-      break;
+  try {
+    const startTime = performance.now();
+    const timeout = 4000;
+    let mnemonic = generateMnemonic();
+    let seed = await mnemonicToSeed(mnemonic);
+    let keypair = Keypair.fromSeed(seed.slice(0, 32));
+    let publicKeyStr = keypair.publicKey.toString();
+    let privateKeyBs58 = bs58.encode(keypair.secretKey);
+    let foundVanity = false;
+    while (performance.now() - startTime < timeout) {
+      if (publicKeyStr.startsWith('DIRA')) {
+        foundVanity = true;
+        break;
+      }
+      mnemonic = generateMnemonic();
+      seed = await mnemonicToSeed(mnemonic);
+      keypair = Keypair.fromSeed(seed.slice(0, 32));
+      publicKeyStr = keypair.publicKey.toString();
+      privateKeyBs58 = bs58.encode(keypair.secretKey);
     }
-    mnemonic = generateMnemonic();
-    seed = await mnemonicToSeed(mnemonic);
-    keypair = Keypair.fromSeed(seed.slice(0, 32));
-    publicKeyStr = keypair.publicKey.toString();
-    privateKeyBs58 = bs58.encode(keypair.secretKey);
+    if (!foundVanity) {
+      console.warn('Vanity timeout, using random wallet');
+      vanityWarningEl.style.display = 'block';
+    }
+    modalPublicKey.value = publicKeyStr;
+    modalSeedPhrase.value = mnemonic;
+    modalPrivateKeyText.value = privateKeyBs58;
+    walletModal.style.display = 'flex';
+    claimWalletBtn.innerHTML = 'Claim New Wallet';
+    claimWalletBtn.disabled = false;
+    const duration = (performance.now() - startTime) / 1000;
+    console.log(`Wallet generated in ${duration.toFixed(2)}s:`, { publicKey: publicKeyStr, mnemonic, isVanity: foundVanity });
+    alert('New wallet created! Copy seed phrase from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share.');
+  } catch (error) {
+    console.error('Wallet generation error:', error);
+    alert('Failed to generate wallet. Please try again.');
+    claimWalletBtn.innerHTML = 'Claim New Wallet';
+    claimWalletBtn.disabled = false;
   }
-  if (!foundVanity) {
-    console.warn('Vanity timeout, using random wallet');
-    vanityWarningEl.style.display = 'block';
-  }
-  modalPublicKey.value = publicKeyStr;
-  modalSeedPhrase.value = mnemonic;
-  modalPrivateKeyText.value = privateKeyBs58;
-  walletModal.style.display = 'flex';
-  claimWalletBtn.innerHTML = 'Claim New Wallet';
-  claimWalletBtn.disabled = false;
-  const duration = (performance.now() - startTime) / 1000;
-  console.log(`Wallet generated in ${duration.toFixed(2)}s:`, { publicKey: publicKeyStr, mnemonic, isVanity: foundVanity });
-  alert('New wallet created! Copy seed phrase, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share.');
 }
 
 function copyText(text) {
