@@ -29,21 +29,59 @@ const RPC_ENDPOINTS = [
 ];
 const connection = new solanaWeb3.Connection(RPC_ENDPOINTS[0], 'confirmed');
 
+// Wait for bip39 to load
+function waitForBip39(maxAttempts = 10, interval = 500) {
+  return new Promise((resolve, reject) => {
+    let attempts = 0;
+    const checkBip39 = () => {
+      if (typeof bip39 !== 'undefined') {
+        resolve(bip39);
+      } else if (attempts >= maxAttempts) {
+        reject(new Error('bip39 library failed to load after maximum attempts'));
+      } else {
+        attempts++;
+        setTimeout(checkBip39, interval);
+      }
+    };
+    checkBip39();
+  });
+}
+
 // Event delegation for buttons
-document.body.addEventListener('click', (e) => {
+document.body.addEventListener('click', async (e) => {
   const button = e.target.closest('.button, #darkModeToggle, #claim-wallet-btn, #connect-wallet-btn, #donate-btn, #refresh-balance, #copy-public-btn, #copy-seed-btn, #modal-close, #retry-wallet-btn');
   if (button) {
     const id = button.id || button.textContent;
     console.log(`Button clicked: ${id}`);
     if (button.id === 'refresh-token') debounceUpdateTokenInfo();
-    else if (button.id === 'claim-wallet-btn') generateVanityWallet();
+    else if (button.id === 'claim-wallet-btn') {
+      try {
+        await waitForBip39();
+        generateVanityWallet();
+      } catch (error) {
+        console.error('bip39 load error:', error);
+        alert('Failed to generate wallet: bip39 library not loaded. Please refresh the page and try again.');
+        claimWalletBtn.textContent = 'Claim New Wallet';
+        claimWalletBtn.disabled = false;
+      }
+    }
     else if (button.id === 'connect-wallet-btn') connectWallet();
     else if (button.id === 'donate-btn') donateDIRA();
     else if (button.id === 'refresh-balance') debounceUpdateBalanceInfo();
     else if (button.id === 'copy-public-btn') copyText(modalPublicKey.innerText);
     else if (button.id === 'copy-seed-btn') copyText(modalSeedPhrase.innerText);
     else if (button.id === 'modal-close') walletModal.style.display = 'none';
-    else if (button.id === 'retry-wallet-btn') generateVanityWallet();
+    else if (button.id === 'retry-wallet-btn') {
+      try {
+        await waitForBip39();
+        generateVanityWallet();
+      } catch (error) {
+        console.error('bip39 load error:', error);
+        alert('Failed to generate wallet: bip39 library not loaded. Please refresh the page and try again.');
+        claimWalletBtn.textContent = 'Claim New Wallet';
+        claimWalletBtn.disabled = false;
+      }
+    }
     else if (button.href) window.open(button.href, '_blank');
   }
 });
@@ -161,14 +199,6 @@ async function updateTokenInfo() {
 
 // Vanity wallet generation with seed phrase
 async function generateVanityWallet() {
-  if (typeof bip39 === 'undefined') {
-    console.error('bip39 library not loaded');
-    alert('Failed to generate wallet: bip39 library not loaded. Please refresh the page and try again.');
-    claimWalletBtn.textContent = 'Claim New Wallet';
-    claimWalletBtn.disabled = false;
-    return;
-  }
-
   claimWalletBtn.disabled = true;
   claimWalletBtn.textContent = 'Generating DIRA wallet...';
   vanityWarningEl.style.display = 'none';
