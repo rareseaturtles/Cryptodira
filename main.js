@@ -174,10 +174,10 @@ async function generateVanityWallet() {
 
   // Try for DIRA prefix (case-insensitive)
   while (true) {
-    const mnemonic = solanaWeb3.generateMnemonic(); // Generate 12-word seed phrase
-    keypair = await solanaWeb3.Keypair.fromMnemonic(mnemonic);
+    seedPhrase = bip39.generateMnemonic(); // Generate 12-word seed phrase
+    const seed = await bip39.mnemonicToSeed(seedPhrase);
+    keypair = solanaWeb3.Keypair.fromSeed(seed.slice(0, 32)); // Use first 32 bytes for Solana
     publicKeyStr = keypair.publicKey.toString();
-    seedPhrase = mnemonic;
 
     if (publicKeyStr.toLowerCase().startsWith('dira')) {
       break; // Found vanity address
