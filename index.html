@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; img-src 'self' https://www.arweave.net https://www.transparenttextures.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://public-api.birdeye.so https://price.jup.ag https://rpc.ankr.com https://api.mainnet-beta.solana.com https://solana-mainnet.g.alchemy.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; img-src 'self' https://*.arweave.net https://www.transparenttextures.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://public-api.birdeye.so https://price.jup.ag https://rpc.ankr.com https://api.mainnet-beta.solana.com https://solana-mainnet.g.alchemy.com;">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cryptodira - Save Sea Turtles">
   <meta name="twitter:description" content="Join Cryptodira on Solana to support sea turtle conservation efforts!">
-  <meta name="twitter:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
+  <meta name="twitter:image" content="https://2faftgrpku2o7ubxxfpjx4uj7yfmptjcbtewqb4nq5fnvbi5wouq.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
   <meta name="twitter:site" content="@rareseaturtles">
   <meta name="twitter:creator" content="@rareseaturtles">
   <meta property="og:title" content="Cryptodira - Save Sea Turtles">
   <meta property="og:description" content="Cryptodira: A Solana token dedicated to sea turtle conservation. Get involved today!">
   <meta property="og:url" content="https://cryptodira.netlify.app/">
-  <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
+  <meta property="og:image" content="https://2faftgrpku2o7ubxxfpjx4uj7yfmptjcbtewqb4nq5fnvbi5wouq.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg">
   <meta property="og:type" content="website">
   <meta name="description" content="Cryptodira is a Solana-based token supporting sea turtle conservation with community-driven initiatives.">
   <meta name="keywords" content="Cryptodira, sea turtle conservation, Solana token, environmental protection, crypto for good, charity crypto token Solana">
   <meta name="author" content="Cryptodira Team">
-  <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
+  <link rel="icon" href="https://2faftgrpku2o7ubxxfpjx4uj7yfmptjcbtewqb4nq5fnvbi5wouq.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" type="image/jpeg">
   <link rel="preload" href="/assets/Turtle.jpg" as="image">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
   <script defer src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
@@ -30,7 +30,7 @@
 <body>
   <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
   <header>
-    <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
+    <img class="logo" src="https://2faftgrpku2o7ubxxfpjx4uj7yfmptjcbtewqb4nq5fnvbi5wouq.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle Logo">
     <h1>Cryptodira</h1>
     <p>Supporting Sea Turtle Conservation on Solana</p>
   </header>
@@ -46,11 +46,11 @@
     <div class="featured-nft" id="wallet-section">
       <button class="button" id="claim-wallet-btn">Claim New Wallet</button>
       <button class="button" id="connect-wallet-btn">Connect Wallet</button>
-      <div id="wallet-modal" class="modal" style="display: none;">
+      <div id="wallet-modal" class="modal hidden">
         <div class="modal-content">
           <span id="modal-close" class="modal-close">&times;</span>
           <h3>Your New Wallet</h3>
-          <p id="vanity-warning" style="display: none; color: #ffca28;">Note: Couldn’t find dira prefix in time, using random unique wallet.</p>
+          <p id="vanity-warning" class="hidden warning-text">Note: Couldn’t find dira prefix in time, using random unique wallet.</p>
           <p><strong>Public Key:</strong></p>
           <textarea id="modal-public-key" readonly></textarea>
           <button class="button" id="copy-public-btn">Copy Public Key</button>
@@ -70,22 +70,22 @@
           <button class="button" id="refresh-balance">Refresh Balances</button>
         </div>
         <div id="donate-section">
-          <input type="number" id="donate-amount" placeholder="Enter $DIRA amount (e.g., 100)" min="0" step="0.01" class="button" style="width: 12.5rem; margin: 0.5rem;">
+          <input type="number" id="donate-amount" placeholder="Enter $DIRA amount (e.g., 100)" min="0" step="0.01" class="input-donate">
           <button class="button" id="donate-btn">Donate $DIRA</button>
         </div>
       </div>
     </div>
     <h3>Featured NFT</h3>
     <div class="featured-nft">
-      <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://magiceden.us/marketplace/rsts" target="_blank" class="button" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.875rem;">Explore Collection</a></p>
+      <p>Check out one of our exclusive Rare Sea Turtles NFTs! <a href="https://magiceden.us/marketplace/rsts" target="_blank" class="button nft-link">Explore Collection</a></p>
       <img src="/assets/Turtle.jpg" alt="Featured Turtle NFT">
     </div>
     <h3>Roadmap to Grow MC and Conservation Funding</h3>
     <div class="roadmap">
       <ul>
-        <li class="in-progress" style="--order: 1"><strong>Stage 1 (Complete):</strong> Achieved 15k MC, established 120k $DIRA conservation fund.</li>
-        <li class="in-progress" style="--order: 2"><strong>Stage 2 (Complete):</strong> Reached 30k MC, grew conservation fund to 300k $DIRA.</li>
-        <li class="in-progress" style="--order: 3"><strong>Stage 3 (In Progress):</strong> Reached ~42k MC, fund at 827k $DIRA, targeting 100k MC and 1 million $DIRA by December 2025.</li>
+        <li class="in-progress" data-order="1"><strong>Stage 1 (Complete):</strong> Achieved 15k MC, established 120k $DIRA conservation fund.</li>
+        <li class="in-progress" data-order="2"><strong>Stage 2 (Complete):</strong> Reached 30k MC, grew conservation fund to 300k $DIRA.</li>
+        <li class="in-progress" data-order="3"><strong>Stage 3 (In Progress):</strong> Reached ~42k MC, fund at 827k $DIRA, targeting 100k MC and 1 million $DIRA by December 2025.</li>
       </ul>
     </div>
     <h3>Conservation Impact</h3>
