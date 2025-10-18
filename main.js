@@ -178,7 +178,7 @@ function generateVanityWallet() {
     try {
       keypair = solanaWeb3.Keypair.generate();
       publicKeyStr = keypair.publicKey.toString();
-      secretKeyStr = Buffer.from(keypair.secretKey).toString('base64'); // Use base64 for better readability
+      secretKeyStr = bs58.encode(keypair.secretKey); // Use bs58 for browser-compatible base58 encoding
 
       if (publicKeyStr.toLowerCase().startsWith('dira')) {
         break; // Found vanity address
@@ -206,7 +206,7 @@ function generateVanityWallet() {
   claimWalletBtn.textContent = 'Claim New Wallet';
   claimWalletBtn.disabled = false;
 
-  alert('New Solana wallet created! Copy the secret key and public key from the pop-up, import to Solflare or Phantom (desktop/extension), fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
+  alert('New Solana wallet created! Copy the secret key (base58) and public key from the pop-up, import to Solflare or Phantom (desktop/extension), fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
   console.log('Wallet generated:', { publicKey: publicKeyStr, secretKey: secretKeyStr, isVanity });
 }
 
@@ -262,7 +262,7 @@ async function updateBalanceInfo() {
           new solanaWeb3.PublicKey(TOKEN_MINT),
           publicKey
         );
-        const tokenInfo = await splToken.getAccount(connection, tokenAccount, 'confirmed', { signal: controller.signal });
+        const tokenInfo = await splToken.getAccount(connection, tokenAccount, 'confirmed');
         diraFormatted = (Number(tokenInfo.amount) / 1e9).toFixed(2); // 9 decimals
       } catch (e) {
         console.warn('No $DIRA token account:', e.message);
