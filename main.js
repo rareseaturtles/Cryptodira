@@ -1,3 +1,8 @@
+if (!window.solanaWeb3 || !window.splToken || !window.bip39 || !window.bs58) {
+  console.error('Required libraries not loaded. Ensure CDN scripts are included.');
+  alert('Error: Required libraries failed to load. Please refresh the page or check your internet connection.');
+}
+
 const { Keypair, PublicKey, Connection, Transaction } = solanaWeb3;
 const { getAssociatedTokenAddress, createTransferInstruction, TOKEN_PROGRAM_ID } = splToken;
 const { generateMnemonic, mnemonicToSeed } = bip39;
@@ -123,14 +128,14 @@ async function updateTokenInfo() {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000);
-    let response = await fetch(`https://public-api.birdeye.so/defi/price?address=${TOKEN_MINT}`, {
+    let response = await fetch(`https://public-api.birdeye.so/public/price?address=${TOKEN_MINT}`, {
       headers: { "X-API-KEY": BIRDEYE_API_KEY, "x-chain": "solana" },
       signal: controller.signal
     });
     clearTimeout(timeoutId);
     if (!response.ok) {
       console.warn('Birdeye API failed, trying Jupiter...');
-      response = await fetch(`https://price.jup.ag/v6/price?ids=${TOKEN_MINT}`);
+      response = await fetch(`https://price.jup.ag/v6/price?ids=${TOKEN_MINT}`, { signal: controller.signal });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const jupData = await response.json();
       const price = jupData.data[TOKEN_MINT]?.price?.toFixed(6) || "N/A";
@@ -163,13 +168,20 @@ async function updateTokenInfo() {
   } catch (error) {
     console.error(`Token data error after ${(performance.now() - startTime).toFixed(2)}ms:`, error);
     tokenInfoEl.innerHTML = `
-      <p>Error fetching token data: ${error.message}. Please try again.</p>
+      <p>Error fetching token data: ${error.message}. Please try again or check API key at birdeye.so/api-key.</p>
       <button class="button" id="refresh-token">Refresh</button>
     `;
   }
 }
 
 async function generateVanityWallet() {
+  if (!window.bip39 || !window.bs58) {
+    console.error('bip39 or bs58 not loaded');
+    alert('Error: Wallet generation libraries failed to load. Please refresh the page.');
+    claimWalletBtn.innerHTML = 'Claim New Wallet';
+    claimWalletBtn.disabled = false;
+    return;
+  }
   claimWalletBtn.disabled = true;
   claimWalletBtn.innerHTML = 'Generating DIRA wallet... <span class="loader"></span>';
   vanityWarningEl.style.display = 'none';
@@ -209,10 +221,10 @@ async function generateVanityWallet() {
     claimWalletBtn.disabled = false;
     const duration = (performance.now() - startTime) / 1000;
     console.log(`Wallet generated in ${duration.toFixed(2)}s:`, { publicKey: publicKeyStr, mnemonic, isVanity: foundVanity });
-    alert('New wallet created! Copy seed phrase from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share.');
+    alert('New wallet created! Copy seed phrase, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share.');
   } catch (error) {
     console.error('Wallet generation error:', error);
-    alert('Failed to generate wallet. Please try again.');
+    alert('Failed to generate wallet: ' + error.message);
     claimWalletBtn.innerHTML = 'Claim New Wallet';
     claimWalletBtn.disabled = false;
   }
@@ -289,6 +301,11 @@ async function updateBalanceInfo() {
 }
 
 async function donateDIRA() {
+  if (!window.splToken) {
+    console.error('splToken not loaded');
+    alert('Error: Donation library failed to load. Please refresh the page.');
+    return;
+  }
   const amount = parseFloat(donateAmountInput.value);
   if (!amount || amount <= 0) {
     alert('Please enter a valid $DIRA amount (e.g., 100).');
