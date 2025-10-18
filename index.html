@@ -59,13 +59,14 @@ CA 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
    <div id="wallet-modal" class="modal" style="display: none;">
      <div class="modal-content">
        <span id="modal-close" class="modal-close">&times;</span>
-       <h3>Your New Wallet</h3>
-       <p id="vanity-warning" style="display: none; color: #ffca28;">Note: Couldn’t find DIRA in key, using random unique wallet.</p>
+       <h3 id="modal-title">Your New Wallet</h3>
+       <p id="vanity-warning" style="display: none; color: #ffca28;">Note: Couldn’t find wallet starting with DIRA, using random unique wallet.</p>
        <p><strong>Public Key:</strong> <span id="modal-public-key"></span></p>
        <button class="button" id="copy-public-btn">Copy Public Key</button>
        <p><strong>Secret Key:</strong> <span id="modal-secret-key"></span></p>
        <button class="button" id="copy-secret-btn">Copy Secret Key</button>
        <p class="warning">WARNING: Save keys OFFLINE on paper. Do NOT share. Import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. We can't recover lost keys.</p>
+       <button class="button" id="retry-wallet-btn" style="display: none;">Retry for Vanity</button>
      </div>
    </div>
    <div id="balance-section">
@@ -99,7 +100,7 @@ CA 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
  <div class="impact-tracker">
  <p><strong>Conservation Fund:</strong> 827,000 $DIRA</p>
  <p><strong>Goal:</strong> 1 million $DIRA by December 2025</p>
- <p><strong>Upcoming:</strong> birthday October 16th.</p>
+ <p><strong>Recent:</strong> birthday October 16th.</p>
  </div>
 
  <h3>Join the Community</h3>
