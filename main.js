@@ -13,6 +13,7 @@ const modalSecretKey = document.getElementById('modal-secret-key');
 const copyPublicBtn = document.getElementById('copy-public-btn');
 const copySecretBtn = document.getElementById('copy-secret-btn');
 const modalClose = document.getElementById('modal-close');
+const vanityWarningEl = document.getElementById('vanity-warning');
 
 // Constants
 const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db"; // Replace if expired
@@ -94,7 +95,7 @@ function debounceUpdateBalanceInfo() {
   updateBalanceInfo();
 }
 
-// Token info fetch (restored original)
+// Token info fetch
 async function updateTokenInfo() {
   console.log('Fetching token data...');
   const startTime = performance.now();
@@ -159,15 +160,27 @@ async function updateTokenInfo() {
 async function generateVanityWallet() {
   claimWalletBtn.disabled = true;
   claimWalletBtn.innerHTML = 'Generating DIRA wallet... <span class="loader"></span>';
+  vanityWarningEl.style.display = 'none';
 
   const startTime = performance.now();
+  const timeout = 3000; // 3 seconds
   let keypair = solanaWeb3.Keypair.generate();
   let publicKeyStr = keypair.publicKey.toString();
+  let foundVanity = false;
 
   // Try for DIRA prefix (case-sensitive)
-  while (!publicKeyStr.startsWith('DIRA')) {
+  while (performance.now() - startTime < timeout) {
+    if (publicKeyStr.startsWith('DIRA')) {
+      foundVanity = true;
+      break;
+    }
     keypair = solanaWeb3.Keypair.generate();
     publicKeyStr = keypair.publicKey.toString();
+  }
+
+  if (!foundVanity) {
+    console.warn('Vanity timeout, using random wallet');
+    vanityWarningEl.style.display = 'block';
   }
 
   modalPublicKey.innerText = publicKeyStr;
@@ -177,7 +190,7 @@ async function generateVanityWallet() {
   claimWalletBtn.disabled = false;
 
   const duration = (performance.now() - startTime) / 1000;
-  console.log(`Wallet generated in ${duration.toFixed(2)}s:`, { publicKey: publicKeyStr });
+  console.log(`Wallet generated in ${duration.toFixed(2)}s:`, { publicKey: publicKeyStr, isVanity: foundVanity });
   alert('New wallet created! Copy keys from the pop-up, import to Phantom/Solflare, fund with ~0.01 SOL and $DIRA on Jupiter to donate. WARNING: Save OFFLINE on paper. Do NOT share. We can’t recover lost keys.');
 }
 
