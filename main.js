@@ -54,13 +54,13 @@ document.body.addEventListener('click', async (e) => {
     const id = button.id || button.textContent;
     console.log(`Button clicked: ${id}`);
     if (button.id === 'refresh-token') debounceUpdateTokenInfo();
-    else if (button.id === 'claim-wallet-btn') {
+    else if (button.id === 'claim-wallet-btn' || button.id === 'retry-wallet-btn') {
       try {
         await waitForBip39();
         generateVanityWallet();
       } catch (error) {
         console.error('bip39 load error:', error);
-        alert('Failed to generate wallet: bip39 library not loaded. Please refresh the page and try again.');
+        alert('Failed to generate wallet: bip39 library not loaded. Please check your network and refresh the page.');
         claimWalletBtn.textContent = 'Claim New Wallet';
         claimWalletBtn.disabled = false;
       }
@@ -71,17 +71,6 @@ document.body.addEventListener('click', async (e) => {
     else if (button.id === 'copy-public-btn') copyText(modalPublicKey.innerText);
     else if (button.id === 'copy-seed-btn') copyText(modalSeedPhrase.innerText);
     else if (button.id === 'modal-close') walletModal.style.display = 'none';
-    else if (button.id === 'retry-wallet-btn') {
-      try {
-        await waitForBip39();
-        generateVanityWallet();
-      } catch (error) {
-        console.error('bip39 load error:', error);
-        alert('Failed to generate wallet: bip39 library not loaded. Please refresh the page and try again.');
-        claimWalletBtn.textContent = 'Claim New Wallet';
-        claimWalletBtn.disabled = false;
-      }
-    }
     else if (button.href) window.open(button.href, '_blank');
   }
 });
