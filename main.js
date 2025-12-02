@@ -1,5 +1,5 @@
 /* ────────────────────────────────────────────────────────────────────────
-   main.js – Cryptodira Turtle Ticks (FIXED token fetch + no generator)
+   main.js – Cryptodira Turtle Ticks (NO generator, ORIGINAL token logic)
    ──────────────────────────────────────────────────────────────────────── */
 
 const tokenInfoEl       = document.getElementById("token-info");
@@ -12,7 +12,7 @@ const walletStatusEl    = document.getElementById('walletStatus');
 const tickCountEl       = document.getElementById('tickCount');
 
 const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db";
-const TOTAL_TOKEN_SUPPLY = 4880000;  // Your original supply
+const TOTAL_TOKEN_SUPPLY = 4880000;
 const TOKEN_MINT = "53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8";
 const DONATION_RECEIVER = "293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy";
 const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana", 'confirmed');
@@ -20,7 +20,7 @@ const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana", 'con
 let totalTicks = 0;
 let isFetchingTicks = false;
 
-/* ────────────────────── Dark Mode (unchanged) ────────────────────── */
+/* ────────────────────── Dark Mode (original) ────────────────────── */
 darkModeToggle.addEventListener('click', e => {
   e.stopPropagation();
   document.body.classList.toggle('dark-mode');
@@ -33,7 +33,7 @@ if (localStorage.getItem('darkMode') === 'enabled') {
   darkModeToggle.textContent = 'Light Mode';
 }
 
-/* ────────────────────── Token Info (YOUR ORIGINAL LOGIC + FALLBACK) ────────────────────── */
+/* ────────────────────── Token Info (100% ORIGINAL) ────────────────────── */
 async function updateTokenInfo() {
   console.log('Fetching token data...');
   const startTime = performance.now();
@@ -61,8 +61,8 @@ async function updateTokenInfo() {
       const fetchTime = performance.now() - startTime;
       console.log(`Fetched Jupiter data in ${fetchTime.toFixed(2)}ms:`, { price, marketCap });
       tokenInfoEl.innerHTML = `
-        <p><strong>Price:</strong> \( {price !== "N/A" ? " \)" + price : price}</p>
-        <p><strong>Market Cap:</strong> \( {marketCap !== "N/A" ? " \)" + marketCap : marketCap}</p>
+        <p><strong>Price:</strong> \[ {price}</p>
+        <p><strong>Market Cap:</strong> \]{marketCap}</p>
         <p><strong>Mission:</strong> Fund conservation through community participation.</p>
         <p><strong>Track:</strong> <a href="https://birdeye.so/token/${TOKEN_MINT}?chain=solana" target="_blank">Birdeye</a></p>
         <button class="button" id="refresh-token">Refresh</button>
@@ -78,9 +78,9 @@ async function updateTokenInfo() {
     console.log(`Fetched Birdeye data in ${fetchTime.toFixed(2)}ms:`, { price, liquidity, marketCap });
 
     tokenInfoEl.innerHTML = `
-      <p><strong>Price:</strong> \( {price !== "N/A" ? " \)" + price : price}</p>
-      <p><strong>Liquidity:</strong> \( {liquidity !== "N/A" ? " \)" + liquidity : liquidity}</p>
-      <p><strong>Market Cap:</strong> \( {marketCap !== "N/A" ? " \)" + marketCap : marketCap}</p>
+      <p><strong>Price:</strong> \[ {price}</p>
+      <p><strong>Liquidity:</strong> \]{liquidity}</p>
+      <p><strong>Market Cap:</strong> $${marketCap}</p>
       <p><strong>Mission:</strong> Fund conservation through community participation.</p>
       <p><strong>Track:</strong> <a href="https://birdeye.so/token/${TOKEN_MINT}?chain=solana" target="_blank">Birdeye</a></p>
       <button class="button" id="refresh-token">Refresh</button>
@@ -94,7 +94,7 @@ async function updateTokenInfo() {
   }
 }
 
-/* ────────────────────── Wallet Connect ────────────────────── */
+/* ────────────────────── Wallet Connect (original) ────────────────────── */
 async function connectWallet() {
   if (!window.solana?.isPhantom && !window.solana?.isSolflare) {
     alert("Please install Phantom or Solflare wallet.");
@@ -113,7 +113,7 @@ async function connectWallet() {
   }
 }
 
-/* ────────────────────── Balance (unchanged) ────────────────────── */
+/* ────────────────────── Balance (original) ────────────────────── */
 async function updateBalanceInfo() {
   console.log('Fetching balance data...');
   const startTime = performance.now();
@@ -126,11 +126,9 @@ async function updateBalanceInfo() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-      // SOL balance
       const solBalance = await connection.getBalance(publicKey, { signal: controller.signal });
       const solFormatted = (solBalance / 1e9).toFixed(4);
 
-      // $DIRA balance
       let diraFormatted = 0;
       try {
         const tokenAccount = await splToken.getAssociatedTokenAddress(
@@ -138,7 +136,7 @@ async function updateBalanceInfo() {
           publicKey
         );
         const tokenInfo = await splToken.getAccount(connection, tokenAccount, 'confirmed');
-        diraFormatted = (Number(tokenInfo.amount) / 1e9).toFixed(2); // 9 decimals
+        diraFormatted = (Number(tokenInfo.amount) / 1e9).toFixed(2);
       } catch (e) {
         console.warn('No $DIRA token account:', e.message);
       }
@@ -162,13 +160,13 @@ async function updateBalanceInfo() {
     }
   } else {
     balanceInfoEl.innerHTML = `
-      <p>Connect wallet to view balances or claim a new one.</p>
+      <p>Connect wallet to view balances.</p>
       <button class="button" id="refresh-balance">Refresh Balances</button>
     `;
   }
 }
 
-/* ────────────────────── Turtle Ticks ────────────────────── */
+/* ────────────────────── Turtle Ticks (new) ────────────────────── */
 async function fetchTickCount() {
   if (isFetchingTicks) return;
   isFetchingTicks = true;
@@ -184,7 +182,6 @@ async function fetchTickCount() {
   isFetchingTicks = false;
 }
 
-/* ────────────────────── Add Tick (Donate) ────────────────────── */
 addTickBtn.onclick = async () => {
   const amount = parseFloat(donateAmountInput.value);
   if (!amount || amount <= 0) return alert("Enter a valid $DIRA amount");
@@ -224,7 +221,7 @@ addTickBtn.onclick = async () => {
   }
 };
 
-/* ────────────────────── Confetti ────────────────────── */
+/* ────────────────────── Confetti (new) ────────────────────── */
 function launchConfetti() {
   const canvas = document.createElement('canvas');
   canvas.style.position = 'fixed';
