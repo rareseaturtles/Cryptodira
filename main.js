@@ -1,22 +1,19 @@
 /* ────────────────────────────────────────────────────────────────────────
-   main.js – Cryptodira Turtle Ticks (NO wallet generator, NO goals)
+   main.js – Cryptodira Turtle Ticks (NO wallet generator, FIXED token info)
    ──────────────────────────────────────────────────────────────────────── */
 
 const tokenInfoEl       = document.getElementById("token-info");
 const darkModeToggle    = document.getElementById('darkModeToggle');
 const connectWalletBtn  = document.getElementById('connect-wallet-btn');
-const donateBtn         = document.getElementById('donate-btn');
+const addTickBtn        = document.getElementById('addTick');
 const donateAmountInput = document.getElementById('donate-amount');
 const balanceInfoEl     = document.getElementById('balance-info');
-
-const tickCountEl       = document.getElementById('tickCount');
-const addTickBtn        = document.getElementById('addTick');
 const walletStatusEl    = document.getElementById('walletStatus');
+const tickCountEl       = document.getElementById('tickCount');
 
 const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db";
-const TOTAL_TOKEN_SUPPLY = 4880000;
 const TOKEN_MINT = "53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8";
-const DONATION_RECEIVER = "293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy"; // ← YOUR CDCF WALLET
+const DONATION_RECEIVER = "293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy";
 const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana", 'confirmed');
 
 let totalTicks = 0;
@@ -35,7 +32,7 @@ if (localStorage.getItem('darkMode') === 'enabled') {
   darkModeToggle.textContent = 'Light Mode';
 }
 
-/* ────────────────────── Token Info (Price + Liquidity) ────────────────────── */
+/* ────────────────────── Token Info (FIXED) ────────────────────── */
 async function updateTokenInfo() {
   tokenInfoEl.innerHTML = `<p>Loading token data... <span class="loader"></span></p>
                            <button class="button" id="refresh-token">Refresh</button>`;
@@ -103,7 +100,7 @@ async function updateBalanceInfo() {
   }
 }
 
-/* ────────────────────── Turtle Ticks Counter ────────────────────── */
+/* ────────────────────── Turtle Ticks ────────────────────── */
 async function fetchTickCount() {
   if (isFetchingTicks) return;
   isFetchingTicks = true;
@@ -111,18 +108,18 @@ async function fetchTickCount() {
     const receiverPubkey = new solanaWeb3.PublicKey(DONATION_RECEIVER);
     const ata = await splToken.getAssociatedTokenAddress(new solanaWeb3.PublicKey(TOKEN_MINT), receiverPubkey);
     const acc = await splToken.getAccount(connection, ata);
-    totalTicks = Math.floor(Number(acc.amount) / 1e9); // 1 $DIRA = 1 Tick
+    totalTicks = Math.floor(Number(acc.amount) / 1e9);
     tickCountEl.textContent = totalTicks.toLocaleString();
   } catch (err) {
-    console.warn("Could not fetch tick count:", err);
+    console.warn("Tick fetch failed:", err);
   }
   isFetchingTicks = false;
 }
 
-/* ────────────────────── Add Tick (Donate 1 $DIRA) ────────────────────── */
+/* ────────────────────── Add Tick (Donate) ────────────────────── */
 addTickBtn.onclick = async () => {
   const amount = parseFloat(donateAmountInput.value);
-  if (!amount || amount <= 0) return alert("Enter a valid $DIRA amount (e.g. 100)");
+  if (!amount || amount <= 0) return alert("Enter a valid $DIRA amount");
 
   if (!window.solana?.isConnected) return alert("Connect wallet first");
 
@@ -209,7 +206,7 @@ function launchConfetti() {
   animate();
 }
 
-/* ────────────────────── Event Listeners ────────────────────── */
+/* ────────────────────── Events ────────────────────── */
 document.body.addEventListener('click', e => {
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -223,5 +220,5 @@ window.addEventListener('load', () => {
   updateTokenInfo();
   if (window.solana?.isConnected) connectWallet();
   fetchTickCount();
-  setInterval(fetchTickCount, 30000); // refresh ticks every 30s
+  setInterval(fetchTickCount, 30000);
 });
