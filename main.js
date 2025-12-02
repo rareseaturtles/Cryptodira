@@ -14,6 +14,7 @@ const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.co
 
 let totalTicks = 0;
 let isFetchingTicks = false;
+let diraBalance = 0; // Global to track $DIRA balance for validation
 
 darkModeToggle.addEventListener('click', e => {
   e.stopPropagation();
@@ -69,15 +70,18 @@ async function updateBalanceInfo() {
   const pubkey = window.solana.publicKey;
   try {
     const sol = (await connection.getBalance(pubkey) / 1e9).toFixed(4);
-    let dira = "0.00";
+    diraBalance = 0; // Reset
     try {
       const ata = await splToken.getAssociatedTokenAddress(new solanaWeb3.PublicKey(TOKEN_MINT), pubkey);
       const acc = await splToken.getAccount(connection, ata);
-      dira = (Number(acc.amount) / 1e9).toFixed(2);
-    } catch (_) {}
+      diraBalance = Number(acc.amount) / 1e9;
+    } catch (err) {
+      console.error("No $DIRA account or error:", err);
+    }
+    const diraDisplay = diraBalance.toFixed(2);
     balanceInfoEl.innerHTML = `
       <p><strong>SOL:</strong> ${sol}</p>
-      <p><strong>\( DIRA:</strong> \){dira}</p>
+      <p><strong>\( DIRA:</strong> \){diraDisplay}</p>
       <button class="button" id="refresh-balance">Refresh</button>
     `;
   } catch (err) {
@@ -94,14 +98,23 @@ async function fetchTickCount() {
     const acc = await splToken.getAccount(connection, ata);
     totalTicks = Math.floor(Number(acc.amount) / 1e9);
     tickCountEl.textContent = totalTicks.toLocaleString();
-  } catch (_) {}
+  } catch (err) {
+    console.error("Tick count fetch error:", err);
+    tickCountEl.textContent = "Error loading";
+  }
   isFetchingTicks = false;
+}
+
+function validateDonateAmount() {
+  const amount = parseFloat(donateAmountInput.value);
+  addTickBtn.disabled = !(amount > 0 && window.solana?.isConnected);
 }
 
 addTickBtn.onclick = async () => {
   const amount = parseFloat(donateAmountInput.value);
   if (!amount || amount <= 0) return alert("Enter valid $DIRA amount");
   if (!window.solana?.isConnected) return alert("Connect wallet first");
+  if (amount > diraBalance) return alert("Insufficient $DIRA balance");
 
   try {
     const from = window.solana.publicKey;
@@ -124,6 +137,8 @@ addTickBtn.onclick = async () => {
     tickCountEl.textContent = totalTicks.toLocaleString();
     launchConfetti();
     updateBalanceInfo();
+    donateAmountInput.value = ''; // Clear input after success
+    validateDonateAmount(); // Re-validate (disables button)
   } catch (err) {
     alert("Donation failed: " + err.message);
   }
