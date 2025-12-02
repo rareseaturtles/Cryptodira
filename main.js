@@ -10,7 +10,7 @@ const tickCountEl       = document.getElementById('tickCount');
 const TOTAL_TOKEN_SUPPLY = 4880000;
 const TOKEN_MINT = "53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8";
 const DONATION_RECEIVER = "293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy";
-const connection = new solanaWeb3.Connection("https://solana-api.projectserum.com", 'confirmed');
+const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", 'confirmed');
 
 let totalTicks = 0;
 let isFetchingTicks = false;
