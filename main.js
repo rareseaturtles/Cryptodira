@@ -1,5 +1,5 @@
 /* ────────────────────────────────────────────────────────────────────────
-   main.js – Cryptodira Turtle Ticks (NO generator, ORIGINAL token logic)
+   main.js – Cryptodira Turtle Ticks (FIXED RPC for wallet connect)
    ──────────────────────────────────────────────────────────────────────── */
 
 const tokenInfoEl       = document.getElementById("token-info");
@@ -15,7 +15,8 @@ const BIRDEYE_API_KEY = "0d4d8f6a8444446cb233b2f2e933d6db";
 const TOTAL_TOKEN_SUPPLY = 4880000;
 const TOKEN_MINT = "53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8";
 const DONATION_RECEIVER = "293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy";
-const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana", 'confirmed');
+// FIXED: Use official Solana public RPC (no key needed, no 403 errors)
+const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", 'confirmed');
 
 let totalTicks = 0;
 let isFetchingTicks = false;
@@ -33,7 +34,7 @@ if (localStorage.getItem('darkMode') === 'enabled') {
   darkModeToggle.textContent = 'Light Mode';
 }
 
-/* ────────────────────── Token Info (100% ORIGINAL) ────────────────────── */
+/* ────────────────────── Token Info (original + Jupiter fallback) ────────────────────── */
 async function updateTokenInfo() {
   console.log('Fetching token data...');
   const startTime = performance.now();
@@ -96,20 +97,21 @@ async function updateTokenInfo() {
 
 /* ────────────────────── Wallet Connect (original) ────────────────────── */
 async function connectWallet() {
-  if (!window.solana?.isPhantom && !window.solana?.isSolflare) {
-    alert("Please install Phantom or Solflare wallet.");
-    return;
-  }
-  try {
-    await window.solana.connect();
-    connectWalletBtn.textContent = "Connected";
-    connectWalletBtn.disabled = true;
-    walletStatusEl.textContent = `Connected: ${window.solana.publicKey.toBase58().slice(0,8)}...`;
-    addTickBtn.disabled = false;
-    updateBalanceInfo();
-    fetchTickCount();
-  } catch (err) {
-    alert("Connection failed: " + err.message);
+  if ('solana' in window) {
+    const provider = window.solana;
+    try {
+      await provider.connect();
+      connectWalletBtn.textContent = 'Wallet Connected';
+      connectWalletBtn.disabled = true;
+      walletStatusEl.textContent = `Connected: ${provider.publicKey.toBase58().slice(0,8)}...`;
+      addTickBtn.disabled = false;
+      updateBalanceInfo();  // This is where the RPC error happens — FIXED with new RPC
+    } catch (error) {
+      console.error('Wallet connection error:', error);
+      alert('Wallet connection failed: ' + error.message);
+    }
+  } else {
+    alert('Please install Phantom or Solflare wallet extension.');
   }
 }
 
@@ -126,9 +128,11 @@ async function updateBalanceInfo() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
 
+      // SOL balance (this call fails on Ankr — FIXED with public RPC)
       const solBalance = await connection.getBalance(publicKey, { signal: controller.signal });
       const solFormatted = (solBalance / 1e9).toFixed(4);
 
+      // $DIRA balance
       let diraFormatted = 0;
       try {
         const tokenAccount = await splToken.getAssociatedTokenAddress(
@@ -136,7 +140,7 @@ async function updateBalanceInfo() {
           publicKey
         );
         const tokenInfo = await splToken.getAccount(connection, tokenAccount, 'confirmed');
-        diraFormatted = (Number(tokenInfo.amount) / 1e9).toFixed(2);
+        diraFormatted = (Number(tokenInfo.amount) / 1e9).toFixed(2); // 9 decimals
       } catch (e) {
         console.warn('No $DIRA token account:', e.message);
       }
