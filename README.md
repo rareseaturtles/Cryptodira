@@ -1,12 +1,20 @@
 # Cryptodira
 
-Welcome to Cryptodira, where we protect the ocean of cryptocurrencies just like our beloved turtles protect their habitats!
+## $DIRA Token Details
+The $DIRA token is designed to facilitate transactions within the Cryptodira ecosystem. Keep an eye on its developments and announcements for potential use cases and value growth.
 
-## Live Token Overview
-Stay updated with our live token data that demonstrates the strength and stability of Cryptodira. Dive into real-time analytics to monitor your investments.
+## Fund Treasury Wallet Information
+The treasury wallet for the Cryptodira project is designed to fund long-term developments and improvements for the project. Transparency is key, and regular updates will be provided to the community regarding the allocation and use of these funds.
 
-## Fund Treasury Wallet Details
-Our treasury wallet serves as the safe haven for community funds, ensuring transparency and security. Each transaction is documented, akin to turtles tracking their paths through the ocean.
+### Wallet Address
+`0xYourWalletAddressHere`
 
 ## Disclaimers
-As we swim through the ever-changing waters of cryptocurrency, it's essential to note that while Cryptodira aims to be a beacon of security and success, all investments carry risks. Please conduct your own research and consider consulting with a financial advisor.
+1. **Investment Risks:** Please be aware that investing in cryptocurrencies involves risks. The value of your investment can fluctuate significantly.
+2. **Research Before Investing:** It is crucial to conduct your own research before making any investment decisions. Do not invest money that you cannot afford to lose.
+3. **Community Engagement:** The success of Cryptodira relies on community support and engagement. Be involved, ask questions, and stay informed.
+
+## Updates
+This document will be updated regularly to reflect the latest changes and developments related to the Cryptodira project.
+
+**Last Updated:** 2026-02-15 05:23:16 (UTC)
