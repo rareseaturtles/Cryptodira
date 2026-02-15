@@ -1,20 +1,67 @@
-# Cryptodira
+# Cryptodira 🐢
 
-## $DIRA Token Details
-The $DIRA token is designed to facilitate transactions within the Cryptodira ecosystem. Keep an eye on its developments and announcements for potential use cases and value growth.
+**Slow and steady wins the race.**
 
-## Fund Treasury Wallet Information
-The treasury wallet for the Cryptodira project is designed to fund long-term developments and improvements for the project. Transparency is key, and regular updates will be provided to the community regarding the allocation and use of these funds.
+Cryptodira is a community-driven project inspired by hidden-necked turtles. We're exploring a charity-focused token on Solana, where transparent mechanics might support real impact over time.
 
-### Wallet Address
-`0xYourWalletAddressHere`
+**Critical Disclaimer:**  
+This is exploratory only.  
+- Token is live but low-cap with high risk/volatility.  
+- No funds managed or solicited as charity yet.  
+- No promises, guarantees, value, returns, or impact.  
+- Nothing here is financial, legal, or investment advice.  
+- Governance evolving slowly; consult professionals before any involvement.  
 
-## Disclaimers
-1. **Investment Risks:** Please be aware that investing in cryptocurrencies involves risks. The value of your investment can fluctuate significantly.
-2. **Research Before Investing:** It is crucial to conduct your own research before making any investment decisions. Do not invest money that you cannot afford to lose.
-3. **Community Engagement:** The success of Cryptodira relies on community support and engagement. Be involved, ask questions, and stay informed.
+Building community thoughtfully. Join discussions on charity, Solana, or turtle themes.
 
-## Updates
-This document will be updated regularly to reflect the latest changes and developments related to the Cryptodira project.
+## Mission & Ethos
+- **Slow and Steady**: Natural growth, no hype, transparency first.  
+- **Charity Exploration**: Signal support for causes like environmental or animal welfare.  
+- **Solana Fit**: Low-cost, fast for potential on-chain transparency.  
+- **Community Focus**: Consensus-driven with safeguards.
 
-**Last Updated:** 2026-02-15 05:23:16 (UTC)
+## Current Status
+Simple static site sharing ideas.
+
+- **Live Preview**: Enable GitHub Pages in settings for https://rareseaturtles.github.io/Cryptodira/.  
+- Features: Turtle-themed landing with mission, disclaimers, token/fund info.
+
+## Live Token: $DIRA
+Community signal token on Solana (low liquidity, use caution).  
+
+- **Mint Address**: [53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8](https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8)  
+- **Supply**: \~4.88M DIRA  
+- **Holders**: \~182  
+- **Market Cap**: \~$280 (volatile)  
+- **Price**: \~$0.000058  
+- **Liquidity**: \~$49 (Meteora pool)  
+- View: [Solscan](https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8) | [Dexscreener](https://dexscreener.com/solana/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8)  
+
+Authorities not fully revoked yet — no guarantees.
+
+## Fund Treasury Wallet
+Holds assets for potential future transparent use.  
+
+- **Address**: [293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy](https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy)  
+- **Holdings**: \~808K DIRA (\~16.6% supply), minor PSOL (\~$3.65), 0 SOL  
+- Activity: Low; transparent on-chain.  
+
+No charity mechanics active — evolving with community.
+
+## Future Ideas (Exploratory)
+- Token as signal (no returns).  
+- Multisig treasury → DAO grants.  
+- Verifiable donations via partners.  
+- Timelocks, approvals for safety.  
+
+Hypothetical; no implementation yet.
+
+## Tech Stack
+- HTML5, CSS3, Vanilla JS  
+- Tailwind CSS (CDN)  
+
+## Run Locally
+```bash
+git clone https://github.com/rareseaturtles/Cryptodira.git
+cd Cryptodira
+open index.html  # Or drag to browser
