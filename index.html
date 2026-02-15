@@ -1,60 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cryptodira 🐢 — Slow and Steady on Solana</title>
+  <meta name="description" content="Exploratory community project: Thinking about a transparent, charity-focused signal on Solana. Nothing promised. Slow and steady." />
+  
+  <!-- Tailwind CSS CDN (v3) - easy, no build needed -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'turtle-green': '#0f766e',
+            'turtle-teal': '#14b8a6',
+            'deep-ocean': '#0c4a6e',
+          }
+        }
+      }
+    }
+  </script>
 
-  <title>Cryptodira — Hope in Healing</title>
-
-  <!-- SEO / Social -->
-  <meta name="description" content="Cryptodira is a calm signal in a loud world. No promises. Just hope in healing." />
-  <meta property="og:title" content="Cryptodira" />
-  <meta property="og:description" content="A slow signal in a loud world. No promises. Just hope in healing." />
-  <meta property="og:image" content="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" />
-  <meta property="og:type" content="website" />
-
-  <link rel="icon" href="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css" />
+  <!-- Optional: Favicon (add your turtle icon to assets/img/favicon.ico) -->
+  <!-- <link rel="icon" href="assets/img/favicon.ico" /> -->
+  
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .fade-in { animation: fadeIn 1.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
+<body class="bg-gray-50 text-gray-800 antialiased">
 
-<body>
-  <button id="darkModeToggle" aria-label="Toggle dark mode">Dark</button>
-
-  <main class="container">
-    <header class="hero">
-      <img class="logo" src="https://www.arweave.net/0UBZmi9VNO_QN7lem_KJ_grHzSIMyWgHjYdK2oUds6k?ext=jpg" alt="Cryptodira Turtle" />
-      <h1>Cryptodira</h1>
-      <p class="tagline">
-        A slow signal in a loud world.<br />
-        No promises. Just hope in healing.
+  <!-- Header / Hero -->
+  <header class="bg-gradient-to-b from-deep-ocean to-turtle-teal text-white py-20 px-6 text-center">
+    <div class="max-w-4xl mx-auto fade-in">
+      <h1 class="text-5xl md:text-6xl font-bold mb-4">
+        Cryptodira 🐢
+      </h1>
+      <p class="text-2xl md:text-3xl font-light mb-6">
+        Slow and steady wins the race.
       </p>
-    </header>
+      <p class="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
+        A quiet space to explore ideas for community-driven, transparent charity on Solana.
+      </p>
+    </div>
+  </header>
 
-    <section class="reflection">
-      <p>
-        The ocean heals by moving slowly.<br />
-        Turtles survive by staying calm.<br />
-        This is a space to breathe.
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-6 py-16 space-y-20">
+
+    <!-- Mission -->
+    <section class="text-center fade-in">
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Mission & Ethos</h2>
+      <p class="text-lg leading-relaxed mb-6">
+        Inspired by the hidden-neck turtles (Cryptodira), we move deliberately. 
+        No rush, no hype — just thoughtful exploration of how a community could signal support for real-world healing and impact.
+      </p>
+      <p class="text-lg leading-relaxed">
+        Solana's speed and low costs make it ideal for transparent, on-chain good — but we're building community first, at our own pace.
       </p>
     </section>
 
-    <section class="ambient">
-      <div class="wave"></div>
-      <div class="glow"></div>
+    <!-- Current Status -->
+    <section class="bg-white shadow-lg rounded-xl p-8 md:p-12 fade-in">
+      <h2 class="text-3xl font-bold text-center mb-8">Current Status: Under Construction</h2>
+      <div class="prose prose-lg mx-auto text-center">
+        <p>This is an early-stage brainstorming repo and landing page.</p>
+        <ul class="list-none space-y-4 mt-6">
+          <li>✅ Turtle-themed static site (HTML/CSS/JS)</li>
+          <li>🧠 Open ideas for future charity signaling</li>
+          <li>🚫 No tokens launched</li>
+          <li>🚫 No funds managed or solicited</li>
+          <li>🚫 No promises or guarantees</li>
+        </ul>
+        <p class="mt-8 font-medium">Follow @rareseaturtles on X for slow updates.</p>
+      </div>
     </section>
 
-    <nav class="links">
-      <a href="https://x.com/rareseaturtles" target="_blank">X</a>
-      <a href="https://t.me/+FsJKNuEXxRRmZGRh" target="_blank">Telegram</a>
-      <a href="https://magiceden.us/marketplace/rsts" target="_blank">Art</a>
-    </nav>
+    <!-- Future Exploration (Hypothetical) -->
+    <section class="text-center fade-in">
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Ideas We're Exploring (Non-Binding)</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-2xl font-semibold mb-4">Community Signal Token</h3>
+          <p>A potential utility/signaling token — no expected value, no returns promised. Just a way for holders to voice support for causes.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-2xl font-semibold mb-4">Transparent Treasury</h3>
+          <p>Multisig (e.g., Squads) → eventual DAO-style voting on grants to verified charities. Full on-chain visibility.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-2xl font-semibold mb-4">Impact Focus</h3>
+          <p>Environmental, animal welfare, healing causes — partnered with established platforms (e.g., The Giving Block for Solana donations).</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-2xl font-semibold mb-4">Safeguards First</h3>
+          <p>Timelocks, multi-approvals, no central control. Everything hypothetical until properly structured.</p>
+        </div>
+      </div>
+      <p class="mt-10 text-lg italic">All of this is conceptual — we're nowhere near launch or implementation.</p>
+    </section>
+
+    <!-- Big Disclaimer -->
+    <section class="bg-red-50 border border-red-200 rounded-xl p-8 text-center fade-in">
+      <h2 class="text-3xl font-bold text-red-800 mb-6">Critical Disclaimer</h2>
+      <p class="text-lg font-medium text-red-900 max-w-3xl mx-auto">
+        This project is purely exploratory and not official in any way. No tokens exist. No funds are being raised, managed, or promised. 
+        Nothing here constitutes financial, legal, investment, or charitable advice. 
+        Any future steps would require full legal/compliance review (especially in the US). 
+        Do not send funds, invest, or expect returns/impact yet. For discussion only.
+      </p>
+    </section>
+
   </main>
 
-  <footer>
-    © 2025 Cryptodira — just a symbol, not a solution
+  <!-- Footer -->
+  <footer class="bg-deep-ocean text-white py-12 text-center">
+    <div class="max-w-4xl mx-auto px-6">
+      <p class="text-lg mb-4">Made with patience and 🐢 vibes in Indiana, USA.</p>
+      <p class="text-sm opacity-80">
+        &copy; <span id="year"></span> Cryptodira — All ideas exploratory. Follow <a href="https://x.com/rareseaturtles" class="underline hover:text-turtle-teal"> @rareseaturtles</a>
+      </p>
+    </div>
   </footer>
 
-  <script src="/main.js"></script>
+  <!-- Simple JS: Set year + optional smooth scroll -->
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // If you add links later, this enables smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+
 </body>
 </html>
