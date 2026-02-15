@@ -1,150 +1,113 @@
-:root {
-  --ocean: #26a69a;
-  --deep: #0d4536;
-  --bg-light: linear-gradient(135deg, #e0f7fa, #b2dfdb);
-  --bg-dark: radial-gradient(circle at top, #001414, #000);
-}
+/* styles.css - Clean, modern turtle-themed overrides & custom styles */
 
+/* Base resets & typography */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: var(--bg-light);
-  color: var(--deep);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  line-height: 1.6;
+  color: #1f2937; /* gray-800 */
+  background-color: #f9fafb; /* gray-50 */
 }
 
-body.dark {
-  background: var(--bg-dark);
-  color: #aefcff;
+/* Custom colors (matching Tailwind config in HTML) */
+:root {
+  --turtle-green: #0f766e;
+  --turtle-teal: #14b8a6;
+  --deep-ocean: #0c4a6e;
+  --soft-gray: #6b7280;
+  --light-bg: #f3f4f6;
 }
 
-.container {
-  width: 100%;
-  max-width: 60rem;
-  padding: 3rem 1.5rem;
-  text-align: center;
+/* Hero enhancements */
+header {
+  background: linear-gradient(to bottom, var(--deep-ocean), var(--turtle-teal));
 }
 
-.hero {
-  margin-top: 2rem;
-}
-
-.logo {
-  width: 9rem;
-  border-radius: 1rem;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-  animation: float 6s ease-in-out infinite;
+h1, h2, h3 {
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 h1 {
-  font-size: 3rem;
-  font-weight: 600;
-  margin: 1.5rem 0 0.5rem;
-  letter-spacing: 0.04em;
+  font-size: clamp(3rem, 8vw, 4.5rem);
 }
 
-.tagline {
-  font-size: 1.25rem;
-  opacity: 0.85;
-  line-height: 1.6;
+section h2 {
+  color: var(--turtle-green);
 }
 
-.reflection {
-  margin: 4rem auto;
-  max-width: 36rem;
-  font-size: 1.2rem;
-  line-height: 1.9;
-  opacity: 0.85;
+/* Cards & sections */
+.bg-white {
+  background-color: white;
 }
 
-.ambient {
-  position: relative;
-  height: 10rem;
-  overflow: hidden;
-  margin: 4rem 0;
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.wave {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    rgba(38,166,154,0.25),
-    rgba(0,105,92,0.05)
-  );
-  animation: drift 22s linear infinite;
+.rounded-xl {
+  border-radius: 1rem;
 }
 
-.glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(0,255,255,0.15), transparent 70%);
+/* Disclaimer box */
+.bg-red-50 {
+  background-color: #fef2f2;
 }
 
-.links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 3rem;
+.border-red-200 {
+  border-color: #fecaca;
 }
 
-.links a {
-  text-decoration: none;
-  color: inherit;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  position: relative;
+.text-red-800 {
+  color: #991b1b;
 }
 
-.links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 0;
-  height: 2px;
-  background: var(--ocean);
-  transition: width 0.3s ease;
+.text-red-900 {
+  color: #7f1d1d;
 }
 
-.links a:hover::after {
-  width: 100%;
-}
-
+/* Footer */
 footer {
-  margin-top: auto;
-  padding: 1.5rem;
-  font-size: 0.9rem;
-  opacity: 0.6;
-}
-
-/* Dark mode toggle */
-#darkModeToggle {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  border: 1px solid var(--ocean);
-  background: transparent;
-  color: inherit;
-  padding: 0.4rem 0.75rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
+  background: var(--deep-ocean);
 }
 
 /* Animations */
-@keyframes float {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
-@keyframes drift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Responsive tweaks */
+@media (min-width: 768px) {
+  main {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Utility classes for future use */
+.prose {
+  max-width: 65ch;
+  margin: 0 auto;
+}
+
+.prose p {
+  margin-bottom: 1.25rem;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
 }
