@@ -1,142 +1,144 @@
+```html
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cryptodira 🐢 — Slow and Steady on Solana</title>
-  <meta name="description" content="Exploratory community project: Thinking about a transparent, charity-focused signal on Solana. Nothing promised. Slow and steady." />
-  
-  <!-- Tailwind CSS CDN (v3) - easy, no build needed -->
+  <meta name="description" content="Exploratory community project: Transparent charity signal on Solana. No promises. Slow and steady." />
+  <meta property="og:title" content="Cryptodira 🐢" />
+  <meta property="og:description" content="Slow and steady community token on Solana. Exploratory only — no promises." />
+  <meta property="og:image" content="assets/logo.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'turtle-green': '#0f766e',
-            'turtle-teal': '#14b8a6',
-            'deep-ocean': '#0c4a6e',
-          }
-        }
-      }
+      theme: { extend: { colors: { 'turtle-green': '#0f766e', 'turtle-teal': '#14b8a6', 'deep-ocean': '#0c4a6e' } } }
     }
   </script>
 
-  <!-- Optional: Favicon (add your turtle icon to assets/img/favicon.ico) -->
-  <!-- <link rel="icon" href="assets/img/favicon.ico" /> -->
-  
-  <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .fade-in { animation: fadeIn 1.5s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  </style>
+  <link rel="icon" href="assets/logo.jpg" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
 
-  <!-- Header / Hero -->
   <header class="bg-gradient-to-b from-deep-ocean to-turtle-teal text-white py-20 px-6 text-center">
     <div class="max-w-4xl mx-auto fade-in">
-      <h1 class="text-5xl md:text-6xl font-bold mb-4">
-        Cryptodira 🐢
-      </h1>
-      <p class="text-2xl md:text-3xl font-light mb-6">
-        Slow and steady wins the race.
-      </p>
-      <p class="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
-        A quiet space to explore ideas for community-driven, transparent charity on Solana.
-      </p>
+      <img src="assets/logo.jpg" alt="Cryptodira Logo" class="mx-auto h-32 mb-4" />
+      <h1 class="text-5xl md:text-6xl font-bold mb-4">Cryptodira 🐢</h1>
+      <p class="text-2xl md:text-3xl font-light mb-6">Slow and steady wins the race.</p>
+      <p class="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">Exploring community-driven charity on Solana.</p>
     </div>
   </header>
 
-  <!-- Main Content -->
   <main class="max-w-4xl mx-auto px-6 py-16 space-y-20">
 
-    <!-- Mission -->
     <section class="text-center fade-in">
       <h2 class="text-4xl font-bold text-turtle-green mb-6">Mission & Ethos</h2>
-      <p class="text-lg leading-relaxed mb-6">
-        Inspired by the hidden-neck turtles (Cryptodira), we move deliberately. 
-        No rush, no hype — just thoughtful exploration of how a community could signal support for real-world healing and impact.
-      </p>
-      <p class="text-lg leading-relaxed">
-        Solana's speed and low costs make it ideal for transparent, on-chain good — but we're building community first, at our own pace.
-      </p>
+      <p class="text-lg leading-relaxed mb-6">Inspired by hidden-neck turtles, we move deliberately. No hype — thoughtful signals for healing impact.</p>
+      <p class="text-lg leading-relaxed">Solana enables transparent, low-cost exploration. Community first, at our pace.</p>
     </section>
 
-    <!-- Current Status -->
     <section class="bg-white shadow-lg rounded-xl p-8 md:p-12 fade-in">
-      <h2 class="text-3xl font-bold text-center mb-8">Current Status: Under Construction</h2>
+      <h2 class="text-3xl font-bold text-center mb-8">Current Status</h2>
       <div class="prose prose-lg mx-auto text-center">
-        <p>This is an early-stage brainstorming repo and landing page.</p>
+        <p>Token live; fund wallet established. Still exploratory — no mechanics implemented.</p>
         <ul class="list-none space-y-4 mt-6">
-          <li>✅ Turtle-themed static site (HTML/CSS/JS)</li>
-          <li>🧠 Open ideas for future charity signaling</li>
-          <li>🚫 No tokens launched</li>
-          <li>🚫 No funds managed or solicited</li>
-          <li>🚫 No promises or guarantees</li>
+          <li>✅ Static turtle-themed site</li>
+          <li>🧠 Ideas for charity signaling</li>
+          <li>🚫 No promises/guarantees</li>
         </ul>
-        <p class="mt-8 font-medium">Follow @rareseaturtles on X for slow updates.</p>
+        <p class="mt-8 font-medium">Follow @rareseaturtles on X for updates.</p>
       </div>
     </section>
 
-    <!-- Future Exploration (Hypothetical) -->
+    <section class="text-center fade-in mt-12">
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Live Token: $DIRA</h2>
+      <div class="bg-white p-8 rounded-xl shadow max-w-3xl mx-auto space-y-6">
+        <p class="text-lg font-medium">Community token on Solana (low-cap, high risk).</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          <div>
+            <p class="font-semibold mb-2">Mint Address:</p>
+            <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" class="text-turtle-teal underline break-all">53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</a>
+          </div>
+          <div>
+            <p class="font-semibold mb-2">Stats:</p>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+              <li>Supply: \~4.88M</li>
+              <li>Holders: \~182</li>
+              <li>Market Cap: \~$280</li>
+              <li>Price: \~$0.000058</li>
+              <li>Liquidity: \~$49</li>
+            </ul>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 italic mt-6">View on <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" class="underline">Solscan</a> or <a href="https://dexscreener.com/solana/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8" class="underline">Dexscreener</a>. Authorities not revoked. No value promised.</p>
+      </div>
+    </section>
+
+    <section class="text-center fade-in mt-12">
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Fund Treasury Wallet</h2>
+      <div class="bg-white p-8 rounded-xl shadow max-w-3xl mx-auto space-y-6">
+        <p class="text-lg font-medium">Holds assets for future exploration.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          <div>
+            <p class="font-semibold mb-2">Address:</p>
+            <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy" class="text-turtle-teal underline break-all">293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy</a>
+          </div>
+          <div>
+            <p class="font-semibold mb-2">Holdings:</p>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+              <li>\~808K DIRA (\~16.6% supply)</li>
+              <li>Minor PSOL (\~$3.65)</li>
+              <li>0 SOL</li>
+            </ul>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 italic mt-6">Transparent on <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy" class="underline">Solscan</a>. No active use yet.</p>
+      </div>
+    </section>
+
     <section class="text-center fade-in">
-      <h2 class="text-4xl font-bold text-turtle-green mb-6">Ideas We're Exploring (Non-Binding)</h2>
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Exploratory Ideas</h2>
       <div class="grid md:grid-cols-2 gap-8">
         <div class="bg-white p-6 rounded-xl shadow">
-          <h3 class="text-2xl font-semibold mb-4">Community Signal Token</h3>
-          <p>A potential utility/signaling token — no expected value, no returns promised. Just a way for holders to voice support for causes.</p>
+          <h3 class="text-2xl font-semibold mb-4">Signal Token</h3>
+          <p>Utility for community voice — no returns.</p>
         </div>
         <div class="bg-white p-6 rounded-xl shadow">
-          <h3 class="text-2xl font-semibold mb-4">Transparent Treasury</h3>
-          <p>Multisig (e.g., Squads) → eventual DAO-style voting on grants to verified charities. Full on-chain visibility.</p>
+          <h3 class="text-2xl font-semibold mb-4">Treasury</h3>
+          <p>Multisig → DAO grants; on-chain visibility.</p>
         </div>
         <div class="bg-white p-6 rounded-xl shadow">
-          <h3 class="text-2xl font-semibold mb-4">Impact Focus</h3>
-          <p>Environmental, animal welfare, healing causes — partnered with established platforms (e.g., The Giving Block for Solana donations).</p>
+          <h3 class="text-2xl font-semibold mb-4">Impact</h3>
+          <p>Verified causes via partners.</p>
         </div>
         <div class="bg-white p-6 rounded-xl shadow">
-          <h3 class="text-2xl font-semibold mb-4">Safeguards First</h3>
-          <p>Timelocks, multi-approvals, no central control. Everything hypothetical until properly structured.</p>
+          <h3 class="text-2xl font-semibold mb-4">Safeguards</h3>
+          <p>Timelocks, approvals; hypothetical.</p>
         </div>
       </div>
-      <p class="mt-10 text-lg italic">All of this is conceptual — we're nowhere near launch or implementation.</p>
+      <p class="mt-10 text-lg italic">Conceptual only.</p>
     </section>
 
-    <!-- Big Disclaimer -->
     <section class="bg-red-50 border border-red-200 rounded-xl p-8 text-center fade-in">
       <h2 class="text-3xl font-bold text-red-800 mb-6">Critical Disclaimer</h2>
       <p class="text-lg font-medium text-red-900 max-w-3xl mx-auto">
-        This project is purely exploratory and not official in any way. No tokens exist. No funds are being raised, managed, or promised. 
-        Nothing here constitutes financial, legal, investment, or charitable advice. 
-        Any future steps would require full legal/compliance review (especially in the US). 
-        Do not send funds, invest, or expect returns/impact yet. For discussion only.
+        Exploratory project. Token live but no value/impact guaranteed. No funds raised or managed. Not advice. High risk. Do not invest or expect returns.
       </p>
     </section>
 
   </main>
 
-  <!-- Footer -->
   <footer class="bg-deep-ocean text-white py-12 text-center">
     <div class="max-w-4xl mx-auto px-6">
-      <p class="text-lg mb-4">Made with patience and 🐢 vibes in Indiana, USA.</p>
-      <p class="text-sm opacity-80">
-        &copy; <span id="year"></span> Cryptodira — All ideas exploratory. Follow <a href="https://x.com/rareseaturtles" class="underline hover:text-turtle-teal"> @rareseaturtles</a>
-      </p>
+      <p class="text-lg mb-4">Made with 🐢 vibes.</p>
+      <p class="text-sm opacity-80">&copy; <span id="year"></span> Cryptodira. Follow <a href="https://x.com/rareseaturtles" class="underline hover:text-turtle-teal">@rareseaturtles</a></p>
     </div>
   </footer>
 
-  <!-- Simple JS: Set year + optional smooth scroll -->
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    // If you add links later, this enables smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
-      });
-    });
-  </script>
-
+  <script src="main.js"></script>
 </body>
 </html>
