@@ -1,15 +1,12 @@
 {
-  "name": "my-solana-project",
+  "name": "cryptodira-site",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Static site for Cryptodira project",
+  "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "open index.html"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@solana/web3.js": "^1.91.8"
-  }
+  "author": "@rareseaturtles",
+  "license": "MIT"
 }
