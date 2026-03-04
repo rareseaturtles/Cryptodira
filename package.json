@@ -6,6 +6,9 @@
   "scripts": {
     "start": "open index.html"
   },
+  "dependencies": {
+    "axios": "^1.7.9"
+  },
   "keywords": [],
   "author": "@rareseaturtles",
   "license": "MIT"
