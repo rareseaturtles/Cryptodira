@@ -1,13 +1,31 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  console.log('🔑 SOL_INCINERATOR_API_KEY present?', !!process.env.SOL_INCINERATOR_API_KEY); // debug line
-
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+  // === CORS PREFlight (OPTIONS) - this was the main blocker ===
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      }
+    };
   }
 
-  const { wallet } = JSON.parse(event.body || '{}');
+  console.log('🔑 SOL_INCINERATOR_API_KEY present?', !!process.env.SOL_INCINERATOR_API_KEY);
+
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
+  }
+
+  let wallet;
+  try {
+    const body = JSON.parse(event.body || '{}');
+    wallet = body.wallet;
+  } catch (e) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
+  }
 
   const API_KEY = process.env.SOL_INCINERATOR_API_KEY;
   if (!API_KEY) {
@@ -20,11 +38,15 @@ exports.handler = async (event) => {
       userPublicKey: wallet,
       asLegacyTransaction: false
     }, {
-      headers: { 'x-api-key': API_KEY, 'Content-Type': 'application/json' }
+      headers: {
+        'x-api-key': API_KEY,
+        'Content-Type': 'application/json'
+      }
     });
 
     return {
       statusCode: 200,
+      headers: { 'Access-Control-Allow-Origin': '*' },
       body: JSON.stringify({
         success: true,
         accountsClosed: apiResponse.data.accountsClosed || 0,
@@ -33,6 +55,10 @@ exports.handler = async (event) => {
     };
   } catch (error) {
     console.error('Incinerator API error:', error.response?.data || error.message);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Failed to generate cleanup transactions' }) };
+    return {
+      statusCode: 500,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ error: 'Failed to generate cleanup transactions' })
+    };
   }
 };
