@@ -12,11 +12,11 @@
 </head>
 <body class="bg-[#f9fafb] text-[#1f2937]">
 
-  <!-- Header -->
+  <!-- Header with REAL Cryptodira Logo -->
   <header class="bg-gradient-to-b from-[#0c4a6e] to-[#14b8a6] text-white py-12">
     <div class="max-w-4xl mx-auto text-center px-6">
       <div class="flex justify-center mb-4">
-        <span class="text-7xl">🐢</span>
+        <img src="assets/turtle.png" alt="Cryptodira Logo" class="h-28 w-auto drop-shadow-2xl">
       </div>
       <h1 class="text-5xl font-bold tracking-tight">Cryptodira</h1>
       <p class="mt-3 text-xl opacity-90">Slow and steady wins the race.</p>
@@ -25,6 +25,55 @@
   </header>
 
   <main class="max-w-4xl mx-auto px-6 py-12 prose">
+
+    <!-- TURTLE CLEANUP TOOL – NOW AT THE VERY TOP -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-semibold text-[#0f766e] mb-6 text-center">Turtle Cleanup Tool 🐢</h2>
+      <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">
+        Reclaim tiny SOL amounts locked in empty or spam token accounts.<br>
+        Optionally donate reclaimed SOL to the Cryptodira Conservation Fund treasury.
+      </p>
+
+      <div class="max-w-2xl mx-auto bg-white border border-teal-200 p-8 rounded-3xl shadow-xl">
+        <button id="connect-wallet" 
+                class="w-full bg-[#14b8a6] hover:bg-[#0f766e] text-white font-semibold py-4 px-6 rounded-2xl transition text-lg shadow">
+          Connect Solana Wallet (Phantom recommended)
+        </button>
+
+        <div id="wallet-status" class="text-center my-5 font-medium text-emerald-600"></div>
+
+        <button id="scan-accounts" 
+                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-6 rounded-2xl transition hidden">
+          Scan Wallet & Preview Reclaimable SOL
+        </button>
+
+        <div id="preview-results" class="mt-6 text-sm"></div>
+
+        <div id="donation-options" class="mt-6 hidden">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" id="donate-checkbox" class="w-5 h-5 accent-teal-600">
+            <span class="text-gray-700">Donate reclaimed SOL to Cryptodira Conservation Fund</span>
+          </label>
+          <div id="donate-amount" class="hidden mt-4 pl-8">
+            <label class="block text-sm mb-2">Amount to donate (SOL):</label>
+            <input type="number" id="donate-value" step="0.000001" class="w-full border border-teal-300 rounded-2xl p-4 focus:outline-none focus:border-teal-500">
+            <p class="text-xs text-gray-500 mt-2">Max available: <span id="max-donate">0</span> SOL</p>
+          </div>
+        </div>
+
+        <button id="execute-cleanup" 
+                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-2xl transition mt-6 hidden shadow">
+          Incinerate / Close Accounts & Reclaim
+        </button>
+
+        <div id="status-message" class="mt-6 text-center text-amber-600"></div>
+
+        <p class="text-xs text-gray-500 text-center mt-10">
+          Burns are permanent. Small network fee applies. Test with tiny amounts first. 
+          Donations go to the public treasury wallet below.
+        </p>
+      </div>
+    </section>
 
     <!-- Mission -->
     <section class="mb-16">
@@ -95,55 +144,6 @@
         </ul>
       </div>
       <p class="text-xs text-gray-500 mt-8">Transparent on Solscan. No active use yet.</p>
-    </section>
-
-    <!-- WALLET CLEANUP TOOL – now matches the clean style -->
-    <section class="mb-16">
-      <h2 class="text-3xl font-semibold text-[#0f766e] mb-6 text-center">Wallet Cleanup Tool 🧹</h2>
-      <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">
-        Reclaim tiny SOL amounts locked in empty or spam token accounts.<br>
-        Optionally donate reclaimed SOL to the Cryptodira Conservation Fund treasury.
-      </p>
-
-      <div class="max-w-2xl mx-auto bg-white border border-teal-200 p-8 rounded-3xl shadow-xl">
-        <button id="connect-wallet" 
-                class="w-full bg-[#14b8a6] hover:bg-[#0f766e] text-white font-semibold py-4 px-6 rounded-2xl transition text-lg shadow">
-          Connect Solana Wallet (Phantom recommended)
-        </button>
-
-        <div id="wallet-status" class="text-center my-5 font-medium text-emerald-600"></div>
-
-        <button id="scan-accounts" 
-                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-6 rounded-2xl transition hidden">
-          Scan Wallet & Preview Reclaimable SOL
-        </button>
-
-        <div id="preview-results" class="mt-6 text-sm"></div>
-
-        <div id="donation-options" class="mt-6 hidden">
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" id="donate-checkbox" class="w-5 h-5 accent-teal-600">
-            <span class="text-gray-700">Donate reclaimed SOL to Cryptodira Conservation Fund</span>
-          </label>
-          <div id="donate-amount" class="hidden mt-4 pl-8">
-            <label class="block text-sm mb-2">Amount to donate (SOL):</label>
-            <input type="number" id="donate-value" step="0.000001" class="w-full border border-teal-300 rounded-2xl p-4 focus:outline-none focus:border-teal-500">
-            <p class="text-xs text-gray-500 mt-2">Max available: <span id="max-donate">0</span> SOL</p>
-          </div>
-        </div>
-
-        <button id="execute-cleanup" 
-                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-2xl transition mt-6 hidden shadow">
-          Incinerate / Close Accounts & Reclaim
-        </button>
-
-        <div id="status-message" class="mt-6 text-center text-amber-600"></div>
-
-        <p class="text-xs text-gray-500 text-center mt-10">
-          Burns are permanent. Small network fee applies. Test with tiny amounts first. 
-          Donations go to the public treasury wallet above.
-        </p>
-      </div>
     </section>
 
     <!-- Exploratory Ideas -->
