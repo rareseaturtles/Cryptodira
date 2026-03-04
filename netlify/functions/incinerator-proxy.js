@@ -1,31 +1,46 @@
-// Enhanced 'incinerator-proxy.js' with improved error handling, validation, and security practices.
-
 const axios = require('axios');
 
-const validateInput = (input) => {
-    // Add validation logic for input
-    return input && typeof input === 'string'; // Example validation
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method not allowed' };
+  }
+
+  const { wallet } = JSON.parse(event.body || '{}');
+
+  if (!wallet) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Wallet address required' }) };
+  }
+
+  const API_KEY = process.env.SOL_INCINERATOR_API_KEY;
+  if (!API_KEY) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'API key not set in Netlify' }) };
+  }
+
+  try {
+    const apiResponse = await axios.post('https://v1.api.sol-incinerator.com/batch/close-all', {
+      userPublicKey: wallet,
+      asLegacyTransaction: false
+    }, {
+      headers: {
+        'x-api-key': API_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        transactions: apiResponse.data.transactions || [],
+        accountsClosed: apiResponse.data.accountsClosed || 0,
+        solReclaimed: apiResponse.data.totalSolanaReclaimed || 0
+      })
+    };
+  } catch (error) {
+    console.error('Incinerator API error:', error.response?.data || error.message);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Failed to generate cleanup transactions' })
+    };
+  }
 };
-
-const handler = async (event) => {
-    try {
-        const { input } = event; // assuming input is provided in the event
-        if (!validateInput(input)) {
-            return { statusCode: 400, body: JSON.stringify({ message: 'Invalid input' }) };
-        }
-
-        // Making network requests with axios
-        const response = await axios.get(`https://api.example.com/data?input=${encodeURIComponent(input)}`);
-        return { statusCode: 200, body: JSON.stringify(response.data) };
-    } catch (error) {
-        console.error('Error occurred:', error);
-
-        // Handle specific error types and return user-friendly messages
-        if (error.response) {
-            return { statusCode: error.response.status, body: JSON.stringify(error.response.data) };
-        }
-        return { statusCode: 500, body: JSON.stringify({ message: 'Internal Server Error' }) };
-    }
-};
-
-exports.handler = handler;
