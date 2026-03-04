@@ -1,46 +1,211 @@
-<!-- ADD THIS ENTIRE BLOCK after your "Fund Treasury Wallet" section -->
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cryptodira 🐢 — Slow and Steady on Solana</title>
+  <meta name="description" content="Exploratory community project: Transparent charity signal on Solana. No promises. Slow and steady." />
+  <meta property="og:title" content="Cryptodira" />
+  <meta property="og:description" content="Slow and steady community token on Solana. Exploratory only — no promises." />
+  <meta property="og:image" content="assets/turtle.png" />
+  <meta property="og:type" content="website" />
 
-<section class="mt-12 border-t border-gray-700 pt-8">
-  <h2 class="text-2xl font-bold text-center mb-6">🐢 Wallet Cleanup Tool</h2>
-  <p class="text-center mb-6 text-gray-300">
-    Reclaim tiny SOL amounts locked in empty/spam token accounts.<br>
-    Optionally donate reclaimed SOL to the Cryptodira Conservation Fund treasury.
-  </p>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { 'turtle-green': '#0f766e', 'turtle-teal': '#14b8a6', 'deep-ocean': '#0c4a6e' } } }
+    }
+  </script>
 
-  <div class="max-w-2xl mx-auto bg-gray-900 p-6 rounded-lg shadow-lg">
-    <button id="connect-wallet" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded mb-4 transition">
-      Connect Solana Wallet (Phantom recommended)
-    </button>
+  <link rel="icon" href="assets/turtle.png" />
+  <link rel="stylesheet" href="styles.css" />
 
-    <div id="wallet-status" class="text-center mb-4 text-green-400 font-medium"></div>
+  <!-- Solana libraries for Wallet Cleanup Tool -->
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+  <script src="https://unpkg.com/bs58@5.0.0/index.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-base@latest/dist/umd/index.min.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-phantom@latest/dist/umd/index.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
 
-    <button id="scan-accounts" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded mb-4 transition hidden">
-      Scan Wallet & Preview Reclaimable SOL
-    </button>
-
-    <div id="preview-results" class="mb-6 text-sm"></div>
-
-    <div id="donation-options" class="mb-6 hidden">
-      <label class="flex items-center mb-3 cursor-pointer">
-        <input type="checkbox" id="donate-checkbox" class="mr-3 h-5 w-5">
-        <span>Donate reclaimed SOL to Cryptodira Conservation Fund</span>
-      </label>
-      <div id="donate-amount" class="hidden pl-8">
-        <label class="block text-sm mb-1">Amount to donate (SOL):</label>
-        <input type="number" id="donate-value" step="0.000001" min="0" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white">
-        <p class="text-xs text-gray-400 mt-1">Max available: <span id="max-donate">0</span> SOL</p>
-      </div>
+  <header class="bg-gradient-to-b from-deep-ocean to-turtle-teal text-white py-20 px-6 text-center">
+    <div class="max-w-4xl mx-auto fade-in">
+      <img src="assets/turtle.png" alt="Cryptodira Logo" class="mx-auto h-32 mb-4" />
+      <h1 class="text-5xl md:text-6xl font-bold mb-4">Cryptodira</h1>
+      <p class="text-2xl md:text-3xl font-light mb-6">Slow and steady wins the race.</p>
+      <p class="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">Exploring community-driven charity on Solana.</p>
     </div>
+  </header>
 
-    <button id="execute-cleanup" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded transition hidden">
-      Incinerate / Close Accounts & Reclaim
-    </button>
+  <main class="max-w-4xl mx-auto px-6 py-16 space-y-20">
 
-    <div id="status-message" class="mt-4 text-center text-yellow-300"></div>
+    <section class="text-center fade-in">
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Mission & Ethos</h2>
+      <p class="text-lg leading-relaxed mb-6">Inspired by hidden-neck turtles, we move deliberately. No hype — thoughtful signals for healing impact.</p>
+      <p class="text-lg leading-relaxed">Solana enables transparent, low-cost exploration. Community first, at our pace.</p>
+    </section>
 
-    <p class="text-xs text-gray-500 mt-6 text-center">
-      Disclaimer: Burns are permanent. Small API fee (~0.0001–0.001 SOL) applies. Test small amounts first.
-      Donations are voluntary and go to public treasury (view on Solscan).
-    </p>
-  </div>
-</section>
+    <section class="bg-white shadow-lg rounded-xl p-8 md:p-12 fade-in">
+      <h2 class="text-3xl font-bold text-center mb-8">Current Status</h2>
+      <div class="prose prose-lg mx-auto text-center">
+        <p>Token live; fund wallet established. Still exploratory — no mechanics implemented.</p>
+        <ul class="list-none space-y-4 mt-6">
+          <li>✅ Static turtle-themed site</li>
+          <li>🧠 Ideas for charity signaling</li>
+          <li>🚫 No promises/guarantees</li>
+        </ul>
+        <p class="mt-8 font-medium">Follow @rareseaturtles on X for updates.</p>
+      </div>
+    </section>
+
+    <section class="text-center fade-in mt-12">
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Live Token: $DIRA</h2>
+      <div class="bg-white p-8 rounded-xl shadow max-w-3xl mx-auto space-y-6">
+        <p class="text-lg font-medium">Community token on Solana (low-cap, high risk).</p>
+        <p class="text-lg mt-4 font-semibold">
+          Mint Address:
+          <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8"
+             class="text-turtle-teal underline break-all ml-2">
+            53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8
+          </a>
+        </p>
+        <p class="text-base mt-6">
+          Check live data (price, liquidity, volume, holders, market cap, trades):
+        </p>
+        <div class="flex flex-wrap justify-center gap-6 mt-4">
+          <a href="https://solscan.io/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8"
+             class="text-turtle-teal hover:underline font-medium">Solscan</a>
+          <a href="https://dexscreener.com/solana/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8"
+             class="text-turtle-teal hover:underline font-medium">Dexscreener</a>
+          <a href="https://birdeye.so/token/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8?chain=solana"
+             class="text-turtle-teal hover:underline font-medium">Birdeye</a>
+        </div>
+        <p class="text-sm text-gray-600 italic mt-6">
+          Authorities not revoked. No value promised — exploratory only.
+        </p>
+      </div>
+    </section>
+
+    <section class="text-center fade-in mt-12">
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Fund Treasury Wallet</h2>
+      <div class="bg-white p-8 rounded-xl shadow max-w-3xl mx-auto space-y-6">
+        <p class="text-lg font-medium">Holds assets for future exploration.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          <div>
+            <p class="font-semibold mb-2">Address:</p>
+            <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy"
+               class="text-turtle-teal underline break-all">
+              293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy
+            </a>
+          </div>
+          <div>
+            <p class="font-semibold mb-2">Holdings:</p>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+              <li>~808K DIRA (~16.6% supply)</li>
+              <li>Minor PSOL (~$3.65)</li>
+              <li>0 SOL</li>
+            </ul>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 italic mt-6">
+          Transparent on <a href="https://solscan.io/account/293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy" class="underline">Solscan</a>. No active use yet.
+        </p>
+      </div>
+    </section>
+
+    <!-- Wallet Cleanup Tool Section -->
+    <section class="mt-12 border-t border-gray-300 pt-12 fade-in">
+      <h2 class="text-4xl font-bold text-center mb-8 text-turtle-green">🐢 Wallet Cleanup Tool</h2>
+      <p class="text-center text-lg text-gray-700 mb-8 max-w-3xl mx-auto">
+        Reclaim small amounts of SOL locked in empty or spam token accounts.<br>
+        Optionally donate reclaimed SOL to the Cryptodira Conservation Fund treasury.
+      </p>
+
+      <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg space-y-6">
+        <button id="connect-wallet"
+                class="w-full bg-turtle-teal hover:bg-turtle-green text-white font-bold py-4 px-6 rounded-lg transition duration-200 text-lg">
+          Connect Solana Wallet (Phantom recommended)
+        </button>
+
+        <div id="wallet-status" class="text-center text-lg font-medium text-green-700"></div>
+
+        <button id="scan-accounts"
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition duration-200 text-lg hidden">
+          Scan Wallet & Preview Reclaimable SOL
+        </button>
+
+        <div id="preview-results" class="text-base prose max-w-none"></div>
+
+        <div id="donation-options" class="hidden">
+          <label class="flex items-center justify-center gap-3 cursor-pointer text-lg">
+            <input type="checkbox" id="donate-checkbox" class="h-5 w-5 text-turtle-teal">
+            <span class="text-gray-800">Donate reclaimed SOL to Cryptodira Conservation Fund</span>
+          </label>
+
+          <div id="donate-amount" class="hidden mt-4">
+            <label class="block text-gray-800 mb-2 text-center">Amount to donate (SOL):</label>
+            <input type="number" id="donate-value" step="0.000001" min="0"
+                   class="w-full max-w-xs mx-auto block bg-gray-50 border border-gray-300 rounded-lg p-3 text-center text-gray-900">
+            <p class="text-sm text-gray-500 mt-2 text-center">
+              Max available: <span id="max-donate">0</span> SOL
+            </p>
+          </div>
+        </div>
+
+        <button id="execute-cleanup"
+                class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-lg transition duration-200 text-lg hidden">
+          Incinerate / Close Accounts & Reclaim
+        </button>
+
+        <div id="status-message" class="text-center text-lg font-medium text-yellow-700 mt-4"></div>
+
+        <p class="text-sm text-gray-600 text-center mt-8">
+          Disclaimer: Burns are permanent. Small API fee (~0.0001–0.001 SOL) applies. Test small amounts first.<br>
+          Donations are voluntary and go to the public treasury (view on Solscan).
+        </p>
+      </div>
+    </section>
+
+    <section class="text-center fade-in">
+      <h2 class="text-4xl font-bold text-turtle-green mb-6">Exploratory Ideas</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-2xl font-semibold mb-4">Signal Token</h3>
+          <p>Utility for community voice — no returns.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-2xl font-semibold mb-4">Treasury</h3>
+          <p>Multisig → DAO grants; on-chain visibility.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-2xl font-semibold mb-4">Impact</h3>
+          <p>Verified causes via partners.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-2xl font-semibold mb-4">Safeguards</h3>
+          <p>Timelocks, approvals; hypothetical.</p>
+        </div>
+      </div>
+      <p class="mt-10 text-lg italic">Conceptual only.</p>
+    </section>
+
+    <section class="bg-red-50 border border-red-200 rounded-xl p-8 text-center fade-in">
+      <h2 class="text-3xl font-bold text-red-800 mb-6">Critical Disclaimer</h2>
+      <p class="text-lg font-medium text-red-900 max-w-3xl mx-auto">
+        Exploratory project. Token live but no value/impact guaranteed. No funds raised or managed. Not advice. High risk. Do not invest or expect returns.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="bg-deep-ocean text-white py-12 text-center">
+    <div class="max-w-4xl mx-auto px-6">
+      <p class="text-lg mb-4">Made with 🐢 vibes.</p>
+      <p class="text-sm opacity-80">&copy; <span id="year"></span> Cryptodira. Follow <a href="https://x.com/rareseaturtles" class="underline hover:text-turtle-teal">@rareseaturtles</a></p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
