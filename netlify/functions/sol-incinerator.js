@@ -4,29 +4,25 @@ exports.handler = async (event) => {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'POST,OPTIONS'
       }
     };
   }
 
   console.log('API key present?', !!process.env.SOL_INCINERATOR_API_KEY);
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
-  }
+  const body = JSON.parse(event.body || '{}');
+  const userPublicKey = body.userPublicKey || body.wallet; // fallback
 
-  let body;
-  try {
-    body = JSON.parse(event.body || '{}');
-  } catch {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Bad JSON' }) };
-  }
+  if (!userPublicKey) return { statusCode: 400, body: JSON.stringify({ error: 'No public key' }) };
 
   const apiKey = process.env.SOL_INCINERATOR_API_KEY;
-  if (!apiKey) return { statusCode: 500, body: JSON.stringify({ error: 'No API key' }) };
+  if (!apiKey) return { statusCode: 500, body: JSON.stringify({ error: 'No key set' }) };
 
-  const endpoint = event.path.endsWith('/preview') ? '/batch/close-all/preview' : '/batch/close-all';
+  // Use path to decide preview or full
+  const isPreview = event.path.includes('/preview');
+  const endpoint = isPreview ? '/batch/close-all/preview' : '/batch/close-all';
   const url = `https://v1.api.sol-incinerator.com${endpoint}`;
 
   try {
@@ -34,13 +30,20 @@ exports.handler = async (event) => {
       method: 'POST',
       headers: {
         'x-api-key': apiKey,
+        'Authorization': apiKey,  // fallback
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ userPublicKey: body.wallet })
+      body: JSON.stringify({
+        userPublicKey: userPublicKey,
+        asLegacyTransaction: false
+      })
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'API fail');
+    if (!res.ok) {
+      console.error('API error:', res.status, data);
+      throw new Error(data.message || `HTTP ${res.status}`);
+    }
 
     return {
       statusCode: 200,
@@ -48,7 +51,7 @@ exports.handler = async (event) => {
       body: JSON.stringify(data)
     };
   } catch (err) {
-    console.error('Error:', err.message);
+    console.error('Proxy fail:', err.message);
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
