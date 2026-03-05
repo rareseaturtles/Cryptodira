@@ -1,15 +1,6 @@
 {
-  "name": "cryptodira-site",
-  "version": "1.0.0",
-  "description": "Static site for Cryptodira project",
-  "main": "index.html",
-  "scripts": {
-    "start": "open index.html"
-  },
+  "name": "cryptodira",
   "dependencies": {
-    "axios": "^1.7.9"
-  },
-  "keywords": [],
-  "author": "@rareseaturtles",
-  "license": "MIT"
+    "axios": "^1.7.2"
+  }
 }
