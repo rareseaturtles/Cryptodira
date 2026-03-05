@@ -3,44 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CryptoDira | Sea Turtle Navy Meme Token</title>
-  <style>
-    body { font-family: 'Comic Sans MS', cursive; background: linear-gradient(#001f3f, #0074D9); color: #fff; text-align: center; margin: 0; padding: 0; }
-    header { background: #001f3f; padding: 20px; }
-    .logo { width: 280px; border: 8px solid #ffd700; border-radius: 20px; box-shadow: 0 0 30px #ffd700; }
-    h1 { font-size: 3em; text-shadow: 3px 3px #ffd700; margin: 10px; }
-    .navy { font-size: 1.5em; color: #ffd700; }
-    section { padding: 40px 20px; }
-    .meme { font-size: 2em; margin: 20px; }
-    .buy-btn { background: #ff4136; color: white; padding: 15px 40px; font-size: 1.8em; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 10px #ffd700; }
-    .buy-btn:hover { transform: scale(1.1); }
-    footer { background: #001f3f; padding: 20px; font-size: 1.2em; }
-  </style>
+  <title>CryptoDira 🐢 — Slow and Steady on Solana</title>
+  
+  <!-- OG / Twitter meta tags exactly from that commit -->
+  <meta property="og:title" content="CryptoDira 🐢 — Slow and Steady on Solana">
+  <meta property="og:description" content="Community-driven charity exploration on Solana. Reclaim tiny SOL with the Turtle Cleanup Tool.">
+  <meta property="og:image" content="https://cryptodira.netlify.app/assets/turtle.png">
+  <meta property="og:url" content="https://cryptodira.netlify.app">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CryptoDira 🐢 — Slow and Steady on Solana">
+  <meta name="twitter:description" content="Community-driven charity exploration on Solana. Reclaim tiny SOL with the Turtle Cleanup Tool.">
+  <meta name="twitter:image" content="https://cryptodira.netlify.app/assets/turtle.png">
+
+  <!-- Tailwind CDN (same as before) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <header>
-    <img src="assets/stained-glass-logo.png" alt="CryptoDira Stained Glass Logo" class="logo">
-    <h1>CryptoDira</h1>
-    <p class="navy">🏴‍☠️ SEA TURTLE NAVY 🐢💥</p>
-    <p>The ultimate meme token for turtle lovers & navy degens!</p>
-  </header>
+<body class="bg-gradient-to-b from-teal-950 to-cyan-950 text-white font-sans">
+  <div class="max-w-4xl mx-auto px-6 py-12">
 
-  <section>
-    <div class="meme">"Turtles don't rug... they just swim deeper!"</div>
-    <p>CA: 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
-  </section>
+    <!-- TURTLE CLEANUP TOOL – AT THE VERY TOP (exactly like that commit) -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-semibold text-[#0f766e] mb-6 text-center">Turtle Cleanup Tool 🐢</h2>
+      <p class="text-center text-gray-300 max-w-md mx-auto">
+        Reclaim tiny SOL with the Turtle Cleanup Tool. Community-driven charity exploration on Solana.
+      </p>
+      <!-- Buttons are static placeholders now (no broken JS) -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+        <button onclick="alert('Wallet connect coming back soon! 🐢')" 
+                class="bg-white text-teal-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition">
+          Connect Phantom
+        </button>
+        <button onclick="alert('Cleanup tool paused for now — we’re going full meme mode!')" 
+                class="bg-[#0f766e] px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition">
+          Scan & Preview
+        </button>
+      </div>
+    </section>
 
-  <section>
-    <button onclick="window.open('https://dexscreener.com/solana/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8', '_blank')" class="buy-btn">BUY ON RAYDIUM 🐢🚀</button>
-  </section>
+    <!-- Rest of the site (logo, token info, etc. — same vibe as that commit) -->
+    <div class="text-center">
+      <img src="assets/turtle.png" alt="CryptoDira Stained Glass Logo" class="mx-auto w-64 drop-shadow-2xl">
+      <h1 class="text-6xl font-bold mt-6 mb-2 tracking-tighter">CryptoDira</h1>
+      <p class="text-2xl text-cyan-300">SEA TURTLE NAVY 🐢🏴‍☠️</p>
+      <p class="mt-8 text-xl">Mint: 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
+      <p class="text-sm text-gray-400 mt-2">Treasury: 293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy</p>
+    </div>
 
-  <section>
-    <h2>Join the Navy!</h2>
-    <p>Telegram • X • Pump.fun — link 'em up when ready</p>
-  </section>
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      <div class="bg-white/10 backdrop-blur p-8 rounded-3xl">
+        <p class="text-5xl">🐢</p>
+        <p class="mt-4 font-medium">Slow & Steady</p>
+      </div>
+      <div class="bg-white/10 backdrop-blur p-8 rounded-3xl">
+        <p class="text-5xl">🏴‍☠️</p>
+        <p class="mt-4 font-medium">Navy Degens</p>
+      </div>
+      <div class="bg-white/10 backdrop-blur p-8 rounded-3xl">
+        <p class="text-5xl">🌊</p>
+        <p class="mt-4 font-medium">Save the Turtles</p>
+      </div>
+    </div>
 
-  <footer>
-    <p>© CryptoDira Sea Turtle Navy • Pure meme fun • No rugs, just shells 🐢</p>
+  </div>
+
+  <footer class="text-center py-12 text-sm text-gray-400">
+    Pure meme fun • No rugs, just shells 🐢
   </footer>
 </body>
 </html>
