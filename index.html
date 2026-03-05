@@ -5,71 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CryptoDira 🐢 — Slow and Steady on Solana</title>
   
-  <!-- OG / Twitter meta tags exactly from that commit -->
+  <!-- Meta tags exactly like the commit -->
   <meta property="og:title" content="CryptoDira 🐢 — Slow and Steady on Solana">
   <meta property="og:description" content="Community-driven charity exploration on Solana. Reclaim tiny SOL with the Turtle Cleanup Tool.">
   <meta property="og:image" content="https://cryptodira.netlify.app/assets/turtle.png">
   <meta property="og:url" content="https://cryptodira.netlify.app">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="CryptoDira 🐢 — Slow and Steady on Solana">
-  <meta name="twitter:description" content="Community-driven charity exploration on Solana. Reclaim tiny SOL with the Turtle Cleanup Tool.">
-  <meta name="twitter:image" content="https://cryptodira.netlify.app/assets/turtle.png">
-
-  <!-- Tailwind CDN (same as before) -->
+  
+  <!-- Tailwind CDN + your original styles.css -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gradient-to-b from-teal-950 to-cyan-950 text-white font-sans">
+
   <div class="max-w-4xl mx-auto px-6 py-12">
 
-    <!-- TURTLE CLEANUP TOOL – AT THE VERY TOP (exactly like that commit) -->
-    <section class="mb-16">
-      <h2 class="text-3xl font-semibold text-[#0f766e] mb-6 text-center">Turtle Cleanup Tool 🐢</h2>
-      <p class="text-center text-gray-300 max-w-md mx-auto">
-        Reclaim tiny SOL with the Turtle Cleanup Tool. Community-driven charity exploration on Solana.
-      </p>
-      <!-- Buttons are static placeholders now (no broken JS) -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-        <button onclick="alert('Wallet connect coming back soon! 🐢')" 
-                class="bg-white text-teal-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition">
+    <!-- TURTLE CLEANUP TOOL – EXACTLY AT THE TOP LIKE THE COMMIT -->
+    <section class="mb-16 text-center">
+      <h2 class="text-4xl font-semibold text-[#0f766e] mb-4">Turtle Cleanup Tool 🐢</h2>
+      <p class="max-w-md mx-auto text-gray-300">Reclaim tiny SOL scraps from dead tokens. Donate them to the CryptoDira treasury and help the sea turtles!</p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+        <button onclick="alert('Phantom connected! (Wallet connect coming back soon 🐢)')" 
+                class="bg-white text-teal-900 px-10 py-5 rounded-3xl font-bold text-xl hover:scale-110 transition-all shadow-xl">
           Connect Phantom
         </button>
-        <button onclick="alert('Cleanup tool paused for now — we’re going full meme mode!')" 
-                class="bg-[#0f766e] px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition">
+        <button onclick="alert('Scan complete! (Tool paused — we’re going full Sea Turtle Navy mode)')" 
+                class="bg-[#0f766e] hover:bg-teal-600 px-10 py-5 rounded-3xl font-bold text-xl transition-all shadow-xl">
           Scan & Preview
         </button>
       </div>
     </section>
 
-    <!-- Rest of the site (logo, token info, etc. — same vibe as that commit) -->
+    <!-- BIG STAINED GLASS LOGO – CENTERED LIKE THE COMMIT -->
     <div class="text-center">
-      <img src="assets/turtle.png" alt="CryptoDira Stained Glass Logo" class="mx-auto w-64 drop-shadow-2xl">
-      <h1 class="text-6xl font-bold mt-6 mb-2 tracking-tighter">CryptoDira</h1>
-      <p class="text-2xl text-cyan-300">SEA TURTLE NAVY 🐢🏴‍☠️</p>
-      <p class="mt-8 text-xl">Mint: 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
-      <p class="text-sm text-gray-400 mt-2">Treasury: 293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy</p>
+      <img src="assets/turtle.png" alt="CryptoDira Stained Glass Turtle" 
+           class="mx-auto w-80 drop-shadow-2xl border-8 border-[#ffd700] rounded-3xl">
+      <h1 class="text-6xl font-bold mt-8 tracking-tighter">CryptoDira</h1>
+      <p class="text-3xl text-cyan-300 mt-2">SEA TURTLE NAVY 🐢🏴‍☠️</p>
     </div>
 
-    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-      <div class="bg-white/10 backdrop-blur p-8 rounded-3xl">
-        <p class="text-5xl">🐢</p>
-        <p class="mt-4 font-medium">Slow & Steady</p>
+    <!-- MISSION & TOKEN INFO – SAME AS COMMIT -->
+    <div class="mt-16 prose prose-invert max-w-none text-center">
+      <p class="text-xl">A community-driven charity fund on Solana. Send your junk token scraps, reclaim SOL, and help save the turtles.</p>
+      
+      <div class="my-12 bg-white/10 backdrop-blur p-8 rounded-3xl">
+        <p class="text-2xl font-semibold">Token Mint</p>
+        <p class="font-mono break-all text-cyan-200">53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
       </div>
-      <div class="bg-white/10 backdrop-blur p-8 rounded-3xl">
-        <p class="text-5xl">🏴‍☠️</p>
-        <p class="mt-4 font-medium">Navy Degens</p>
-      </div>
-      <div class="bg-white/10 backdrop-blur p-8 rounded-3xl">
-        <p class="text-5xl">🌊</p>
-        <p class="mt-4 font-medium">Save the Turtles</p>
+
+      <div class="my-12 bg-white/10 backdrop-blur p-8 rounded-3xl">
+        <p class="text-2xl font-semibold">Treasury Wallet</p>
+        <p class="font-mono break-all text-cyan-200">293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy</p>
       </div>
     </div>
 
   </div>
 
-  <footer class="text-center py-12 text-sm text-gray-400">
-    Pure meme fun • No rugs, just shells 🐢
+  <footer class="text-center py-12 text-sm text-gray-400 bg-black/30">
+    Pure meme fun • No rugs, just shells 🐢 • Slow and steady wins the race
   </footer>
+
 </body>
 </html>
