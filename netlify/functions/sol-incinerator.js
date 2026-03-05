@@ -1,26 +1,64 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 exports.handler = async (event) => {
-  const { path, httpMethod, body } = event;
-  const apiKey = process.env.SOL_INCINERATOR_KEY; // your env var name
+  // === CORS PREFlight (OPTIONS) - this was the main blocker ===
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      }
+    };
+  }
 
-  if (!apiKey) return { statusCode: 500, body: 'No API key' };
+  console.log('🔑 SOL_INCINERATOR_API_KEY present?', !!process.env.SOL_INCINERATOR_API_KEY);
 
-  const url = `https://v1.api.sol-incinerator.com${path}`;
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': apiKey,
-  };
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
+  }
+
+  let wallet;
+  try {
+    const body = JSON.parse(event.body || '{}');
+    wallet = body.wallet;
+  } catch (e) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
+  }
+
+  const API_KEY = process.env.SOL_INCINERATOR_API_KEY;
+  if (!API_KEY) {
+    console.error('❌ No API key found in environment');
+    return { statusCode: 500, body: JSON.stringify({ error: 'API key not set in Netlify' }) };
+  }
 
   try {
-    const res = await fetch(url, {
-      method: httpMethod,
-      headers,
-      body: body ? body : undefined,
+    const apiResponse = await axios.post('https://v1.api.sol-incinerator.com/batch/close-all', {
+      userPublicKey: wallet,
+      asLegacyTransaction: false
+    }, {
+      headers: {
+        'x-api-key': API_KEY,
+        'Content-Type': 'application/json'
+      }
     });
-    const data = await res.json();
-    return { statusCode: res.status, body: JSON.stringify(data) };
-  } catch (err) {
-    return { statusCode: 500, body: err.message };
+
+    return {
+      statusCode: 200,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: true,
+        accountsClosed: apiResponse.data.accountsClosed || 0,
+        solReclaimed: apiResponse.data.totalSolanaReclaimed || 0
+      })
+    };
+  } catch (error) {
+    console.error('Incinerator API error:', error.response?.data || error.message);
+    return {
+      statusCode: 500,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ error: 'Failed to generate cleanup transactions' })
+    };
   }
 };
