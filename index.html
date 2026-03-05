@@ -1,43 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CryptoDira - Turtle Charity Fund</title>
-<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
-  <link rel="stylesheet" href="styles.css" />
-  <!-- Solana libs - critical! -->
-  <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoDira | Sea Turtle Navy Meme Token</title>
+  <style>
+    body { font-family: 'Comic Sans MS', cursive; background: linear-gradient(#001f3f, #0074D9); color: #fff; text-align: center; margin: 0; padding: 0; }
+    header { background: #001f3f; padding: 20px; }
+    .logo { width: 280px; border: 8px solid #ffd700; border-radius: 20px; box-shadow: 0 0 30px #ffd700; }
+    h1 { font-size: 3em; text-shadow: 3px 3px #ffd700; margin: 10px; }
+    .navy { font-size: 1.5em; color: #ffd700; }
+    section { padding: 40px 20px; }
+    .meme { font-size: 2em; margin: 20px; }
+    .buy-btn { background: #ff4136; color: white; padding: 15px 40px; font-size: 1.8em; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 10px #ffd700; }
+    .buy-btn:hover { transform: scale(1.1); }
+    footer { background: #001f3f; padding: 20px; font-size: 1.2em; }
+  </style>
 </head>
 <body>
   <header>
+    <img src="assets/stained-glass-logo.png" alt="CryptoDira Stained Glass Logo" class="logo">
     <h1>CryptoDira</h1>
-    <p>Community fund for sea turtles. Donate scraps, reclaim SOL, save the ocean.</p>
+    <p class="navy">🏴‍☠️ SEA TURTLE NAVY 🐢💥</p>
+    <p>The ultimate meme token for turtle lovers & navy degens!</p>
   </header>
 
-  <section id="cleanup">
-    <h2>Turtle Cleanup Tool</h2>
-    <p>Connect wallet, scan junk tokens, reclaim SOL—donate it here to fund turtles!</p>
-
-    <button onclick="connectWallet()">Connect Phantom</button>
-    <button onclick="scanJunk()">Scan & Preview</button>
-    <button onclick="donateJunk()">Donate Reclaimed SOL</button>
-
-    <div id="status">Status: Not connected</div>
-    <div id="preview">Max available: 0 SOL</div>
+  <section>
+    <div class="meme">"Turtles don't rug... they just swim deeper!"</div>
+    <p>CA: 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
   </section>
 
   <section>
-    <h2>Token Info</h2>
-    <p>Mint: 53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8</p>
-    <p>Treasury: 293Py67fg8fNYMt1USR6Vb5pkG1Wxp5ehaSAPQvBYsJy</p>
+    <button onclick="window.open('https://dexscreener.com/solana/53hZ5wdfphd8wUoh6rqrv5STvB58yBRaXuZFAWwitKm8', '_blank')" class="buy-btn">BUY ON RAYDIUM 🐢🚀</button>
+  </section>
+
+  <section>
+    <h2>Join the Navy!</h2>
+    <p>Telegram • X • Pump.fun — link 'em up when ready</p>
   </section>
 
   <footer>
-    <p>Powered by Solana • Help the turtles</p>
+    <p>© CryptoDira Sea Turtle Navy • Pure meme fun • No rugs, just shells 🐢</p>
   </footer>
-
-  <!-- Your script - loads after libs -->
-  <script src="main.js"></script>
 </body>
 </html>
